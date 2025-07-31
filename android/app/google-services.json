@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "940873643414",
+    "project_id": "new-day-459708",
+    "storage_bucket": "new-day-459708.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940873643414:android:0aaabf2b7116f57d1c99b7",
+        "android_client_info": {
+          "package_name": "com.newplace.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940873643414-qf2pbobvjriri4c01o2lpciqoo91sr1j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoHcf4RMsPkCj5d8vLc29MVmTRK70LsK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "940873643414-qf2pbobvjriri4c01o2lpciqoo91sr1j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,39 @@
+{
+  "appId": "com.newplace.app",
+  "appName": "NewPlace",
+  "webDir": "www",
+  "server": {
+    "cleartext": true,
+    "allowNavigation": [
+      "*.googleapis.com",
+      "*.google.com",
+      "*.gstatic.com",
+      "*.ggpht.com"
+    ]
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "fadeInDuration": 300,
+      "fadeOutDuration": 300,
+      "backgroundColor": "#ffffff",
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    
+  "CustomURLScheme": {
+    "scheme": "newplaceapp",
+    "host": "open"
+  },
+    "Purchases": {
+      "apiKey": "goog_YhBEczdwaWegvjAeukgWXnDDDen"
+    }
+   
+  },
+  "android": {
+    "allowMixedContent": true,
+    "webContentsDebuggingEnabled": true
+  }
+}

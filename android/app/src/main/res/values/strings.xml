@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NewPlace</string>
+    <string name="title_activity_main">NewPlace</string>
+    <string name="package_name">com.newplace.app</string>
+    <string name="custom_url_scheme">com.newplace.app</string>
+</resources>

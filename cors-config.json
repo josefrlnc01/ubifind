@@ -1,0 +1,14 @@
+[
+  {
+    "origin": ["*"],
+    "method": ["GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"],
+    "responseHeader": [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Content-Length",
+      "X-Firebase-Storage-Token"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]

@@ -1,0 +1,456 @@
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="google-adsense-account" content="ca-pub-1639698267501945">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; 
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://maps.gstatic.com https://js.revenuecat.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; 
+      style-src 'self' 'unsafe-inline' https://*.googleapis.com https://maps.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+      img-src 'self' data: blob: https: http: *; 
+      connect-src 'self' https: http: wss: *;
+      frame-src 'self' https://*.google.com https://apis.google.com https://*.revenuecat.com https://new-day-459708.firebaseapp.com https://new-day-459708.web.app https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep2.adtrafficquality.google *;
+      font-src 'self' https: http: data: *;
+      worker-src 'self' blob: *;
+      script-src-elem 'self' 'unsafe-inline' https://*.googleapis.com https://apis.google.com https://maps.gstatic.com https://js.revenuecat.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://googleads.g.doubleclick.net *;
+      child-src 'self' blob: https: http: *;
+      media-src 'self' blob: https: http: data: *;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      upgrade-insecure-requests;"
+      http-equiv="Content-Security-Policy">
+    <title>NewPlace</title>
+    <link rel="icon" type="image/jpg" href="images/faviconlogo.ico" />
+    <link rel="stylesheet" href="style.css" />
+  
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Galindo&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.0/lottie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.0/lottie.min.js"></script>
+    <script>
+        // Global variable to track if Google Maps API is loaded
+        window.googleMapsReady = new Promise((resolve) => {
+            window.initGoogleMaps = async function() {
+                // Inicializar Google Maps
+                
+                if (window.initGoogleMapsLibs) {
+                    await window.initGoogleMapsLibs();
+                }
+                resolve();
+            };
+        });
+    </script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh7iztz49atmSYgyDhwCvVL2aLjrpdGwU&libraries=places,geometry,marker&v=beta&callback=initGoogleMaps"
+        async defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script nomodule src="cordova.js"></script>
+        <script nomodule src="capacitor.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.2/web-animations.min.js"></script>
+        <script nomodule src="capacitor-windows.js"></script>
+        <!-- Scripts de RevenueCat -->
+        <script nomodule src="https://js.revenuecat.com/v8/purchases.js"></script>
+        
+        <script type="module" src="comments.js" async defer></script>
+        <script type="module" src="titles.js" async defer></script>
+        <script type="module" src="premium.js"async defer></script>
+        <script type="module" src="script.js"async  defer></script>
+
+</head>
+
+<body>
+
+    <div class="loader-overlay" id="loader-princ">
+        <div class="newplace-spinner">
+          <div class="ring"></div>
+          <div class="dot"></div>
+        
+        </div>
+    </div>
+    <div class="loader-overlay" id="loader">
+        <div class="newplace-spinner">
+          <div class="ring"></div>
+          <div class="dot"></div>
+          <p class="loading-text">Explorando nuevos lugares...</p>
+        </div>
+    </div>
+
+   <div id="confeti-container" style="display: none;"></div>
+   <div id="lottie-confeti-container" style="display: none;"></div>
+
+    </dialog>
+
+    <div id="customFlyer" style="display: none;" >
+        <div class="flyer-container">
+            <div class="flyer-header">
+                <img class="place-photos" crossorigin="anonymous"/>
+                <h2 id="flyer-title"></h2>
+              </div>
+          
+          <div class="flyer-content">
+          
+            
+            <p class="flyer-rating"></p>
+            <div class="comment-place">
+                
+            <blockquote id="flyer-comment"></blockquote>
+            <p class="count"></p>
+            </div>
+            
+            <p class="flyer-user"><strong></strong></p>
+           <div class="flyer-footer">
+            <p class="flyer-link">🌐 newplaceapp.com</p>
+           </div>
+          </div>
+        </div>
+    </div>
+      
+    <dialog id="confirm-publi">
+        <div class="container-dialog">
+            <div class="action-dialog">
+                <h3 style="text-align: center; font-size: 1.5em;"> ¿ Te apetece guardar sitios <span style="color: #5649c0; font-weight: bold; letter-spacing: 1.2; margin-left: 1.5px;">ILIMITADOS</span> por <span style="color: #5649c0; font-weight: bold; letter-spacing: 1.2; margin-left: 1.5px">HOY</span> ?</h3>
+                <span id="publi"> ¡ Mira un anuncio para obtener un día entero de guardados ilimitados 👾​ !</span>
+        <div class="buttons-confirm">
+            <button id="yes-publi">Desbloquear 🔥</button>
+            <button id="no-publi">No ❄️​</button>
+            </div>
+            
+        </div>
+        </div>
+            
+
+    </dialog>
+
+    <div id="adblock-modal" class="adblock-modal hidden">
+        <div class="adblock-content">
+          <h2>🔒 AdBlock detectado</h2>
+          <p>Este sitio se mantiene gracias a la publicidad. Por favor, considera desactivar AdBlock para continuar disfrutando de todas las funciones.</p>
+          <button id="continue-with-limits">Continuar con funciones limitadas</button>
+          <button id="reload-after-disable">Ya lo desactivé</button>
+        </div>
+      </div>
+
+    <div id="confirm-premium">
+        <button class="exit" id="close-premium">↰</button>
+        
+        <div class="container-premium">
+            <h4>¿ MODO PREMIUM ? 😎​😎​</h4>
+            <div class="box-premium">
+                <p class="text-premium">¡¡ <em style="font-weight: bold;">LIBRE</em> de anuncios !!</p>
+            </div>
+         
+            <div class="box-premium">
+                <p class="text-premium">Desbloquea todo el potencial de NewPlace con <em style="font-weight: bold;"> BÚSQUEDAS ILIMITADAS</em></p>
+            </div>
+            
+           
+            <button id="show-subscriptions" class="give-premium">
+                <span>🔥 3,59€ / Mes 🔥</span>
+                <span> ​DESBLOQUEAR </span>
+                
+                ​</button>
+                
+            <small style="text-align: center; color: white; text-wrap: pretty;" >Cancela tu suscripción desde Google Play cuando quieras</small>  
+            
+        </div>
+
+    </div>
+
+    <main class="container">
+        <header class="titles">
+
+            <nav class="header-buttons">
+                <div class="settings-container">
+                    <!-- Botón que abre/cierra el menú -->
+                    <button id="settings-button">
+                        <img class="icono ajustes" alt="icono de ajustes" src="images/ajustes.webp" />
+                        <!-- Puede usar un SVG o fuente de iconos real aquí -->
+                    </button>
+
+                    <!-- Menú desplegable de ajustes -->
+                    <ul id="settings-menu" class="settings-dropdown" role="menu" aria-label="Menú de ajustes">
+                        <li style="color: rgb(207, 207, 0);" class="section-title" id="premium-title">Premium</li>
+                        <li role="none"><a id="show-premium"  role="menuitem"><span
+                            class="icon icon-premium" id="premium-li"> DESCUBRE EL POTENCIAL COMPLETO </span></a></li>
+
+
+                            <li class="section-title" style="color: rgba(213, 213, 62, 0.895);">LOGROS</li>
+
+                            <li role="none"><a role="menuitem" href="titles.html" style="margin-right: 8px;"><span
+                                        >🏆</span>Mis logros</a></li>
+
+                        <li class="section-title">Perfil de usuario</li>
+
+                        <li role="none"><a role="menuitem" href="resetPass.html"><span
+                                    class="icon icon-password"></span>Cambiar
+                                contraseña</a></li>
+                        <li id="delete-account" role="none"><a role="menuitem" href="#"><span
+                                    class="icon icon-delete"></span>Eliminar
+                                cuenta</a></li>
+
+                        <li class="section-title">Preferencias de la app</li>
+                        <li role="none"><a role="menuitem" class="toggle-theme" id="toggle"><span
+                                    class="icon icon-theme"></span>
+                                <div class="toggle-theme-container">
+                                    <span>Tema claro/oscuro</span>
+                                    <div id="lottie-container"></div>
+                                </div>
+                            </a></li>
+
+                        <li class="section-title">Privacidad y seguridad</li>
+                        <li role="none"><a role="menuitem" id="down-poli"><span
+                                    class="icon icon-privacy"></span>Política de
+                                privacidad</a></li>
+                        <li role="none"><a role="menuitem" id="down-term"><span class="icon icon-terms"></span>Términos
+                                y
+                                condiciones</a></li>
+                        <li class="section-title">Ayuda y soporte</li>
+                        <!--<li role="none"><a role="menuitem" href="#"><span class="icon icon-faq"></span>Preguntas
+                            frecuentes</a></li>-->
+                        <li role="none"><a role="menuitem" href="contact.html"><span
+                                    class="icon icon-contact"></span>Contacto</a></li>
+                        <li role="none"><a role="menuitem" href="problems.html"><span
+                                    class="icon icon-report"></span>Reportar
+                                problema</a></li>
+
+                        <li class="section-divider"></li> <!-- separador visual opcional -->
+                        <li id="log-out-button" role="none"><a role="menuitem" href="#"><span
+                                    class="icon icon-logout"></span>Cerrar sesión</a>
+                        </li>
+                    </ul>
+                </div>
+                <button id="toggle-menu">
+                    <img class="icono menu" src="images/menu-hamburguesa.webp" />
+                </button>
+            </nav>
+
+
+        </header>
+
+        <aside class="principal">
+
+            <div class="form-container">
+                <form id="form">
+                    <div class="input-city">
+                        
+                        <input type="text"  placeholder=" 🔎" id="city" name="city" required />
+                    </div>
+                    <div class="input-filters-container">
+
+                        <div class="container-slide-filters">
+
+                            <div class="input-filters" id="input-filters">
+
+                                <select id="prices">
+                                    <button>
+                                        <span class="picker">👉</span>
+                                        <span>💶</span>
+
+                                    </button>
+                                    <option value="all">
+                                        <span>Todos los precios 💶</span>
+                                    </option>
+                                    <option value="1">
+                                        <span>💶 Barato</span>
+                                    </option>
+                                    <option value="2">
+                                        <span>💶💶 Moderado</span>
+                                    </option>
+                                    <option value="3">
+                                        <span>💶💶💶 Caro</span>
+                                    </option>
+                                    <option value="4">
+                                        <span>💶💶💶💶 Lujo</span>
+                                    </option>
+                                </select>
+                                <select id="rating">
+                                    <button>
+                                        <span class="picker">👉</span>
+                                        <span>⭐</span>
+
+                                    </button>
+
+                                    <option value="all">
+                                        <span>Todas las valoraciones ⭐</span>
+                                    </option>
+                                    <option value="3">
+                                        <span>3 ⭐</span>
+                                    </option>
+                                    <option value="3.5">
+                                        <span>3.5+ ⭐</span>
+                                    </option>
+                                    <option value="4">
+                                        <span>4 ⭐</span>
+                                    </option>
+                                    <option value="4.5">
+                                        <span>4.5 ⭐</span>
+                                    </option>
+
+                                </select>
+
+                                <select id="opening">
+                                    <button>
+                                        <span class="picker">👉</span>
+                                        <span>🕛</span>
+
+                                    </button>
+
+                                    <option value="all">
+                                        <span>Todos los horarios 🕛</span>
+                                    </option>
+                                    <option value="yes">
+                                        <span>Abierto ahora 🕛</span>
+                                    </option>
+
+
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="buttons-form">
+                        <div class="buttons-princ">
+                            <button class="form-buttons subm" id="search-normal"><i class="fas fa-search"></i>
+                                </button>
+                                <button class="form-buttons rein" id="reini-map" type="reset"> <i class="fas fa-undo"></i>
+                                    </button>
+                        </div>
+                       
+                             <button id="locate-me" class="form-buttons " title="Mi ubicación">
+                        <span></span> <i class="fas fa-location-arrow"></i>Buscar por mi zona
+                        </button>
+                        
+    
+                    </div>
+
+                    
+            </div>
+
+
+
+            </form>
+
+
+
+            </div>
+            <div class="map-container" id="map-container">
+                <div id="map" loading="lazy"></div>
+
+                <button id="cancel" class="map-control-btn">Cancelar modo de creación </button>
+                <button id="stop-route">Stop</button>
+            </div>
+
+
+
+
+        </aside>
+    </main>
+    <aside id="get-sites" class="saved-places-panel">
+        <div class="panel-header">
+
+            <div class="panel-actions">
+
+                <button id="closeStorage" class="panel-btn" title="Cerrar">
+                    <i class="fas fa-times" style="text-align: center;"></i>
+                </button>
+            </div>
+        </div>
+        <div id="container-sites">
+            <input type="text" id="search-card" placeholder="Nombre del lugar o de la ciudad" name="search-card" />
+            <div id="sites-list" class="places-grid"></div>
+        </div>
+    </aside>
+
+    <aside id="get-createds-sites" class="createds-places-panel">
+        <div class="panel-header">
+            <div class="panel-actions">
+
+                <button id="close-createds-storage" class="panel-btn" title="Cerrar">
+                    <i class="fas fa-times" style="text-align: center;"></i>
+                </button>
+            </div>
+        </div>
+        <div id="container-created-sites">
+            <input type="text" id="search-createds-card" placeholder="Nombre del lugar" name="search-card" />
+            <div id="sites-createds-list" class="places-grid"></div>
+        </div>
+    </aside>
+
+    <aside id="get-createds-private-sites" class="createds-privates-places-panel">
+        <div class="panel-header">
+            <div class="panel-actions">
+
+                <button id="close-private-createds-storage" class="panel-btn" title="Cerrar">
+                    <i class="fas fa-times" style="text-align: center;"></i>
+                </button>
+            </div>
+        </div>
+        <div id="container-private-created-sites">
+            <input type="text" id="search-createds-private-card" placeholder="Nombre del lugar" name="search-card" />
+            <div id="sites-createds-privates-list" class="places-grid"></div>
+        </div>
+    </aside>
+
+    <aside id="get-options" class="options-places-panel">
+        <div class="panel-header">
+            <button id="close-menu" class="panel-btn" title="Cerrar">
+                <i class="fas fa-times" style="text-align: center;"></i>
+            </button>
+        </div>
+    
+        <div id="container-options">
+            <button id="create-place-btn" class="form-buttons">
+                <span>Crear nuevo lugar</span><span>✏️</span>
+            </button>
+
+            <button id="get" class="btn btn-saved">
+                <span>Mis Lugares Guardados</span> <i class="fas fa fa-bookmark"></i>
+            </button>
+            <button id="get-createds" class="btn btn-saved">
+                <span>
+                    Mis Lugares Creados Públicos
+                </span>
+                <i class="fas fa fa-pen"></i>
+            </button>
+            <button id="get-public-createds" class="btn btn-saved">
+                <span>Mis Lugares Creados Privados
+
+                </span>
+                <i class="fas fa fa-pen"></i>
+            </button>
+        </div>
+    </aside>
+
+
+    <div id="notification-banner" class="notification-banner hidden">
+        <p id="notification-message" style="text-align: end;"></p>
+        <button id="close-notification">✕</button>
+    </div>
+
+   
+
+    <footer>
+        <p>© 2025 NewPlace - Explora y crea lugares desde tu dispositivo. </p>
+
+    </footer>
+
+
+
+
+
+
+
+
+</body>
+
+</html>

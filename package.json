@@ -1,0 +1,38 @@
+{
+  "name": "appnewplace---copia",
+  "version": "1.0.0",
+  "description": "A project by the people, for the people",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@awesome-cordova-plugins/in-app-purchase-2": "^8.0.2",
+    "@capacitor-community/admob": "^7.0.3",
+    "@capacitor/android": "^7.3.0",
+    "@capacitor/browser": "^7.0.1",
+    "@capacitor/cli": "^7.3.0",
+    "@capacitor/core": "^7.3.0",
+    "@capacitor/filesystem": "^7.1.1",
+    "@capacitor/push-notifications": "^7.0.1",
+    "@capacitor/splash-screen": "^7.0.1",
+    "@firebase/firestore": "^4.7.17",
+    "@revenuecat/purchases-capacitor": "^10.3.6",
+    "body-parser": "^2.2.0",
+    "cordova-plugin-customurlscheme": "^5.0.2",
+    "cordova-plugin-file-opener2": "^4.0.0",
+    "cordova-plugin-inappbrowser": "^6.0.0",
+    "cordova-plugin-purchase": "^10.6.1",
+    "firebase-admin": "^13.4.0",
+    "firebase-functions": "^6.4.0",
+    "lottie-web": "^5.13.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "cordova-res": "^0.15.4"
+  }
+}
