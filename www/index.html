@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="google-adsense-account" content="ca-pub-1639698267501945">
+   
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; 
       script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://maps.gstatic.com https://js.revenuecat.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; 
@@ -33,21 +33,19 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.0/lottie.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1639698267501945"
+     crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.0/lottie.min.js"></script>
     <script>
-        // Global variable to track if Google Maps API is loaded
-        window.googleMapsReady = new Promise((resolve) => {
-            window.initGoogleMaps = async function() {
-                // Inicializar Google Maps
-                
-                if (window.initGoogleMapsLibs) {
-                    await window.initGoogleMapsLibs();
-                }
-                resolve();
-            };
-        });
+        window.initGoogleMaps = function() {
+            // Signal that Google Maps is ready
+            window.googleMapsLoaded = true;
+            // Dispatch an event that modules can listen for
+            window.dispatchEvent(new Event('googlemapsloaded'));
+            console.log('Google Maps API loaded');
+            
+        };
     </script>
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh7iztz49atmSYgyDhwCvVL2aLjrpdGwU&libraries=places,geometry,marker&v=beta&callback=initGoogleMaps"
@@ -93,7 +91,6 @@
     <div id="customFlyer" style="display: none;" >
         <div class="flyer-container">
             <div class="flyer-header">
-                <img class="place-photos" crossorigin="anonymous"/>
                 <h2 id="flyer-title"></h2>
               </div>
           

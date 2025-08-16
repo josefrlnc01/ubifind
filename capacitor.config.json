@@ -1,6 +1,6 @@
 {
   "appId": "com.newplace.app",
-  "appName": "NewPlace",
+  "appName": "UFind",
   "webDir": "www",
   "server": {
     "cleartext": true,

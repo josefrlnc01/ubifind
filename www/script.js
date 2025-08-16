@@ -1,5 +1,5 @@
 import { cacheManager } from "./cache.js";
-
+ 
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js"
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
@@ -20,41 +20,21 @@ import {
     increment,
     setDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getPlaceById, savePlace } from "./placeDb.js";
+
 import { addComment, loadComments } from "./comments.js";
+
 // Google Maps components will be accessed through getGoogleMapsComponents()
 let userInitiatedSearch = false;
 document.getElementById('search-normal')?.addEventListener('click', () => userInitiatedSearch = true);
 document.getElementById('locate-me')?.addEventListener('click', () => userInitiatedSearch = true);
 
 // Variables para almacenar los componentes de Google Maps
-let AdvancedMarkerElement, PinElement;
+
 
 // Inicializa Firebase
 export let isPremium = false;
 
-// Función para inicializar los componentes de Google Maps
-async function initGoogleMapsComponents() {
-    if (!window.google || !window.google.maps) {
-        await new Promise(resolve => {
-            const checkGoogle = setInterval(() => {
-                if (window.google && window.google.maps) {
-                    clearInterval(checkGoogle);
-                    resolve();
-                }
-            }, 100);
-        });
-    }
-    
-    // Ahora que estamos seguros de que google.maps está disponible
-    const { AdvancedMarkerElement: AME, PinElement: PE } = await google.maps.importLibrary("marker");
-    AdvancedMarkerElement = AME;
-    PinElement = PE;
-    return { AdvancedMarkerElement, PinElement };
-}
 
-// Inicializar los componentes de Google Maps cuando estén listos
-initGoogleMapsComponents().catch(console.error);
 
 const VAPID_KEY = `BA586IeX-g7HOksHR2U6FupNrfy7KYDmgl993dRPGCwSDrH7gkrath3Ybe3HZT7eNpEwWCTC3bpdJeRY6AvbK1k`
 const favoritosCollection = collection(db, "favoritos");
@@ -63,7 +43,7 @@ const placesCollection = collection(db, 'lugares')
 const spinner = document.querySelector('.newplace-spinner')
 
 
-
+desbloqueoBusquedas()
 
 
 // Elementos del DOM
@@ -75,6 +55,7 @@ const elements = {
     buttonShowPrivateCreateds: document.getElementById('get-public-createds'),
     buttonCreatePlace: document.getElementById('create-place-btn'),
     buttonCloseCreateds: document.getElementById('close-createds-storage'),
+    buttonClosePrivateCreateds: document.getElementById('close-private-createds-storage'),
     logOutButton: document.getElementById('log-out-button'),
     formSearchCard: document.getElementById('form-search-card'),
     pricesFilter: document.getElementById('prices'),
@@ -274,11 +255,18 @@ async function handleDeepLink(placeId) {
             // Si tiene position, lo movemos a location para mantener compatibilidad
             if (place.position) {
                 console.log('Usando posición del campo position:', place.position);
-                normalizedPlace.location = {
-                    lat: place.position.lat || place.position._lat,
-                    lng: place.position.lng || place.position._long
-                };
+                const lat = parseFloat(place.position.lat || place.position._lat);
+                const lng = parseFloat(place.position.lng || place.position._long);
+                
+                if (!isValidLatLng(lat, lng)) {
+                    throw new Error('Invalid coordinates in place data');
+                }
+                
+                normalizedPlace.location = { lat, lng };
+                normalizedPlace.position = { lat, lng }; // Ensure position is also valid
                 console.log('Ubicación normalizada:', normalizedPlace.location);
+            } else {
+                throw new Error('Place has no position data');
             }
 
             try {
@@ -549,7 +537,7 @@ window.addEventListener('load', async () => {
                 }
             });
 
-            infowindow = new google.maps.InfoWindow();
+            
 
         } catch (err) {
             console.warn('Error interno:', err);
@@ -561,6 +549,20 @@ window.addEventListener('load', async () => {
 
 
 async function initMap() {
+    // Function to validate latitude and longitude values
+    function isValidLatLng(lat, lng) {
+        return (
+            typeof lat === 'number' &&
+            typeof lng === 'number' &&
+            !isNaN(lat) &&
+            !isNaN(lng) &&
+            lat >= -90 &&
+            lat <= 90 &&
+            lng >= -180 &&
+            lng <= 180
+        );
+    }
+
     // Check if Google Maps API is loaded
     if (typeof google === 'undefined' || !google.maps) {
         console.warn('Google Maps API no está cargada');
@@ -583,7 +585,6 @@ async function initMap() {
             mapId: '65743a5870e61131c4e7b14f'
         });
 
-        // Intentar obtener la ubicación del usuario
         if (navigator.geolocation) {
             try {
                 const position = await new Promise((resolve, reject) => {
@@ -595,34 +596,33 @@ async function initMap() {
 
                     navigator.geolocation.getCurrentPosition(resolve, reject, options);
                 });
-                const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                if (!isValidLatLng(lat, lng)) {
+                    throw new Error('Invalid latitude or longitude values');
+                }
+                    let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
                 const pinScaled = new PinElement({
                     scale: 1.3,
-                    glyph:'😀',
-            background: '#5a4bff',
-                    borderColor: "#000"
+                    glyph: '😀',
+                    background: '#5a4bff',
+                    borderColor: '#000'
                 });
 
                 const marker = new AdvancedMarkerElement({
                     map,
-                    position: {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    },
+                    position: { lat, lng },
                     content: pinScaled.element
                 });
 
                 markers.push(marker);
-                map.setCenter({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                });
+                map.setCenter({ lat, lng });
                 map.setZoom(17);
             } catch (geoError) {
-                
-
                 showErrorNotification('No se pudo obtener la ubicación 😑');
-                return
+                return;
             }
         }
 
@@ -640,6 +640,7 @@ async function initMap() {
     } catch (error) {
         console.error('Error al inicializar el mapa:', error);
         showErrorNotification('Error al cargar el mapa. Por favor, recarga la página.');
+        return
     }
 }
 
@@ -1037,7 +1038,7 @@ async function displayMarkers(places) {
         if (place && typeof place !== 'undefined') {
 
             bounds.extend(place.geometry.location);
-
+ let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
          
             const pinScaled = new PinElement({
                 scale: 1.1,
@@ -1081,7 +1082,7 @@ async function displayMarkers(places) {
             </div>
             `;
                 if (infowindow) infowindow.close();
-
+                infowindow = new google.maps.InfoWindow()
                 infowindow.setContent(content);
 
                 // Abrir el InfoWindow directamente en la posición del marcador
@@ -1436,6 +1437,20 @@ async function fetchGeocode(city) {
 
 
 //Función para buscar por mi posición
+// Validate latitude and longitude values
+function isValidLatLng(lat, lng) {
+    return (
+        typeof lat === 'number' &&
+        typeof lng === 'number' &&
+        !isNaN(lat) &&
+        !isNaN(lng) &&
+        lat >= -90 &&
+        lat <= 90 &&
+        lng >= -180 &&
+        lng <= 180
+    );
+}
+
 async function searchByMyPosition() {
     const permissionStatus = await navigator.permissions?.query({ name: 'geolocation' }).catch(() => null);
     if (permissionStatus?.state === 'denied') {
@@ -1457,36 +1472,44 @@ async function searchByMyPosition() {
 
         const position = await new Promise((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(
-                resolve, (error) => {
-
-
+                resolve,
+                (error) => {
                     showErrorNotification('No se pudo obtener tu ubicación, asegurate de habilitar los permisos.')
                     reject(error)
                 },
                 { timeout: 10000, enableHighAccuracy: true }
             )
-        })
-        const userPosition = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
+        });
+
+        // Extract coordinates and validate them
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        if (!isValidLatLng(latitude, longitude)) {
+            showErrorNotification('Coordenadas inválidas obtenidas de la geolocalización.');
+            return;
         }
-        
+
+        // Create valid position object
+        const userPosition = { 
+            lat: latitude,
+            lng: longitude 
+        };
+            let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
         const pinScaled = new PinElement({
             scale: 1.3,
-            glyph:'😀',
+            glyph: '😀',
             background: '#5a4bff',
-            
-           
-            borderColor: "#fff"
-        })
+            borderColor: '#fff'
+        });
+
         const marker = new AdvancedMarkerElement({
             map,
             position: userPosition,
             content: pinScaled.element
-        })
-        markers.push(marker)
-        let lat = position.coords.latitude;
-        let lng = position.coords.longitude;
+        });
+        
+        markers.push(marker);
 
         const cacheKey = `${city}-${rating}-${pricing}-${opening}`
         try {
@@ -1494,7 +1517,7 @@ async function searchByMyPosition() {
                 'placesCache',
                 cacheKey,
                 async () => {
-                    const data = await fetchGoogleMapsData(lat, lng, rating, pricing, opening);
+                    const data = await fetchGoogleMapsData(latitude, longitude, rating, pricing, opening);
                     // Verificar que los datos sean válidos antes de guardar en caché
                     return Array.isArray(data) ? data : [];
                 }
@@ -1692,13 +1715,22 @@ async function loadSharePlaces(placeId) {
             map.setZoom(17); // o el zoom que uses para mostrar lugares
         }
         soundSucces()
+        let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+        const pinScaled = new PinElement({
+                scale: 1.1,
+                glyph: '📍​',
+                background: '#FF5A5F',
+                glyphColor: "#000",
+                borderColor: "#000"
+            })
         // 2. Crear un marcador manualmente
         const marker = new AdvancedMarkerElement({
-            position: place.position,
-            map: map,
-            
-            title: place.name,
-        });
+            map,
+            position: place.geometry.location,
+            content: pinScaled.element,
+
+                zIndex: 100,
+            })
         const likeButton = "<button class='button-likes'> <img class='action-btn img-share' src='images/mg.webp'></img></button>"
         const contentInfowindow = `
             <div class="card-sites" data-id='${place.place_id}'>
@@ -2341,7 +2373,7 @@ async function shareCreatedPlace(place) {
 }
 
 //función para ver en el mapa un sitio guardado
-function flyToPlace(place) {
+async function flyToPlace(place) {
     // Validación exhaustiva
     if (!place || (!place.location && (!place.lat || !place.lng))) {
         console.error("Datos de ubicación inválidos:", place);
@@ -2368,13 +2400,22 @@ function flyToPlace(place) {
     const position = { lat: parseFloat(lat), lng: parseFloat(lng) };
     map.setCenter(position);
     map.setZoom(16);
-
+    let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
     // Crear marcador
+    const pinScaled = new PinElement({
+                scale: 1.1,
+                glyph: '📍​',
+                background: '#FF5A5F',
+                glyphColor: "#000",
+                borderColor: "#000"
+            })
     const marker = new AdvancedMarkerElement({
-        map,
-        position: position,
-        title: place.name || "Lugar sin nombre"
-    });
+                map,
+                position: place.geometry.location,
+                content: pinScaled.element,
+
+                zIndex: 100,
+            })
 
     markers.push(marker);
 
@@ -2887,10 +2928,44 @@ async function enableCreatePlace() {
         google.maps.removeEventListener(creationListener)
     }
 
-    const handleMapTap = (event) => {
-        event.stop()
-        handleNewlocation(event.latLng)
-    }
+    const handleMapTap = async (event) => {
+        try {
+            // Get the click position
+            const position = {
+                lat: event.latLng.lat(),
+                lng: event.latLng.lng()
+            };
+            
+            // Remove existing marker if any
+            if (creationMarker) {
+                creationMarker.setMap(null);
+            }
+            
+            // Create a new marker at the clicked position
+            const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+            const pinScaled = new PinElement({
+                scale: 1.1,
+                glyph: '📍',
+                glyphColor: '#000',
+                borderColor: '#000'
+            });
+            
+            creationMarker = new AdvancedMarkerElement({
+                map,
+                position: position,
+                content: pinScaled.element,
+                title: 'Nuevo lugar'
+            });
+            
+            // Show the place creation form
+            showDesktopPlaceCreation(position);
+            
+        } catch (error) {
+            console.error('Error handling map click:', error);
+            showErrorNotification('Error al procesar la ubicación');
+        }
+    };
+
 
 
     creationListener = map.addListener('click', handleMapTap)
@@ -2929,14 +3004,23 @@ async function handleNewlocation(position) {
     if (creationMarker) {
         creationMarker.setMap(null)
     }
-
+        let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+    const pinScaled = new PinElement({
+                scale: 1.1,
+                glyph: '📍​',
+                background: '#FF5A5F',
+                glyphColor: "#000",
+                borderColor: "#000"
+            })
     creationMarker = new AdvancedMarkerElement({
-        map,
-        position: { lat: position.lat(), lng: position.lng() },
-    })
+                map,
+                position: position,
+                content: pinScaled.element,
 
-
-    showDesktopPlaceCreation(position)
+                zIndex: 100,
+            })
+            console.log('position:', position)
+    await showDesktopPlaceCreation(position)
 
 }
 
@@ -2954,19 +3038,24 @@ else{
 }
 
 let downloadURL
-
-async function showDesktopPlaceCreation(position, place) {
+function normalizePosition(pos) {
+  return {
+    lat: typeof pos.lat === 'function' ? parseFloat(pos.lat()) : parseFloat(pos.lat),
+    lng: typeof pos.lng === 'function' ? parseFloat(pos.lng()) : parseFloat(pos.lng),
+  }
+}
+async function showDesktopPlaceCreation(position) {
     const bounds = new google.maps.LatLngBounds();
     const content = `
     <div class='form-creation-place'>
     <div class='inputContainer check'>
 
-    <label>Crear sitio públicamente</label>
-    <input type='checkbox' id='public'/>
+    <label class='title-creation' for='check'>Lugar público</label>
+    <input type='checkbox' name='check' id='public'/>
     </div>
     
     <div class='inputContainer name'>
-    <label for='name-desktop'>Nombre (Obligatorio)</label>
+    <label for='name-desktop'>Nombre</label>
     <input type='text' name='name-desktop' id='name-desktop' required/>
     </div>
 
@@ -3002,10 +3091,23 @@ async function showDesktopPlaceCreation(position, place) {
     </div>
     </div>
     `
-    bounds.extend()
+    // Ensure position is a proper LatLng object
+    const lat = typeof position.lat === 'function' ? position.lat() : parseFloat(position.lat);
+    const lng = typeof position.lng === 'function' ? position.lng() : parseFloat(position.lng);
+    
+    const latLng = { lat, lng };
+    
+    // Update bounds
+    bounds.extend(latLng);
+    
+    // Close any existing infowindow
+    if (infowindow) infowindow.close();
+    
+    // Create new infowindow
     infowindow = new google.maps.InfoWindow({
         content: content,
-        position: { lat: position.lat(), lng: position.lng() },
+        pixelOffset: new google.maps.Size(0, 410),
+        position: latLng,
         maxWidth: 300,
         disableAutoPan: true
     })
@@ -3170,6 +3272,7 @@ async function loadPlaces() {
         } catch (error) {
             console.error('Error al cargar lugares:', error);
             showErrorNotification('Error al cargar los lugares');
+            return
         }
     }
     else {
@@ -3193,7 +3296,7 @@ async function addMarkerToPlace(place) {
             lat: place.position.lat || place.position.latitude,
             lng: place.position.lng || place.position.longitude
         };
-
+            let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
         const pinScaledVisible = new PinElement({
             scale: .8,
@@ -3236,7 +3339,7 @@ async function addMarkerToPlace(place) {
                 
                 <div class='container-createds-card rating'>
                     <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
-                     <button style="align-self:end;" class='share-photo'><img class='action-btn' src='images/folleto.webp'></img></button>
+                    
                 </div>
                 <div class='container-createds-card photo'>
                     ${place.photo ? `<img class="place-photo" loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado'}'>` : '<p>Sin imagen</p>'}
@@ -3245,10 +3348,10 @@ async function addMarkerToPlace(place) {
                     ${place.visibleToAll ? likeButton : ''}
                   
                     <button class='share-ubi'><img class='action-btn'src='images/ubicacion.webp' ></img></button>
-                   <button class='share-card'><img class='action-btn img-share' src='images/share.webp' ></img></button>
+                   <button style="align-self:end;" class='share-photo'><img class='action-btn' src='images/folleto.webp'></img></button>
                 </div>
                 <div class='container-createds-card comment'>
-                    <p class='coment-place'><strong>${auth.currentUser.displayName}</strong><br>${place.comment || 'N/D'}</p>
+                    <p class='coment-place'><strong>${auth.currentUser.displayName}</strong>${place.comment || 'N/D'}</p>
                 </div>
                 ${place.visibleToAll ? `<div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}">
                 </div>` : ''}
@@ -3680,10 +3783,12 @@ function flyToCreatedPlace(position, place) {
 
     // 6. Crear marcador
     creationMarker = new AdvancedMarkerElement({
-        map,
-        position: { lat: lat, lng: lng },
-        title: place?.name || "Lugar sin nombre"
-    });
+                map,
+                position: place.geometry.location,
+                content: pinScaled.element,
+
+                zIndex: 100,
+            })
 
 
     markersOfCreateds.push(creationMarker);
@@ -3768,8 +3873,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-const buttonClosePrivateCreateds = document.getElementById('close-private-createds-storage')
-if(elements.buttonCreatePlace){
     elements.buttonCreatePlace.addEventListener('click', async (e) => {
         e.preventDefault()
         
@@ -3777,10 +3880,7 @@ if(elements.buttonCreatePlace){
         closeMenu()
     
     })
-}
-else{
-    console.warn('No se encontró el botón de activar creación')
-}
+
 
 function closeCreatedsPanel() {
 
@@ -3788,12 +3888,10 @@ function closeCreatedsPanel() {
 
 }
 
-if(buttonClosePrivateCreateds){
-    buttonClosePrivateCreateds.addEventListener('click', closePrivatesCreatedsPanel)
-}
-else{
-    console.warn('No se encontró el boton de cerrar menu de privados creados')
-}
+
+   elements.buttonClosePrivateCreateds.addEventListener('click', closePrivatesCreatedsPanel)
+
+
 
 function closePrivatesCreatedsPanel() {
     soundClick()
@@ -3813,6 +3911,7 @@ function showMenu() {
         counterTransitions++
     }
     soundClick()
+
     menuOptions.classList.add('active')
 
 }
@@ -3822,15 +3921,13 @@ function closeMenu() {
     closeSavedPlacesView()
     closeCreatedsPanel()
 }
-if(elements.buttonCloseCreateds){
+
     elements.buttonCloseCreateds.addEventListener('click', () => {
         soundClick()
         closeCreatedsPanel()
     })
-}
-else{
-    console.warn('No se encontró el boton de close created places')
-}
+
+
 
 const buttonCloseMenu = document.getElementById('close-menu')
 const buttonToggleMenu = document.getElementById('toggle-menu')
@@ -3932,7 +4029,7 @@ async function showInterstitial() {
     const { AdMob } = window.Capacitor.Plugins;
     if (!isPremium) {
         await AdMob.prepareInterstitial({
-            adId: 'ca-app-pub-3940256099942544/1033173712',
+            adId: 'ca-app-pub-1639698267501945/5948105832',
             isTesting: true
         });
 
@@ -4003,7 +4100,7 @@ async function showRewardedAd() {
     if (!window.Capacitor.isNativePlatform()) return
     try {
         await AdMob.prepareRewardVideoAd({
-            adId: 'ca-app-pub-3940256099942544/5224354917',
+            adId: 'ca-app-pub-1639698267501945/1960898980',
             isTesting: true,
             npa: true,
         });
@@ -4049,10 +4146,11 @@ function showVisit() {
 
 
 
-desbloqueoBusquedas()
+
 
 async function shareCanvas(place) {
     try {
+        
         // Rellenar datos
         document.getElementById('flyer-title').textContent = place.name;
         let lazyImagesChanged = false
@@ -4064,31 +4162,12 @@ async function shareCanvas(place) {
         document.querySelector('.flyer-user strong').textContent = `Creado por ${auth.currentUser?.displayName || 'Usuario'}`;
         document.querySelector('.count').textContent = `${await getLikesCount(place.place_id)}❤️`;
          // Change lazy-loaded images to eager load before starting the capture
-    const lazyImages = document.querySelectorAll('.img[loading="lazy"]');
-    if (lazyImages.length > 0) {
-      lazyImages.forEach(img => {
-        img.setAttribute('loading', 'eager');
-        img.crossOrigin = 'anonymous';
-                img.src = place.photo;
-        
-      });
-      console.log("Lazy-loaded images set to eager load for capture.");
-      lazyImagesChanged = true;  // Mark that images were changed
-    }
+    const lazyImages = document.querySelectorAll('.place-photo');
+    
         const flyer = document.getElementById('customFlyer');
-        flyer.classList.remove('hidden');
+        flyer.style.display = 'block';
 
-        // Wait for images to load
-        await Promise.all(Array.from(lazyImages).map(photo => {
-            return new Promise((resolve) => {
-                if (photo.complete) {
-                    resolve();
-                } else {
-                    photo.onload = resolve;
-                    photo.onerror = resolve; // Continue even if image fails
-                }
-            });
-        }));
+        
 
         // Add a small delay to ensure rendering is complete
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -4102,31 +4181,46 @@ async function shareCanvas(place) {
             backgroundColor: '#ffffff' // Ensure white background
         });
 
-        flyer.classList.add('hidden'); // Hide the flyer after capturing
+        flyer.style.display = 'none'; // Hide the flyer after capturing
 
         // Convert to blob and share/download
-        return new Promise((resolve) => {
-            canvas.toBlob(blob => {
-                const file = new File([blob], 'flyer.png', { type: 'image/png' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        title: `Descubre ${place.name}`,
-                        text: 'Mira este lugar en NewPlace!',
-                        files: [file]
-                    }).catch(err => {
-                        console.error('Error sharing:', err);
-                        downloadImage(blob, place.name);
-                    });
-                } else {
-                    downloadImage(blob, place.name);
-                }
-                resolve();
-            }, 'image/png', 0.95); // 0.95 quality for good balance
-        });
+        
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(blob => resolve(blob),'image/png')
+            })
+            const blob64 = await convertBlobToBase64(blob)
+            const fileName = `flyer${Date.now()}.png`
+            const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+                   if(isNative){
+                    const {Filesystem, Directory } = await import  ('https://cdn.jsdelivr.net/npm/@capacitor/filesystem@5/dist/esm/index.js');
+                     const { Share } = await import('https://cdn.jsdelivr.net/npm/@capacitor/share@5/dist/esm/index.js');
+
+                     await Filesystem.writeFile({
+                        path:fileName,
+                        data : blob64.split(',')[1],
+                        directory : Directory.Cache
+                     })
+                     const {uri : nativeUri} = await Filesystem.writeUri({
+                        path : fileName,
+                        directory : Directory.Cache
+                     })
+                      // Handle sharing on native platforms
+                        await Share.share({
+                            title: `Descubre ${place.name}`,
+                            text: 'Mira este lugar en NewPlace!',
+                            url:[nativeUri],
+                            files: [file]
+                        });
+                   } 
+                   else{
+                    showErrorNotification('Error al compartir')
+                    return
+                   }
     } catch (error) {
         console.error('Error en shareCanvas:', error);
         // Show error to user
         showErrorNotification('No se pudo generar el flyer. Por favor, inténtalo de nuevo.');
+        return
     }
 }
 

@@ -19,6 +19,7 @@
     "@capacitor/core": "^7.3.0",
     "@capacitor/filesystem": "^7.1.1",
     "@capacitor/push-notifications": "^7.0.1",
+    "@capacitor/share": "^7.0.2",
     "@capacitor/splash-screen": "^7.0.1",
     "@firebase/firestore": "^4.7.17",
     "@revenuecat/purchases-capacitor": "^10.3.6",
