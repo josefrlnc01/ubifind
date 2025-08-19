@@ -169,15 +169,6 @@ if(document.readyState === 'loading'){
            
         })
        
-        
-        if (!isPremium) {
-            const scrptAds = document.createElement('script');
-            scrptAds.async = true;
-            scrptAds.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1639698267501945';
-            scrptAds.setAttribute('crossorigin', 'anonymous');
-            scrptAds.setAttribute('data-ad-client', 'ca-pub-1639698267501945');
-            document.head.appendChild(scrptAds);
-        }
     
     
     });
@@ -478,8 +469,29 @@ window.addEventListener('load', async () => {
 
             setupPushNotifications()
             isPremium = await isUserPremiumAtStorage();
+            if(!window.Capacitor.isNativePlatform()){
+                document.getElementById('premium-title').style.display = 'none'
+                        document.getElementById('premium-li').style.display = 'none'
+                        document.getElementById('show-premium').style.display = 'none'
+               }
             if (!isPremium) {
-
+                const scrptAds1 = document.createElement('script');
+                const scrptAds2 = document.createElement('script');
+                const scrptAds3 = document.createElement('script');
+                const scrptAds4 = document.createElement('script');
+    
+                scrptAds1.async = true;
+                scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
+                scrptAds2.async = true;
+                scrptAds2.src = '//www.highperformanceformat.com/fc6c7031c0b8d156c901b64ee20ea3dc/invoke.js'
+                scrptAds3.async = true
+                scrptAds3.src = '//pl27454154.profitableratecpm.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js'
+                scrptAds4.async = true
+                scrptAds4.src = '//earringprecaution.com/c9d2315ce60a2a42713a6ac965364fd9/invoke.js'
+                document.head.appendChild(scrptAds1);
+                document.head.appendChild(scrptAds2);
+                document.head.appendChild(scrptAds3);
+                document.head.appendChild(scrptAds4);
                 resetearGuardadoYBusquedasDiarias();
             }
             if (isPremium) {
@@ -1834,6 +1846,7 @@ async function loadSharePlaces(places) {
             const shareUbiBtn = document.querySelectorAll('.share-ubi');
             const shareCardBtn = document.querySelectorAll('.share-card')
             const btnComment = document.querySelectorAll('.btn-comentar');
+            const sharePhoto = document.querySelectorAll('.share-photo')
 
             const count = await getLikesCount(place.place_id);
             loadComments(place.place_id)
@@ -1881,6 +1894,11 @@ async function loadSharePlaces(places) {
                     await shareCreatedPlaceGoogle(place)
                 });
             });
+            sharePhoto.forEach(button => {
+                button.addEventListener('click', async () => {
+                    await shareCanvas(place)
+                });
+            })
             shareCardBtn.forEach(btn => {
                 btn.addEventListener('click', async () => {
                     await shareCreatedPlace(place)
@@ -2371,15 +2389,27 @@ async function shareCreatedPlaceGoogle(place) {
     try {
         const placeUrl = `https://www.google.com/maps/search/?api=1&query=${place.position.lat},${place.position.lng}`
         if (!place.position.lat || !place.position.lng) return
-        const {Share} = window.Capacitor?.Plugins || {}
-        if(Share){
-            await Share.share({
-                title: `Destino ${place.name} !!`,
-                text: 'Mira la ubi que he encontrado en UFind!',
-                url: placeUrl,           
-                dialogTitle: 'Compartir Ubi'
-              });
+        if(window.Capacitor.isNativePlatform()){
+            const {Share} = window.Capacitor?.Plugins || {}
+            if(Share){
+                await Share.share({
+                    title: `Destino ${place.name} !!`,
+                    text: 'Mira la ubi que he encontrado en UFind!',
+                    url: placeUrl,           
+                    dialogTitle: 'Compartir Ubi'
+                  });
+            }
         }
+       else{
+        if(navigator && navigator.canShare){
+            const shareData = {
+                title: place.name || 'Lugar Compartido',
+                text: place.address || '¡Mira este lugar!',
+                url: placeUrl
+            }
+            await navigator.share(shareData)
+        }
+       }
        
        
     }
@@ -2734,6 +2764,7 @@ export function closeSettings() {
     const settingsDropdown = document.getElementById('settings-menu')
     soundClick()
     if (settingsDropdown.style.display === 'block') {
+        settingsDropdown.style.zIndex = '0'
         settingsDropdown.style.display = 'none'
     }
     else {

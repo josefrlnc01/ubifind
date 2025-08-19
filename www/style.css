@@ -286,6 +286,7 @@ body.dark .container-createds-card {
 
  .settings-container {
      position: relative;
+     min-height: auto;
 }
  .section-title .floating-btn {
      font-family: inherit;
@@ -293,7 +294,7 @@ body.dark .container-createds-card {
 }
 
 .icono{
-    filter: contrast(1.5);
+
     width: 34px;
 }
 
@@ -311,7 +312,7 @@ body.dark .container-createds-card {
      list-style: none;
      margin: auto;
      transition: opacity 0.2s ease, transform 0.2s ease;
-     z-index: 10000;
+     
 }
 /* Mostrar menú (al hacer toggle en JS se añade .open) */
 /* Títulos de sección */
@@ -536,7 +537,7 @@ body.dark .container-createds-card {
      align-items: center;
 }
  header {
-     width: 75%;
+     width: 100vw;
      
      display: flex;
      gap: 20px;
@@ -546,7 +547,7 @@ body.dark .container-createds-card {
      align-items: center;
      height: calc(7vh + env(safe-area-inset-top, 0px));
      background-color: #5a4bff;
-     backdrop-filter: blur(10px);
+    
      border-bottom: none;
 }
 .header-buttons{
@@ -1309,14 +1310,18 @@ select:hover{
      transform: translateX(70%);
      z-index: 3200;
 }
+.saved-places-panel.active, .createds-places-panel.active, .createds-privates-places-panel.active  {
+    display: flex;
+    flex-direction: column;
+    transform: translateX(0%);
+}
 .createds-privates-places-panel.active{
     
      z-index: 3200;
 }
  #search-createds-card, #search-card {
      margin-bottom: 20px;
-     
-     width: 520px;
+   
 }
  
 
@@ -2432,11 +2437,7 @@ font-size: .7em;
         padding: 22px 10px;
         min-height: auto;
     }
-     .saved-places-panel.active, .createds-places-panel.active, .createds-privates-places-panel.active  {
-         display: flex;
-         flex-direction: column;
-         transform: translateX(0%);
-    }
+    
     
      .site{
          animation: floating 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -2895,11 +2896,12 @@ input[type="file"] {
 
 @keyframes zoomFadeIn {
     0% {
+        z-index: 0;
       opacity: 0;
       transform: scale(0.9);
     }
     100% {
-        z-index: 100000;
+        z-index: 1000;
       opacity: 1;
       transform: scale(1);
     }
