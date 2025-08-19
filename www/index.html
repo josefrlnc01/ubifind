@@ -51,18 +51,33 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh7iztz49atmSYgyDhwCvVL2aLjrpdGwU&libraries=places,geometry,marker&v=beta&callback=initGoogleMaps"
         async defer></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+        <!-- Load Capacitor first -->
+        <script src="https://cdn.jsdelivr.net/npm/@capacitor/core@7.3.0/dist/capacitor.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@capacitor/app@7.3.0/dist/plugin.js"></script>
+        
+        <!-- Other dependencies -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.2/web-animations.min.js"></script>
+        
+        <!-- Scripts de RevenueCat -->
+        <script src="https://cdn.jsdelivr.net/npm/@revenuecat/purchases-js@1.12.1/dist/Purchases.umd.js"></script>
+
+        
+        <!-- Initialize global objects -->
+        <script>
+            // Initialize global objects that need to be available before modules load
+            window.googleMapsLoaded = false;
+            window.Capacitor = window.Capacitor || {};
+            window.Purchases = window.Capacitor?.Plugins?.Purchases || window.Purchases;
+        </script>
+        
+        <!-- Your application scripts as modules -->
+        <script type="module" src="./script.js"></script>
+        
+        <!-- Capacitor platform-specific scripts -->
         <script nomodule src="cordova.js"></script>
         <script nomodule src="capacitor.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.2/web-animations.min.js"></script>
         <script nomodule src="capacitor-windows.js"></script>
-        <!-- Scripts de RevenueCat -->
-        <script nomodule src="https://js.revenuecat.com/v8/purchases.js"></script>
-        
-        <script type="module" src="comments.js" async defer></script>
-        <script type="module" src="titles.js" async defer></script>
-        <script type="module" src="premium.js"async defer></script>
-        <script type="module" src="script.js"async  defer></script>
 
 </head>
 
@@ -96,17 +111,17 @@
           
           <div class="flyer-content">
           
-            
+            <img class="img-flyer" alt="Foto del lugar" crossorigin="anonymous" referrerpolicy="no-referrer"/>
             <p class="flyer-rating"></p>
             <div class="comment-place">
                 
             <blockquote id="flyer-comment"></blockquote>
-            <p class="count"></p>
+            
             </div>
             
             <p class="flyer-user"><strong></strong></p>
            <div class="flyer-footer">
-            <p class="flyer-link">🌐 newplaceapp.com</p>
+            <p class="flyer-link">📱 UFind</p>
            </div>
           </div>
         </div>
@@ -170,7 +185,7 @@
                 <div class="settings-container">
                     <!-- Botón que abre/cierra el menú -->
                     <button id="settings-button">
-                        <img class="icono ajustes" alt="icono de ajustes" src="images/ajustes.webp" />
+                        <img class="icono ajustes" alt="icono de ajustes" src="images/icons8-ajustes-50.webp" />
                         <!-- Puede usar un SVG o fuente de iconos real aquí -->
                     </button>
 
@@ -227,7 +242,7 @@
                     </ul>
                 </div>
                 <button id="toggle-menu">
-                    <img class="icono menu" src="images/menu-hamburguesa.webp" />
+                    <img class="icono menu" src="images/icons8-menú-50.webp" />
                 </button>
             </nav>
 
@@ -249,7 +264,7 @@
                             <div class="input-filters" id="input-filters">
 
                                 <select id="prices">
-                                    <button>
+                                    <button type="button">
                                         <span class="picker">👉</span>
                                         <span>💶</span>
 
@@ -344,7 +359,7 @@
                 <div id="map" loading="lazy"></div>
 
                 <button id="cancel" class="map-control-btn">Cancelar modo de creación </button>
-                <button id="stop-route">Stop</button>
+               
             </div>
 
 
@@ -437,7 +452,7 @@
    
 
     <footer>
-        <p>© 2025 NewPlace - Explora y crea lugares desde tu dispositivo. </p>
+        <p>© 2025 <strong style="color: #5649c0;">UFind </strong>- Explora y crea lugares desde tu dispositivo. </p>
 
     </footer>
 

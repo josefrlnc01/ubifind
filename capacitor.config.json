@@ -15,6 +15,7 @@
     "SplashScreen": {
       "launchShowDuration": 600,
       "androidSplashResourceName": "splash",
+      
       "androidScaleType": "CENTER_CROP",
       "fadeInDuration": 300,
       "fadeOutDuration": 300,
@@ -22,7 +23,11 @@
       "splashFullScreen": true,
       "splashImmersive": true
     },
-    
+    "App": {
+     
+      "iosScheme": "App",
+      "androidScheme": "https"
+    },
   "CustomURLScheme": {
     "scheme": "newplaceapp",
     "host": "open"

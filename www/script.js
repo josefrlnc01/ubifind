@@ -1,10 +1,10 @@
 import { cacheManager } from "./cache.js";
- 
+
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js"
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { incrementarContadorCompartidosCreadosLogros, incrementarContadorCompartidosGuardadosLogro, incrementarContadorCreadosLogro, incrementarContadorGuardadosLogro, incrementarContadorVisitadosLogro, InitTitlesUi} from "./titles.js";
-import { app, auth, db, storage } from "./firebaseConfig.js";
+import { App, auth, db, storage } from "./firebaseConfig.js";
 import { deleteUserAccount } from "./delete-user.js";
 import {
     collection,
@@ -22,6 +22,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 import { addComment, loadComments } from "./comments.js";
+// Capacitor is available globally via window.Capacitor
 
 // Google Maps components will be accessed through getGoogleMapsComponents()
 let userInitiatedSearch = false;
@@ -122,121 +123,74 @@ function initMenu() {
 }
 let pendingDeepLinkPlaceId = null
 // Asegurarse de que el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', async () => {
+
+if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', async () => {
    
-    const checkMapReady = setInterval(() => {
-        console.log('Verificando mapa...', { map: !!map, pendingDeepLinkPlaceId });
-        if (map && pendingDeepLinkPlaceId) {
-            console.log('Mapa listo, procesando deeplink:', pendingDeepLinkPlaceId);
-            handleDeepLink(pendingDeepLinkPlaceId)
-                .then(() => console.log('handleDeepLink completado'))
-                .catch(err => console.error('Error en handleDeepLink:', err));
-            pendingDeepLinkPlaceId = null;
-            clearInterval(checkMapReady);
-        }
-    }, 300);
-
-    if (elements.closeBanner) {
-        elements.closeBanner.addEventListener('click', hideNotification);
-    }
-    const col = await getDocs(collection(db, 'creados'))
-    col.forEach(async docSnap => {
-        const place = docSnap.data()
-        const placeId = place.place_id || docSnap.id;
-        loadComments(placeId)
-        const comentariosHTML = await loadComments(placeId);
-        document.getElementById(`comentarios-${placeId}`).innerHTML = comentariosHTML;
-
-
-
-        const btn = document.querySelector(`.btn-comentar[data-id="${placeId}"]`);
-        btn.addEventListener('click', async () => {
-            const input = document.getElementById(`input-comentario-${placeId}`);
-            if (input.value.trim()) {
-                await addComment(placeId, input.value.trim());
-                const nuevosComentarios = await loadComments(placeId);
-                document.getElementById(`comentarios-${placeId}`).innerHTML = nuevosComentarios;
-                input.value = '';
+        const checkMapReady = setInterval(() => {
+           
+            if (map && pendingDeepLinkPlaceId) {
+                console.log('Mapa listo, procesando deeplink:', pendingDeepLinkPlaceId);
+                handleDeepLink(pendingDeepLinkPlaceId)
+                    .then(() => console.log('handleDeepLink completado'))
+                    .catch(err => console.error('Error en handleDeepLink:', err));
+                pendingDeepLinkPlaceId = null;
+                clearInterval(checkMapReady);
             }
-        });
-    })
-    if(!window.capacitor && !window.capacitor.isNativePlatform()){
-        const addTest = document.createElement('div')
-    addTest.className = 'adsByGoogle'
-    addTest.style.height = '1px'
-    document.body.appendChild(addTest)
-
-    setTimeout(() => {
-        const isBlocked = !addTest || 
-        addTest.offsetHeight === 0 ||
-        window.getComputedStyle(addTest).display === 'none'
-
-        if (isBlocked) {
-            document.getElementById('adblock-modal').classList.remove('hidden')
-            document.getElementById('continue-with-limits').addEventListener('click', () => {
-                document.getElementById('adblock-modal').classList.add('hidden')
-                limitarFuncionesPremium()
-            })
-            document.getElementById('reload-after-disable').addEventListener('click', async () => {
-                const addsIsClosed = await checkAdBlock()
-                if(addsIsClosed){
-                    location.reload()
-                    document.getElementById('adblock-modal').classList.add('hidden');
-                    document.body.style.overflow = '';
-                    restaurarFuncionesPremium(); 
-                    showNotification('¡Gracias por desactivar AdBlock!');
-                  } else {
-                    showSweetAlert('Aviso', 'Aún detectamos AdBlock. Por favor, asegúrate de haberlo desactivado y vuelve a intentarlo.', 'warning','OK');
-                    return
-                  }
-                
-            })
-        }
-        addTest.remove()
-    }, 500)
-    }
+        }, 300);
     
-    if (!isPremium) {
-        const scrptAds = document.createElement('script');
-        scrptAds.async = true;
-        scrptAds.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1639698267501945';
-        scrptAds.setAttribute('crossorigin', 'anonymous');
-        scrptAds.setAttribute('data-ad-client', 'ca-pub-1639698267501945');
-        document.head.appendChild(scrptAds);
-    }
-
-
-
-
-});
-
-
-
-
-
-
-
-
-
-function checkAdBlock() {
-    return new Promise(resolve => {
-      const testAd = document.createElement('div');
-      testAd.className = 'adsbygoogle';
-      testAd.style.height = '1px';
-      document.body.appendChild(testAd);
-  
-      setTimeout(() => {
-        const isBlocked =
-          !testAd ||
-          testAd.offsetHeight === 0 ||
-          window.getComputedStyle(testAd).display === 'none';
-  
-        testAd.remove();
-        resolve(!isBlocked); // Devuelve true si NO está bloqueado
-      }, 300);
+        if (elements.closeBanner) {
+            elements.closeBanner.addEventListener('click', hideNotification);
+        }
+        initializeCapacitor()
+        const col = await getDocs(collection(db, 'creados'))
+        col.forEach(async docSnap => {
+            const place = docSnap.data()
+            const placeId = place.place_id || docSnap.id;
+            loadComments(placeId)
+           
+            const comentariosHTML = await loadComments(placeId);
+            if(comentariosHTML){
+                document.getElementById(`comentarios-${placeId}`).textContent = comentariosHTML;
+                const btn = document.querySelector(`.btn-comentar[data-id="${placeId}"]`);
+            btn.addEventListener('click', async () => {
+                const input = document.getElementById(`input-comentario-${placeId}`);
+                if (input.value.trim()) {
+                    await addComment(placeId, input.value.trim());
+                    const nuevosComentarios = await loadComments(placeId);
+                    if(nuevosComentarios){
+                        document.getElementById(`comentarios-${placeId}`).textContent = nuevosComentarios;
+                    input.value = '';
+                    }
+                    
+                }
+            });
+            }
+           
+        })
+       
+        
+        if (!isPremium) {
+            const scrptAds = document.createElement('script');
+            scrptAds.async = true;
+            scrptAds.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1639698267501945';
+            scrptAds.setAttribute('crossorigin', 'anonymous');
+            scrptAds.setAttribute('data-ad-client', 'ca-pub-1639698267501945');
+            document.head.appendChild(scrptAds);
+        }
+    
+    
     });
-  }
-  
+    
+    
+    
+}
+
+
+
+
+
+
 
 async function handleDeepLink(placeId) {
     console.log('handleDeepLink llamado con placeId:', placeId);
@@ -271,7 +225,7 @@ async function handleDeepLink(placeId) {
 
             try {
                 console.log('Intentando cargar el lugar en el mapa...');
-                await loadSharePlaces(placeId);
+                await rePlaces(placeId);
                 console.log('Lugar cargado exitosamente en el mapa');
 
                 // Forzar un zoom adecuado
@@ -482,11 +436,14 @@ window.addEventListener('load', async () => {
                 }, { threshold: 0.1 });
                 mapObserver.observe(mapElement);
             }
-
+        
             setTimeout(() => {
                 hideLoadingPrincSpinner()
             },300)
-
+            if(!location.hash){
+                history.replaceState({view:'Home'},'', '#home')
+            }
+            
             try {
                 initMenu()
                 await InitTitlesUi();
@@ -622,7 +579,7 @@ async function initMap() {
                 map.setZoom(17);
             } catch (geoError) {
                 showErrorNotification('No se pudo obtener la ubicación 😑');
-                return;
+                
             }
         }
 
@@ -1561,6 +1518,75 @@ async function searchByMyPosition() {
     }
 }
 
+async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
+    showLoadingSpinner();
+    const city = elements.cityInput.value;
+    const center = new google.maps.LatLng(lat, lng);
+    const token = getSessionToken();
+    const service = new google.maps.places.PlacesService(map);
+
+    const request = {
+        query: city.toLowerCase(),
+        location: center,
+        radius: 1000,
+        sessionToken: token
+    };
+    try {
+        return new Promise((resolve) => {
+            service.textSearch(request, (results, status) => {
+                if (results && status === google.maps.places.PlacesServiceStatus.OK) {
+                    let filteredPlaces = results
+
+
+                    if (rating !== 'all') {
+                        filteredPlaces = filteredPlaces.filter(res => res.rating >= rating)
+                    }
+                    if (pricing !== 'all') {
+                        filteredPlaces = filteredPlaces.filter(res => res.price_level <= pricing)
+                    }
+                    if (opening !== 'all') {
+                        filteredPlaces = filteredPlaces.filter(res => res.opening_hours.open_now)
+                    }
+                    setTimeout(() => {
+                        hideLoadingSpinner()
+                    }, 450)
+                    if (parseInt(localStorage.getItem('contadorBusquedas') || '0') >= maxSearches) {
+                        showSweetAlert('¿En busca de las búsquedas? 👀', 'Para buscar ilimitadamente puedes desbloquear premium, si no, puedes esperar 24 horas y podrás volver a realizar 10 búsquedas 😼', 'warning', 'OK')
+                        return
+                    }
+                    if (parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0') === maxSearchesWithoutAdds) {
+                        showInterstitial()
+
+                        localStorage.setItem('contadorBusquedasSinAnuncios', '0')
+                    }
+                    finalizarSesionBusqueda();
+                    if (filteredPlaces) {
+
+                        incrementarContadorBusquedas()
+                        incrementarContadorBusquedasSinAnuncios()
+                        setTimeout(() => {
+                            soundBubble()
+                        }, 450)
+                       
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+                        resolve(filteredPlaces)
+                    }
+                    else {
+                        reject([])
+
+                        showErrorNotification('No se encontraron lugares con estas características')
+                        return
+                    }
+                }
+            })
+        })
+    }
+    catch (error) {
+        console.log(error)
+        return
+    }
+}
+
 
 function finalizarSesionBusqueda() {
     sessionToken = null; // Se libera el token y se puede crear uno nuevo
@@ -1627,7 +1653,7 @@ function hideLoadingPrincSpinner() {
 let searchedPlaces = [];
 
 //Función para obtener datos de googlemaps de los lugares
-async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
+async function gleMapsData(lat, lng, rating, pricing, opening) {
     showLoadingSpinner();
     const city = elements.cityInput.value;
     const center = new google.maps.LatLng(lat, lng);
@@ -1695,19 +1721,19 @@ async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
 }
 
 let currentSharedInfoWindow = null;
-async function loadSharePlaces(placeId) {
+async function loadSharePlaces(places) {
     if(currentSharedInfoWindow){
         currentSharedInfoWindow.close()
     }
     try {
-        const snapShot = await getDoc(doc(db, 'creados', placeId));
+        const snapShot = await getDoc(doc(db, 'creados', places.place_id));
         if (!snapShot.exists()) {
             showErrorNotification('Lugar no encontrado');
             return;
         }
 
         const place = snapShot.data();
-        place.place_id = placeId;
+        place.place_id = places.place_id;
 
         // 1. Centrar el mapa y hacer zoom
         if (map) {
@@ -1716,31 +1742,40 @@ async function loadSharePlaces(placeId) {
         }
         soundSucces()
         let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-        const pinScaled = new PinElement({
-                scale: 1.1,
-                glyph: '📍​',
-                background: '#FF5A5F',
-                glyphColor: "#000",
-                borderColor: "#000"
-            })
-        // 2. Crear un marcador manualmente
+        const pinScaledVisible = new PinElement({
+            scale: .8,
+            glyphColor:'#fff',
+            background: '#5a4bff',
+            borderColor: "#000"
+        });
+        const pinScaledPrivate = new PinElement({
+            scale: .8,
+            glyphColor:'#ccc',
+            background: '#0843c1',
+            borderColor: "#000"
+        });
+        
         const marker = new AdvancedMarkerElement({
-            map,
-            position: place.geometry.location,
-            content: pinScaled.element,
+            position: place.position,
+            map: map,
+            title: place.name,
 
-                zIndex: 100,
-            })
+            content: place.visibleToAll
+                ? pinScaledVisible.element // público
+                : pinScaledPrivate.element // privado
+
+        });
         const likeButton = "<button class='button-likes'> <img class='action-btn img-share' src='images/mg.webp'></img></button>"
         const contentInfowindow = `
             <div class="card-sites" data-id='${place.place_id}'>
                 <button class='close-window'>X</button>
                 <h2>${place.name || 'N/D'}</h2>
-                 ${place.visibleToAll ? `<p class='count-likes'></p>` : ''}
+                 
                 
                 <div class='container-createds-card rating'>
-                    <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
-                     <button style="align-self:end;" class='share-photo'><img class='action-btn' src='images/folleto.webp'></img></button>
+                  
+                    ${place.visibleToAll ? `<p class='count-likes'></p>` : ''}
+                      <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
                 </div>
                 <div class='container-createds-card photo'>
                     ${place.photo ? `<img class="place-photo" loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado'}'>` : '<p>Sin imagen</p>'}
@@ -1749,10 +1784,10 @@ async function loadSharePlaces(placeId) {
                     ${place.visibleToAll ? likeButton : ''}
                   
                     <button class='share-ubi'><img class='action-btn'src='images/ubicacion.webp' ></img></button>
-                   <button class='share-card'><img class='action-btn img-share' src='images/share.webp' ></img></button>
+                   <button style="align-self:end;" class='share-photo'><img class='action-btn' src='images/folleto.webp'></img></button>
                 </div>
                 <div class='container-createds-card comment'>
-                    <p class='coment-place'><strong>${auth.currentUser.displayName}</strong><br>${place.comment || 'N/D'}</p>
+                    <p class='coment-place'><strong>${auth.currentUser.displayName}</strong>${place.comment || 'N/D'}</p>
                 </div>
                 ${place.visibleToAll ? `<div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}">
                 </div>` : ''}
@@ -1761,6 +1796,7 @@ async function loadSharePlaces(placeId) {
                   <button class="btn-comentar" data-id="${place.place_id}"><img class='action-btn img-share' src='images/mensaje.webp'></img></button>
                 </div>` : ''}
             </div>`;
+
 
         // Crear y abrir la ventana de información
         
@@ -1777,7 +1813,16 @@ async function loadSharePlaces(placeId) {
         
             throw windowError;
         }
-
+        marker.addEventListener('click', () => {
+            currentSharedInfoWindow.open(map,marker)
+            const pinScaledVisible = new PinElement({
+            scale: .8,
+            glyphColor:'#fff',
+            background: '#5a4bff',
+            borderColor: "#000"
+        });
+        
+        })
         // Add click listener to close button
         // Configurar eventos del infowindow
         google.maps.event.addListenerOnce(currentSharedInfoWindow, 'domready', async () => {
@@ -1863,7 +1908,7 @@ function getPriceLabel(priceLevel) {
 
 // Función para mostrar lugares guardados
 async function renderSavedPlaces() {
-
+   
     let saveds = []
     const visitedsId = await checkVisitedsPlacesId();
     const user = auth.currentUser
@@ -1882,7 +1927,7 @@ async function renderSavedPlaces() {
         container.innerHTML = '<span>Aún no hay sitios guardados</span>';
         return;
     }
-
+    appState.home = false
     snapshot.forEach(docSnap => {
         const place = docSnap.data();
 
@@ -1931,7 +1976,8 @@ async function renderSavedPlaces() {
             flyToPlace(place)
             closeSavedPlacesView()
             menuOptions.classList.remove('active')
-            window.scrollTo({ bottom: 0, behavior: 'smooth' })
+            javascript
+lTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         })
         lastSite.querySelectorAll('.btn.delete-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -1979,7 +2025,13 @@ function attachVisitButtonListeners(place) {
     document.querySelectorAll('.btn-view').forEach(btn => {
         btn.addEventListener('click', () => {
             const position = place.position
-            flyToPlace(place) || flyToCreatedPlace(position, place)
+            flyToPlace(place) 
+
+        })
+    })
+    document.querySelectorAll('.btn-view-created').forEach(btn => {
+        btn.addEventListener('click', () => {
+            loadSharePlaces(place)
 
         })
     })
@@ -1994,7 +2046,7 @@ function attachVisitButtonListeners(place) {
     document.querySelectorAll('.view-created-searchcard-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             
-            loadSharePlaces(place.place_id)
+            loadSharePlaces(place)
             closeCreatedsPanel()
             closeMenu()
         })
@@ -2319,17 +2371,17 @@ async function shareCreatedPlaceGoogle(place) {
     try {
         const placeUrl = `https://www.google.com/maps/search/?api=1&query=${place.position.lat},${place.position.lng}`
         if (!place.position.lat || !place.position.lng) return
-        if (navigator.share) {
-            const shareData = {
-                title: `Mira la ubi de ${place.name}`,
-
-                url: placeUrl,
-            }
-            await navigator.share(shareData)
+        const {Share} = window.Capacitor?.Plugins || {}
+        if(Share){
+            await Share.share({
+                title: `Destino ${place.name} !!`,
+                text: 'Mira la ubi que he encontrado en UFind!',
+                url: placeUrl,           
+                dialogTitle: 'Compartir Ubi'
+              });
         }
-        else {
-            await navigator.clipboard.writeText(placeUrl)
-        }
+       
+       
     }
     catch (err) {
 
@@ -2492,14 +2544,15 @@ async function flyToPlace(place) {
     });
 }
 
-if(elements.form){
-// Event listeners
-elements.form.addEventListener('submit', async (e) => {
-    soundClick()
-    e.preventDefault();
+if(elements.form) {
+    // Event listeners
+    elements.form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        soundClick();
+        await searchPlaces();
+    });
 
-    await searchPlaces();
-});
+    
 }
 else{
     console.warn('No se encontró el form')
@@ -2542,9 +2595,7 @@ const body = document.body
 if (localStorage.getItem('theme') === 'dark') {
     body.classList.add('dark')
     
-        imagenAjustesMenu.setAttribute('src','images/icons8-ajustes-50.webp')
-        imagenButtonMenu.setAttribute('src','images/icons8-menú-50.webp')
-   
+        
 }
 
 
@@ -3301,7 +3352,7 @@ async function addMarkerToPlace(place) {
         const pinScaledVisible = new PinElement({
             scale: .8,
             glyphColor:'#fff',
-            background: '#6c5ce7',
+            background: '#5a4bff',
             borderColor: "#000"
         });
         const pinScaledPrivate = new PinElement({
@@ -3335,11 +3386,12 @@ async function addMarkerToPlace(place) {
             <div class="card-sites" data-id='${place.place_id}'>
                 <button class='close-window'>X</button>
                 <h2>${place.name || 'N/D'}</h2>
-                 ${place.visibleToAll ? `<p class='count-likes'></p>` : ''}
+                 
                 
                 <div class='container-createds-card rating'>
-                    <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
-                    
+                  
+                    ${place.visibleToAll ? `<p class='count-likes'></p>` : ''}
+                      <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
                 </div>
                 <div class='container-createds-card photo'>
                     ${place.photo ? `<img class="place-photo" loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado'}'>` : '<p>Sin imagen</p>'}
@@ -3586,6 +3638,7 @@ async function deleteCreatedPlace(placeId) {
 }
 
 async function renderCreatedPlaces() {
+   
     const user = auth.currentUser;
     const container = elements.createdsSitesList
     container.innerHTML = ''
@@ -3603,16 +3656,18 @@ async function renderCreatedPlaces() {
         container.innerHTML = '<span>Aún no hay sitios creados</span>'
         return
     }
-    snapshot.forEach(docSnap => {
+    appState.home = false
+    snapshot.forEach(async docSnap => {
         const place = docSnap.data()
         const placeId = docSnap.id
+        const likesCount = await getLikesCount(place.place_id)
 
         const html = `
     <div class="site">
         <h3>${place.name || 'N/D'}</h3>
 
         <div class='container-createds-card rating'>
-       
+       <span>${likesCount} ❤️</span>
         <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
         </div>
 
@@ -3621,7 +3676,7 @@ async function renderCreatedPlaces() {
         </div>
 
         <div class='container-createds-card comment'>
-        <label>Comentario Personal</label>
+        
         <p>${place.comment ? place.comment : 'N/D'}</p>
         </div>
 
@@ -3639,10 +3694,11 @@ async function renderCreatedPlaces() {
 
         lastSite.querySelector('.btn.btn-view-created').addEventListener('click', () => {
            
-            loadSharePlaces(place.place_id)
+            loadSharePlaces(place)
             menuOptions.classList.remove('active')
             closeCreatedsPanel()
-            window.scrollTo({ bottom: 0, behavior: 'smooth' })
+            
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         })
 
         lastSite.querySelectorAll('.delete-btn').forEach(btn => {
@@ -3661,6 +3717,7 @@ async function renderCreatedPlaces() {
 
 
 async function renderPrivateCreatedsPlaces() {
+   
     const user = auth.currentUser;
     const container = elements.privatesCreatedsSitesList
     container.innerHTML = ''
@@ -3678,6 +3735,7 @@ async function renderPrivateCreatedsPlaces() {
         container.innerHTML = '<span>Aún no hay sitios creados</span>'
         return
     }
+    appState.home = false
     snapshot.forEach(docSnap => {
         const place = docSnap.data()
         const placeId = docSnap.id
@@ -3721,7 +3779,7 @@ async function renderPrivateCreatedsPlaces() {
             load
             menuOptions.classList.remove('active')
             closeCreatedsPanel()
-            window.scrollTo({ bottom: 0, behavior: 'smooth' })
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         })
 
         lastSite.querySelectorAll('.delete-btn').forEach(btn => {
@@ -3794,27 +3852,36 @@ function flyToCreatedPlace(position, place) {
     markersOfCreateds.push(creationMarker);
 
     // 7. Crear contenido del infowindow
-    const contentInfowindow = `
-        <div class="card-sites">
+     const likeButton = "<button class='button-likes'> <img class='action-btn img-share' src='images/mg.webp'></img></button>"
+    const contentInfowindow =  `
+    <div class="card-sites" data-id='${place.place_id}'>
         <button class='close-window'>X</button>
- <h3>${place.name || 'N/D'}</h3>
-
-<div class='container-createds-card rating'>
-       
-        <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
+        <h2>${place.name || 'N/D'}</h2>
+         ${place.visibleToAll ? `<p class='count-likes'></p>` : ''}
+        
+        <div class='container-createds-card rating'>
+            <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
+            
         </div>
-
-  <div class='container-createds-card photo'>
-         ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='max-width: 100%; height: auto; border-radius: 8px;'>` : '<p>Sin imagen</p>'}
+        <div class='container-createds-card photo'>
+            ${place.photo ? `<img class="place-photo" loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado'}'>` : '<p>Sin imagen</p>'}
         </div>
-
-
+         <div class='container-buttons'>
+            ${place.visibleToAll ? likeButton : ''}
+          
+            <button class='share-ubi'><img class='action-btn'src='images/ubicacion.webp' ></img></button>
+           <button style="align-self:end;" class='share-photo'><img class='action-btn' src='images/folleto.webp'></img></button>
+        </div>
         <div class='container-createds-card comment'>
-        <label>Comentario Personal</label>
-        <p>${place.comment || 'N/D'}</p>
+            <p class='coment-place'><strong>${auth.currentUser.displayName}</strong>${place.comment || 'N/D'}</p>
         </div>
-           
-        </div>`;
+        ${place.visibleToAll ? `<div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}">
+        </div>` : ''}
+       ${place.visibleToAll ? `<div class='comentarios-input'>
+         <textarea class='text-comment' id="input-comentario-${place.place_id}" placeholder="Escribe tu comentario..."></textarea> 
+          <button class="btn-comentar" data-id="${place.place_id}"><img class='action-btn img-share' src='images/mensaje.webp'></img></button>
+        </div>` : ''}
+    </div>`;
 
     // 8. Cerrar infowindow anterior si existe
     if (infowindow) {
@@ -3854,7 +3921,7 @@ function showFilters(event) {
     // Si el clic viene de un select, ignorar
     if (event.target.closest('select')) return;
 
-    containerSlideFilters.classList.toggle('displayed');
+    
 }
 
 if(containerSlideFilters){
@@ -3911,7 +3978,8 @@ function showMenu() {
         counterTransitions++
     }
     soundClick()
-
+   appState.home = false
+   appState.menuOpen = true
     menuOptions.classList.add('active')
 
 }
@@ -3949,18 +4017,6 @@ document.addEventListener('click', (event) => {
 
 const downloadPol = document.getElementById('down-poli')
 const downloadTer = document.getElementById('down-term')
-
-
-async function convertBlobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = reject;
-        reader.onload = () => {
-            resolve(reader.result.split(',')[1]); // solo la parte base64
-        };
-        reader.readAsDataURL(blob);
-    });
-}
 
 
 async function downloadPdf(filepath) {
@@ -4143,93 +4199,182 @@ function showVisit() {
     let sound = new Audio('audios/visit.mp3')
     sound.play()
 }
-
-
-
-
-
-async function shareCanvas(place) {
-    try {
-        
-        // Rellenar datos
-        document.getElementById('flyer-title').textContent = place.name;
-        let lazyImagesChanged = false
-        // Update image elements with CORS attributes
-       
-        
-        document.getElementById('flyer-comment').textContent = `"${place.comment}"`;
-        document.querySelector('.flyer-rating').textContent = '⭐'.repeat(place.rating || 4);
-        document.querySelector('.flyer-user strong').textContent = `Creado por ${auth.currentUser?.displayName || 'Usuario'}`;
-        document.querySelector('.count').textContent = `${await getLikesCount(place.place_id)}❤️`;
-         // Change lazy-loaded images to eager load before starting the capture
-    const lazyImages = document.querySelectorAll('.place-photo');
-    
-        const flyer = document.getElementById('customFlyer');
-        flyer.style.display = 'block';
-
-        
-
-        // Add a small delay to ensure rendering is complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Capture with html2canvas
-        const canvas = await html2canvas(flyer, {
-            useCORS: true,      // Enable CORS
-            allowTaint: true,   // Allow tainted canvas
-            logging: true,      // Enable logging for debugging
-            scale: window.devicePixelRatio || 1, // Better quality on high DPI screens
-            backgroundColor: '#ffffff' // Ensure white background
-        });
-
-        flyer.style.display = 'none'; // Hide the flyer after capturing
-
-        // Convert to blob and share/download
-        
-            const blob = await new Promise(resolve => {
-                canvas.toBlob(blob => resolve(blob),'image/png')
-            })
-            const blob64 = await convertBlobToBase64(blob)
-            const fileName = `flyer${Date.now()}.png`
-            const isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-                   if(isNative){
-                    const {Filesystem, Directory } = await import  ('https://cdn.jsdelivr.net/npm/@capacitor/filesystem@5/dist/esm/index.js');
-                     const { Share } = await import('https://cdn.jsdelivr.net/npm/@capacitor/share@5/dist/esm/index.js');
-
-                     await Filesystem.writeFile({
-                        path:fileName,
-                        data : blob64.split(',')[1],
-                        directory : Directory.Cache
-                     })
-                     const {uri : nativeUri} = await Filesystem.writeUri({
-                        path : fileName,
-                        directory : Directory.Cache
-                     })
-                      // Handle sharing on native platforms
-                        await Share.share({
-                            title: `Descubre ${place.name}`,
-                            text: 'Mira este lugar en NewPlace!',
-                            url:[nativeUri],
-                            files: [file]
-                        });
-                   } 
-                   else{
-                    showErrorNotification('Error al compartir')
-                    return
-                   }
-    } catch (error) {
-        console.error('Error en shareCanvas:', error);
-        // Show error to user
-        showErrorNotification('No se pudo generar el flyer. Por favor, inténtalo de nuevo.');
-        return
+async function setFlyerPhoto(url) {
+    const imgEl = document.querySelector('#customFlyer .img-flyer');
+    if (!imgEl) return;
+  
+    if (!url) {
+      imgEl.style.display = 'none'; // sin foto -> ocultar
+      imgEl.removeAttribute('src');
+      return;
     }
-}
+  
+    imgEl.style.display = 'block';
+    imgEl.crossOrigin = 'anonymous';
+    imgEl.referrerPolicy = 'no-referrer';
+    imgEl.src = url;
+  
+    try {
+      if (imgEl.decode) {
+        await imgEl.decode();
+      } else {
+        await new Promise((res, rej) => {
+          imgEl.onload = res;
+          imgEl.onerror = rej;
+        });
+      }
+    } catch {
+      // Fallback CORS: fetch -> blob
+      try {
+        const resp = await fetch(url, { mode: 'cors' });
+        const blob = await resp.blob();
+        imgEl.src = URL.createObjectURL(blob);
+        await new Promise((res, rej) => {
+          imgEl.onload = res;
+          imgEl.onerror = rej;
+        });
+      } catch {
+        imgEl.style.display = 'none';
+        imgEl.removeAttribute('src');
+      }
+    }
+  }
+  
+  async function shareCanvas(place) {
+    const flyer = document.getElementById('customFlyer');
+    
+    try {
+      // Mostrar loader
+      showLoadingPrincSpinner();
+      
+      // Rellenar textos
+      document.getElementById('flyer-title').textContent = place.name;
+      document.getElementById('flyer-comment').textContent = `"${place.comment || ''}"`;
+      document.querySelector('.flyer-rating').textContent = '⭐'.repeat(place.rating || 4);
+      document.querySelector('.flyer-user strong').textContent =
+        `Creado por ${auth.currentUser?.displayName || 'Usuario'}`;
+  
+      // Cargar la foto si existe
+      if (place.photo) {
+        await setFlyerPhoto(place.photo);
+        await new Promise(resolve => setTimeout(resolve,500))
+      } else {
+        // Limpiar la imagen si no hay URL
+        const imgElement = document.querySelector('.flyer-image img');
+        if (imgElement) imgElement.src = '';
+      }
+  
+      // Mostrar el flyer
+      flyer.style.display = 'block';
+  
+      // Esperar a que se renderice el contenido
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Esperar a que se carguen las fuentes
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
+      
+      // Esperar un frame más para asegurar que todo está renderizado
+      await new Promise(resolve => requestAnimationFrame(resolve));
+  
+      // Configuración de html2canvas
+      const scale = Math.min(2, window.devicePixelRatio || 1);
+      
+      // Crear el canvas con html2canvas
+      const canvas = await html2canvas(flyer, {
+        useCORS: true,
+        allowTaint: true,
+        logging: true,
+        backgroundColor: '#ffffff',
+        scale: scale,
+        onclone: (clonedDoc) => {
+          // Asegurarse de que el clon esté visible
+          const clonedFlyer = clonedDoc.getElementById('customFlyer');
+          if (clonedFlyer) {
+            clonedFlyer.style.display = 'block';
+          }
+        }
+      });
+  
+      // Ocultar el flyer después de la captura
+      flyer.style.display = 'none';
+  
+      // Convertir a blob
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (b) => b ? resolve(b) : reject(new Error('No se pudo generar la imagen')),
+          'image/png',
+          0.92
+        );
+      });
+  
+      // Manejar la descarga o compartición según la plataforma
+      if (window.Capacitor?.isNativePlatform?.()) {
+        // Para Android/iOS
+        const { Filesystem, Share } = window.Capacitor.Plugins;
+        if (!Filesystem || !Share) {
+          throw new Error('Funcionalidad de compartir no disponible');
+        }
+        
+        const fileName = `ufind_${place.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.png`;
+        const base64Data = await convertBlobToBase64(blob);
+        
+        // Guardar en caché
+        const result = await Filesystem.writeFile({
+          path: fileName,
+          data: base64Data,
+          directory: 'CACHE',
+          recursive: true
+        });
+        
+        // Obtener la URI del archivo
+        const fileUri = (await Filesystem.getUri({
+          directory: 'CACHE',
+          path: fileName
+        })).uri;
+        
+        // Compartir el archivo
+        await Share.share({
+          title: `Descubre ${place.name}`,
+          text: 'Mira este lugar en UFind!',
+          url: fileUri,
+          dialogTitle: 'Compartir lugar',
+          files: [fileUri]
+        });
+      } else {
+        // Para navegador web
+        downloadImage(blob, place.name);
+      }
+      
+    } catch (error) {
+      console.error('Error en shareCanvas:', error);
+      showErrorNotification('Error al generar el flyer: ' + (error?.message || 'Error desconocido'));
+    } finally {
+      // Asegurarse de ocultar el flyer y el loader
+      flyer.style.display = 'none';
+      hideLoadingPrincSpinner();
+    }
+  }
+  
+  // Devuelve base64 “puro” (sin prefijo)
+  async function convertBlobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(blob);
+    });
+  }
+  
+
 
 // Helper function to download the image
 function downloadImage(blob, placeName) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `newplace-${placeName.toLowerCase().replace(/\s+/g, '-')}.png`;
+    a.download = `UFind-${placeName.toLowerCase().replace(/\s+/g, '-')}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -4238,22 +4383,62 @@ function downloadImage(blob, placeName) {
 }
 
 
-
-function limitarFuncionesPremium() {
-    document.querySelectorAll('.save-btn, .share-btn, .visit-btn .btn-share, .text-comment').forEach(el => {
-      el.classList.add('bloqueado');
-      el.disabled = true
-      el.addEventListener('click', () => {
-        alert('Esta función está bloqueada mientras AdBlock esté activado.');
-      });
-    });
-  }
-
-  function restaurarFuncionesPremium(){
-    document.querySelectorAll('.save-btn, .share-btn, .visit-btn .btn-share, .text-comment').forEach(el => {
-        el.classList.remove('bloqueado');
-        el.disabled = false
-        el.replaceWith(el.cloneNode(true))
-      });
+    let appState = {
+        menuOpen : false,
+        home : true
     }
-  
+
+function goToHome(){
+    appState.home = true
+    closeMenu()
+    closeSavedPlacesView()
+    closeCreatedsPanel()
+    closePrivatesCreatedsPanel()
+}
+    function handleBackButton(){
+        console.log('Boton de atras presionado')
+        if(appState.menuOpen){
+            closeMenu()
+            return false
+        }
+        if(!appState.home){
+            goToHome()
+            return false
+        }
+
+    //Si estamos en home y no hay menus abiertos, permitimos salir de la app
+        return true
+    }
+
+    async function initializeCapacitor(){
+        if(window.Capacitor?.isNativePlatform?.()){
+            console.log('Capacitor Detectado')
+            
+            // Usar window.Capacitor
+            const AppPlugin = window.Capacitor?.Plugins?.App;
+            if (AppPlugin?.addListener) {
+              AppPlugin.addListener('backButton', () => {
+                const shouldExit = handleBackButton();
+                if (shouldExit) AppPlugin.exitApp?.();
+              });
+            }
+            else{
+                console.warn('Plugin app no disponible')
+            }
+        }
+        else{
+            console.log('Capacitor no detectado')
+
+            document.addEventListener('keydown', (event) => {
+               
+                if(event.key === 'Escape'){
+                    const shouldExit = handleBackButton()
+                    if(shouldExit){
+                        handleBackButton()
+                        
+                    }
+                }
+                
+            })
+        } 
+    }

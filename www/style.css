@@ -65,7 +65,7 @@
                 #f1f5f9 50%, 
                 #e1e4e6 75%, 
                 #cbcbcb 100%);
-     min-height: 160vh;
+     min-height: 140vh;
      overflow-x: hidden;
      max-width: 100vw;
      font-family: "Poppins", sans-serif;
@@ -77,16 +77,13 @@
      box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.05);
      color: #e0e0e0;
 }
- body.dark header {
-     background: linear-gradient(200deg, #3f3a7d75 0%, #291b7a7c 100%);
-     border-bottom: 4px solid #d6336c;
-}
+ 
  body.dark .container {
-     background: #1a1a1a74;
+     background: #000000ad;
      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
  body.dark select {
-     background-color: #1a1a1a;
+     background-color: #0a081f;
      border-radius: 8px;
      &::picker(select) {
          color: aliceblue;
@@ -106,8 +103,8 @@
 #city{
     background: transparent;
    
-    border:3px solid #4a3aff4a;
-    border-radius: 16px;
+    border:3px solid #5a4bff;
+    border-radius: 12px;
     transition: all .3s ease-in;
    
 }
@@ -135,10 +132,16 @@
 }
 /* Tarjetas y contenedores */
  body.dark .form-container, body.dark .map-container {
-     background-color:#00000078;
+     background-color:#080614;
      backdrop-filter: contrast(.85);
      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
      border: none;
+}
+body.dark .form-container{
+    border:3px solid #5a4bff;
+}
+body.dark .form-container:hover{
+    background-color:#110b33;
 }
 
  body.dark .site h3 {
@@ -146,11 +149,9 @@
 }
 /* Botones */
  body.dark .btn-saved {
-     background-color: #d6336c;
+     background-color: #ff337cc7;
 }
- body.dark .btn-saved:hover {
-     background-color: #c2255c;
-}
+
  body.dark .subm {
      background-color: #5a4bff;
      border-color: #4a3aff;
@@ -162,7 +163,7 @@
 body.dark .container-createds-card {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction:row;
     padding: 0.12rem;
     
 }
@@ -238,9 +239,7 @@ body.dark .container-createds-card {
  body.dark h1 {
      text-shadow: 0 0 8px rgba(138, 124, 255, 0.4);
 }
- body.dark .btn-saved {
-     box-shadow: 0 0 8px rgba(214, 51, 108, 0.3);
-}
+
 /* Ajustes para modo oscuro en móviles */
 
      
@@ -541,14 +540,14 @@ body.dark .container-createds-card {
      
      display: flex;
      gap: 20px;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
+    
      flex-direction: row;
      justify-content: space-between;
      align-items: center;
      height: calc(7vh + env(safe-area-inset-top, 0px));
-     background-color: #6c5ce7;
-     border-bottom: 4px solid var(--accent-color);
+     background-color: #5a4bff;
+     backdrop-filter: blur(10px);
+     border-bottom: none;
 }
 .header-buttons{
     width: 90%;
@@ -591,20 +590,24 @@ body.dark .container-createds-card {
      backdrop-filter: contrast(.85);
      align-self: center;
      width: 35%;
-     padding: 1rem;
+     padding: .25rem;
      flex-basis: 40%;
      box-shadow: var(--shadow);
-     border-radius: 12px;
      
-     margin-top: 2rem;
+     border-radius: 20px;
+     border: 3px solid #5a4bff;
+     margin-top: 4rem;
      overflow: visible;
+}
+.form-container:hover{
+    background-color: #5a4bff3b;
 }
  form {
      width: 100%;
      gap: .1rem;
      min-height: auto;
      margin: auto;
-     padding: 8px;
+     padding: 4px;
      display: flex;
      flex-direction: column;
      justify-content: space-evenly;
@@ -665,6 +668,7 @@ background: #4a3aff33;
      
      margin-top: 28px;
      box-shadow: var(--shadow);
+     
      border-radius: 20px;
      height: 100%;
      padding: 10px 22px;
@@ -1068,7 +1072,7 @@ input:hover{
     filter: opacity(.9);
 }
 .input-filters {
-    margin-top: 3rem;
+    
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -1104,10 +1108,12 @@ input:hover{
      transition: all .2s ease-in;
      &:open {
          font-size: .8em;
-         border:3px solid #5a4bff
+         border:3px solid #5a4bff;
+         scale: .95;
     }
      &:open .selected {
          font-size: 0.9em;
+         
          
     }
      &:open .picker {
@@ -1148,13 +1154,14 @@ select:hover{
      border:none;
      
      padding: 10px 12px;
-     width: 50px;
+     min-height: 75px;
+     width: 100%;
      align-self: flex-end;
      font-family: "Galindo", sans-serif;
-     height: 50px;
+     
      overflow: hidden;
      interpolate-size: allow-keywords;
-     background-image: url('images/filtrar.webp');
+    
      background-repeat: no-repeat;
      background-position: center;
      
@@ -1162,13 +1169,6 @@ select:hover{
 .container-slide-filters:hover{
     cursor: pointer;
      
-}
-
-.displayed{
-    height: 125px;
-    width: 100%;
-    background-position: top;
-    
 }
 
     
@@ -1318,22 +1318,18 @@ select:hover{
      
      width: 520px;
 }
- #sites-createds-list {
-     min-height: 400px;
-     width: 100%;
-}
+ 
 
  #container-sites, #container-created-sites, #container-private-created-sites {
      display: flex;
      flex-direction: column;
+     justify-content: center;
+     align-items: center;
      width: 100%;
      gap: 15px;
      
 }
-#container-sites span, #container-created-sites span, #container-privates-createds-sites span{
-    margin-left: 1rem;
-     margin-top: .5rem;
-}
+
 
  #sites-list, #sites-createds-list, #sites-createds-privates-list {
      display: flex;
@@ -1599,7 +1595,8 @@ select:hover{
 }
  .container-buttons {
      display: flex;
-     width: 100%;
+     margin: auto;
+     width: 95%;
      justify-content: center;
      gap: 1.5rem;
     padding: 2px;
@@ -1654,7 +1651,7 @@ select:hover{
      color: #fff;
 }
  .btn-saved {
-     background-color: var(--accent-color);
+     background-color: #fd79a8c7;
      color: white;
      margin-top: 6px;
      flex-grow: 4;
@@ -1681,7 +1678,7 @@ select:hover{
 }
  .buttons-form {
     padding: 10px 12px;
-    margin-top: 10px;
+    
      width: 100%;
      height: 100%;
      display: flex;
@@ -1704,7 +1701,7 @@ select:hover{
      justify-content: center;
      align-items: center;
      border-radius: 9px;
-     background-color: var(--primary-dark);
+     background-color: #5649c0c4;
      border: none;
      color: #fff;
      font-family: "Galindo", sans-serif;
@@ -1722,7 +1719,7 @@ select:hover{
      transform: translateY(-2px);
 }
  .subm {
-     background-color: var(--primary-color);
+     background-color:#5a4bff;
      color: white;
      flex-grow: 2;
      display: flex;
@@ -1746,7 +1743,7 @@ select:hover{
  .rein {
      flex-grow: 1;
      background-color: transparent;
-     border: 2px solid #4f46e5;
+     border: 3px solid #4f46e5;
      color: #4f46e5;
      transition: all 0.4s ease;
 }
@@ -1838,7 +1835,7 @@ select:hover{
  #locate-me {
      font-size: 0.9em;
      transition: var(--transition);
-     background-color: var(--primary-dark);
+     background-color: #5a4bff;
      width: 100%;
      padding: 1rem;
      font-weight: 200;
@@ -1875,7 +1872,7 @@ select:hover{
     left: 0;
     width: 100%;
     height: 100%;
-     background: linear-gradient(120deg, #327cde, #2756e2a8);
+     background: linear-gradient(120deg, #6c5ce7, #1c05c5 );
      backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
@@ -1917,7 +1914,8 @@ select:hover{
     padding-bottom: .5rem;
     justify-content: center;
     align-items: center;
-    background: black;
+    background: #5a4bffcc;
+    backdrop-filter: blur(10px);
     background-blend-mode: overlay;
 }
 
@@ -2051,13 +2049,13 @@ button, input[type="button"], input[type="submit"], div, select {
 
 
   .flyer-container {
-    width: 600px;
-    height: 600px;
+    min-width: 600px;
+    min-height: 600px;
     background: #1e1e2f;
     color: white;
     font-family: 'Segoe UI', sans-serif;
     border-radius: 16px;
-    overflow: hidden;
+    
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -2072,7 +2070,14 @@ button, input[type="button"], input[type="submit"], div, select {
   }
   #flyer-title{
     font-size: 1.6em;
+    margin-top: 1rem;
+    margin-bottom: .5rem;
     color: #4a3aff;
+  }
+  .img-flyer{
+    width: 250px;
+    border-radius: 8px;
+    margin: auto;
   }
   .flyer-content {
     padding: 24px;
@@ -2335,13 +2340,13 @@ font-size: .7em;
     .panel-header{
         margin-top: 15px;
     }
-     .saved-places-panel.active, .createds-places-panel.active {
+     .saved-places-panel.active, .createds-places-panel.active, .createds-privates-places-panel.active {
          display: flex;
          flex-direction: column;
          transform: translateX(0%);
     }
-    #container-sites span, #container-created-sites span{
-    margin-left: 2.5rem;
+    #container-sites span, #container-created-sites span, #container-private-created-sites span{
+   
     color: aliceblue;
      margin-top: .5rem;
 }
@@ -2349,12 +2354,7 @@ font-size: .7em;
          width: 90vw;
          margin: auto;
     }
-     #container-created-sites {
-         display: flex;
-         flex-direction: column;
-         justify-content: center;
-         align-items: center;
-    }
+    
      .form-container, .map-container {
          flex-grow: 1;
     }
@@ -2371,7 +2371,7 @@ font-size: .7em;
     }
      .container {
          width: 100vw;
-         min-height: 110vh;
+         
     }
      .principal {
         padding: 4px 6px;
@@ -2428,10 +2428,10 @@ font-size: .7em;
          top: -1;
          left: 0.5;
     }
-    #container-sites span, #container-created-sites span{
-    margin-left: 1rem;
-     margin-top: .5rem;
-}
+    .button-likes, .share-ubi, .share-card, .share-photo {
+        padding: 22px 10px;
+        min-height: auto;
+    }
      .saved-places-panel.active, .createds-places-panel.active, .createds-privates-places-panel.active  {
          display: flex;
          flex-direction: column;
@@ -2526,11 +2526,11 @@ font-size: .7em;
      
      .container {
          width: 100vw;
-         min-height: 110vh;
+         
     }
      .principal {
          width: 98%;
-         min-height: 60vh;
+         
          gap: 18px;
          display: flex;
          flex-direction: column;
