@@ -896,8 +896,14 @@ export function desbloqueoCreados() {
 }
 
 
-desbloqueoBusquedas()
 
+
+const maxCounterMenu = 3
+function incrementarContadorMenu() {
+    let count = parseInt(localStorage.getItem('contadorMenu') || '0')
+    count++
+    localStorage.setItem('contadorMenu', count.toString())
+}
 
 function incrementarContadorCreados() {
     let count = parseInt(localStorage.getItem('contadorCreados') || '0')
@@ -1565,7 +1571,7 @@ function activateScriptAds() {
     else{
         localStorage.removeItem(KEY_INTERSTITIAL)
     }
-})()
+})();
 async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
     showLoadingSpinner();
     const city = elements.cityInput.value;
@@ -1581,7 +1587,7 @@ async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
     };
     if (parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0') >= maxSearchesWithoutAdds) {
                        
-        const isNative = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+        const isNative = window.Capacitor.isNativePlatform()
         if (isNative) {
 
             showInterstitial()
@@ -3991,6 +3997,11 @@ function showMenu() {
 
         counterTransitions++
     }
+    if(parseInt(localStorage.getItem('contadorMenu') || '0') >= maxCounterMenu){
+        activateScriptAds()
+        localStorage.setItem('contadorMenu', '0')
+    }
+    incrementarContadorMenu()
     soundClick()
     appState.home = false
     appState.menuOpen = true
