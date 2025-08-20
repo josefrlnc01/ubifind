@@ -3,7 +3,7 @@ import { cacheManager } from "./cache.js";
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js"
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { incrementarContadorCompartidosCreadosLogros, incrementarContadorCompartidosGuardadosLogro, incrementarContadorCreadosLogro, incrementarContadorGuardadosLogro, incrementarContadorVisitadosLogro, InitTitlesUi} from "./titles.js";
+import { incrementarContadorCompartidosCreadosLogros, incrementarContadorCompartidosGuardadosLogro, incrementarContadorCreadosLogro, incrementarContadorGuardadosLogro, incrementarContadorVisitadosLogro, InitTitlesUi } from "./titles.js";
 import { App, auth, db, storage } from "./firebaseConfig.js";
 import { deleteUserAccount } from "./delete-user.js";
 import {
@@ -44,7 +44,7 @@ const placesCollection = collection(db, 'lugares')
 const spinner = document.querySelector('.newplace-spinner')
 
 
-desbloqueoBusquedas()
+
 
 
 // Elementos del DOM
@@ -124,11 +124,11 @@ function initMenu() {
 let pendingDeepLinkPlaceId = null
 // Asegurarse de que el DOM esté completamente cargado
 
-if(document.readyState === 'loading'){
+if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', async () => {
-   
+
         const checkMapReady = setInterval(() => {
-           
+
             if (map && pendingDeepLinkPlaceId) {
                 console.log('Mapa listo, procesando deeplink:', pendingDeepLinkPlaceId);
                 handleDeepLink(pendingDeepLinkPlaceId)
@@ -138,7 +138,7 @@ if(document.readyState === 'loading'){
                 clearInterval(checkMapReady);
             }
         }, 300);
-    
+
         if (elements.closeBanner) {
             elements.closeBanner.addEventListener('click', hideNotification);
         }
@@ -148,33 +148,33 @@ if(document.readyState === 'loading'){
             const place = docSnap.data()
             const placeId = place.place_id || docSnap.id;
             loadComments(placeId)
-           
+
             const comentariosHTML = await loadComments(placeId);
-            if(comentariosHTML){
+            if (comentariosHTML) {
                 document.getElementById(`comentarios-${placeId}`).textContent = comentariosHTML;
                 const btn = document.querySelector(`.btn-comentar[data-id="${placeId}"]`);
-            btn.addEventListener('click', async () => {
-                const input = document.getElementById(`input-comentario-${placeId}`);
-                if (input.value.trim()) {
-                    await addComment(placeId, input.value.trim());
-                    const nuevosComentarios = await loadComments(placeId);
-                    if(nuevosComentarios){
-                        document.getElementById(`comentarios-${placeId}`).textContent = nuevosComentarios;
-                    input.value = '';
+                btn.addEventListener('click', async () => {
+                    const input = document.getElementById(`input-comentario-${placeId}`);
+                    if (input.value.trim()) {
+                        await addComment(placeId, input.value.trim());
+                        const nuevosComentarios = await loadComments(placeId);
+                        if (nuevosComentarios) {
+                            document.getElementById(`comentarios-${placeId}`).textContent = nuevosComentarios;
+                            input.value = '';
+                        }
+
                     }
-                    
-                }
-            });
+                });
             }
-           
+
         })
-       
-    
-    
+
+
+
     });
-    
-    
-    
+
+
+
 }
 
 
@@ -202,11 +202,11 @@ async function handleDeepLink(placeId) {
                 console.log('Usando posición del campo position:', place.position);
                 const lat = parseFloat(place.position.lat || place.position._lat);
                 const lng = parseFloat(place.position.lng || place.position._long);
-                
+
                 if (!isValidLatLng(lat, lng)) {
                     throw new Error('Invalid coordinates in place data');
                 }
-                
+
                 normalizedPlace.location = { lat, lng };
                 normalizedPlace.position = { lat, lng }; // Ensure position is also valid
                 console.log('Ubicación normalizada:', normalizedPlace.location);
@@ -380,14 +380,14 @@ function isOffensive(phrase) {
 
 
 window.addEventListener('load', async () => {
-   
+
     showLoadingPrincSpinner()
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
             window.location.href = 'register.html';
             return;
         }
-       
+
         const params = new URLSearchParams(window.location.search)
         const placeId = params.get('creado')
         if (placeId) {
@@ -397,8 +397,8 @@ window.addEventListener('load', async () => {
         // Espera a que el mapa esté inicializado
 
         try {
-           
-            
+
+            desbloqueoBusquedas()
 
             const isFirstTime = localStorage.getItem('firstTime');
             if (isFirstTime === 'true') {
@@ -411,8 +411,8 @@ window.addEventListener('load', async () => {
             if (elements.cityInput) {
                 elements.cityInput.value = arrayOfSearches.sort(() => Math.random() - 0.5)[0] || '';
             }
-            
-           
+
+
 
             // Map init - only if map element exists
             const mapElement = document.getElementById('map');
@@ -427,21 +427,21 @@ window.addEventListener('load', async () => {
                 }, { threshold: 0.1 });
                 mapObserver.observe(mapElement);
             }
-        
+
             setTimeout(() => {
                 hideLoadingPrincSpinner()
-            },300)
-            if(!location.hash){
-                history.replaceState({view:'Home'},'', '#home')
+            }, 300)
+            if (!location.hash) {
+                history.replaceState({ view: 'Home' }, '', '#home')
             }
-            
+
             try {
                 initMenu()
                 await InitTitlesUi();
-                
-                
+
+
                 // Luego inicializar títulos y logros
-                
+
             } catch (error) {
                 console.warn('Error al inicializar la interfaz:', error);
             }
@@ -469,29 +469,16 @@ window.addEventListener('load', async () => {
 
             setupPushNotifications()
             isPremium = await isUserPremiumAtStorage();
-            if(!window.Capacitor.isNativePlatform()){
+            if (!window.Capacitor.isNativePlatform()) {
                 document.getElementById('premium-title').style.display = 'none'
-                        document.getElementById('premium-li').style.display = 'none'
-                        document.getElementById('show-premium').style.display = 'none'
-               }
+                document.getElementById('premium-li').style.display = 'none'
+                document.getElementById('show-premium').style.display = 'none'
+            }
             if (!isPremium) {
-                const scrptAds1 = document.createElement('script');
-                const scrptAds2 = document.createElement('script');
-                const scrptAds3 = document.createElement('script');
-                const scrptAds4 = document.createElement('script');
-    
-                scrptAds1.async = true;
-                scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
-                scrptAds2.async = true;
-                scrptAds2.src = '//www.highperformanceformat.com/fc6c7031c0b8d156c901b64ee20ea3dc/invoke.js'
-                scrptAds3.async = true
-                scrptAds3.src = '//pl27454154.profitableratecpm.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js'
-                scrptAds4.async = true
-                scrptAds4.src = '//earringprecaution.com/c9d2315ce60a2a42713a6ac965364fd9/invoke.js'
-                document.head.appendChild(scrptAds1);
-                document.head.appendChild(scrptAds2);
-                document.head.appendChild(scrptAds3);
-                document.head.appendChild(scrptAds4);
+
+
+
+
                 resetearGuardadoYBusquedasDiarias();
             }
             if (isPremium) {
@@ -506,11 +493,11 @@ window.addEventListener('load', async () => {
                 }
             });
 
-            
+
 
         } catch (err) {
             console.warn('Error interno:', err);
-           return
+            return
         }
     });
 })
@@ -572,7 +559,7 @@ async function initMap() {
                 if (!isValidLatLng(lat, lng)) {
                     throw new Error('Invalid latitude or longitude values');
                 }
-                    let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+                let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
                 const pinScaled = new PinElement({
                     scale: 1.3,
                     glyph: '😀',
@@ -591,7 +578,7 @@ async function initMap() {
                 map.setZoom(17);
             } catch (geoError) {
                 showErrorNotification('No se pudo obtener la ubicación 😑');
-                
+
             }
         }
 
@@ -747,7 +734,7 @@ function closeSavedPlacesView() {
         soundClick();
         const savedPanel = document.querySelector('.saved-places-panel');
         const createdPanel = document.querySelector('.createds-places-panel');
-        
+
         if (savedPanel) savedPanel.classList.remove('active');
         if (createdPanel) createdPanel.classList.remove('active');
         if (searchCard) searchCard.value = '';
@@ -800,7 +787,7 @@ async function savePlaces(place, isVisited = false, isSaved = false) {
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-           
+
 
 
             await addDoc(favoritosCollection, placeData);
@@ -880,7 +867,7 @@ function getHoy() {
     return new Date().toISOString().split('T')[0]
 }
 function puedeGuardar() {
-    
+
 
     if (isPremium || puedeGuardarMas()) {
         return true;
@@ -902,14 +889,14 @@ function puedeBuscarMas() {
     return (ilimitado && fechaDesbloqueo === hoy)
 }
 export function desbloqueoBusquedas() {
-    return parseInt(localStorage.setItem('contadorBusquedas', '0'))
+    return parseInt(localStorage.setItem('contadorBusquedas', '0')), parseInt(localStorage.setItem('contadorBusquedasSinAnuncios', '0'))
 }
 export function desbloqueoCreados() {
     return parseInt(localStorage.setItem('contadorCreados', '0'))
 }
 
 
-
+desbloqueoBusquedas()
 
 
 function incrementarContadorCreados() {
@@ -1007,8 +994,8 @@ async function displayMarkers(places) {
         if (place && typeof place !== 'undefined') {
 
             bounds.extend(place.geometry.location);
- let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-         
+            let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
             const pinScaled = new PinElement({
                 scale: 1.1,
                 glyph: '📍​',
@@ -1197,31 +1184,31 @@ function showPlaceInGoogle(place) {
     }
 }
 export async function isUserPremiumAtStorage() {
-    try{
+    try {
         if (!auth.currentUser) {
             return false
-          }
+        }
         let premiumInBackend = false
-   
-    const q = query(collection(db,'usuarios'),
-    where('userId','==', auth.currentUser.uid))
-    const snapshot = await getDocs(q)
-    const doc = snapshot.docs.length > 0 ? snapshot.docs[0] : null
-   
-    if(doc && doc.data().premium){
-        premiumInBackend = true
+
+        const q = query(collection(db, 'usuarios'),
+            where('userId', '==', auth.currentUser.uid))
+        const snapshot = await getDocs(q)
+        const doc = snapshot.docs.length > 0 ? snapshot.docs[0] : null
+
+        if (doc && doc.data().premium) {
+            premiumInBackend = true
+        }
+        const Purchases = window.Capacitor?.Plugins?.Purchases
+        if (!Purchases) {
+            return premiumInBackend
+        }
+        const purchaserInfo = await Purchases.getCustomerInfo()
+        const entitlements = purchaserInfo?.entitlements?.active;
+
+        const isEntitlementActive = entitlements['premium_upgrade'].isActive === true
+        return isEntitlementActive || premiumInBackend
     }
-    const Purchases = window.Capacitor?.Plugins?.Purchases
-    if(!Purchases){
-        return premiumInBackend
-    }
-    const purchaserInfo = await Purchases.getCustomerInfo()
-    const entitlements = purchaserInfo?.entitlements?.active;
-    
-    const isEntitlementActive = entitlements['premium_upgrade'].isActive === true
-    return isEntitlementActive || premiumInBackend
-    }
-    catch(error){
+    catch (error) {
         console.error('Error checking premium status')
         return false
     }
@@ -1337,7 +1324,7 @@ async function searchPlaces() {
 
             if (places && places.length > 0) {
 
-               
+
                 displayMarkers(places);
             } else {
                 showErrorNotification('No se encontraron lugares con estas características 😑');
@@ -1460,11 +1447,11 @@ async function searchByMyPosition() {
         }
 
         // Create valid position object
-        const userPosition = { 
+        const userPosition = {
             lat: latitude,
-            lng: longitude 
+            lng: longitude
         };
-            let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+        let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
         const pinScaled = new PinElement({
             scale: 1.3,
             glyph: '😀',
@@ -1477,7 +1464,7 @@ async function searchByMyPosition() {
             position: userPosition,
             content: pinScaled.element
         });
-        
+
         markers.push(marker);
 
         const cacheKey = `${city}-${rating}-${pricing}-${opening}`
@@ -1530,6 +1517,55 @@ async function searchByMyPosition() {
     }
 }
 
+
+const COOL_DOWN = 30 * 1000 //1 minuto
+const KEY_INTERSTITIAL = 'lastInterstitial'
+const setLastTs = (ts = Date.now()) => localStorage.setItem(KEY_INTERSTITIAL, String(ts))
+const getLastTs = () => parseInt(localStorage.getItem(KEY_INTERSTITIAL) || '0', 10)
+const inCoolDown = () => Date.now() - getLastTs() < COOL_DOWN
+const POP_TAG_ID     = 'adsterra-popunder-script';
+const popRemainingms = () => {
+    const elapsed = Date.now() - getLastTs()
+    return Math.max(COOL_DOWN - elapsed, 0)
+}
+
+function desactivateScriptAdds(){
+    const script = document.getElementById(POP_TAG_ID)
+    if(script){
+        script.remove()
+        localStorage.removeItem(KEY_INTERSTITIAL)
+    }
+}
+function activateScriptAds() {
+    const scrptAds1 = document.createElement('script');
+    scrptAds1.async = true;
+    scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
+    scrptAds1.id = POP_TAG_ID
+    scrptAds1.onload = () => setLastTs()
+    scrptAds1.onerror = () => console.error('Error al cargar el script de anuncios')
+    document.head.appendChild(scrptAds1);
+    setTimeout(() => {
+        desactivateScriptAdds()
+    }, COOL_DOWN)
+}
+(function resumeScriptAds(){
+    const remaining = popRemainingms()
+    if(remaining > 0){
+        if(!document.getElementById(POP_TAG_ID)){
+            const scrptAds1 = document.createElement('script');
+    scrptAds1.async = true;
+    scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
+    scrptAds1.id = POP_TAG_ID
+    document.head.appendChild(scrptAds1);
+        }
+        setTimeout(() => {
+         desactivateScriptAdds()   
+        },remaining)
+    }
+    else{
+        localStorage.removeItem(KEY_INTERSTITIAL)
+    }
+})()
 async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
     showLoadingSpinner();
     const city = elements.cityInput.value;
@@ -1543,12 +1579,33 @@ async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
         radius: 1000,
         sessionToken: token
     };
+    if (parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0') >= maxSearchesWithoutAdds) {
+                       
+        const isNative = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+        if (isNative) {
+
+            showInterstitial()
+            if (parseInt(localStorage.getItem('contadorBusquedas') || '0') >= maxSearches) {
+                showSweetAlert('¿En busca de las búsquedas? 👀', 'Para buscar ilimitadamente puedes desbloquear premium, si no, puedes esperar 24 horas y podrás volver a realizar 10 búsquedas 😼', 'warning', 'OK')
+                return
+            }
+        }
+        else{
+            activateScriptAds()
+        }
+
+
+        localStorage.setItem('contadorBusquedasSinAnuncios', '0')
+ 
+
+
+}
     try {
         return new Promise((resolve) => {
             service.textSearch(request, (results, status) => {
                 if (results && status === google.maps.places.PlacesServiceStatus.OK) {
                     let filteredPlaces = results
-
+                    console.log(parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0'))
 
                     if (rating !== 'all') {
                         filteredPlaces = filteredPlaces.filter(res => res.rating >= rating)
@@ -1562,15 +1619,8 @@ async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
                     setTimeout(() => {
                         hideLoadingSpinner()
                     }, 450)
-                    if (parseInt(localStorage.getItem('contadorBusquedas') || '0') >= maxSearches) {
-                        showSweetAlert('¿En busca de las búsquedas? 👀', 'Para buscar ilimitadamente puedes desbloquear premium, si no, puedes esperar 24 horas y podrás volver a realizar 10 búsquedas 😼', 'warning', 'OK')
-                        return
-                    }
-                    if (parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0') === maxSearchesWithoutAdds) {
-                        showInterstitial()
 
-                        localStorage.setItem('contadorBusquedasSinAnuncios', '0')
-                    }
+                  
                     finalizarSesionBusqueda();
                     if (filteredPlaces) {
 
@@ -1579,7 +1629,7 @@ async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
                         setTimeout(() => {
                             soundBubble()
                         }, 450)
-                       
+
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
                         resolve(filteredPlaces)
                     }
@@ -1620,8 +1670,8 @@ function getSessionToken() {
 
 let counterSearchesWithoutAdds = parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0')
 let counterSearches = parseInt(localStorage.getItem('contadorBusquedas') || '0')
-let maxSearchesWithoutAdds = 4
-let maxSearches = 4
+let maxSearchesWithoutAdds = 2
+let maxSearches = 10
 const maxClickInCardWithoutAdds = 10
 let counterClicksInCards = parseInt(localStorage.getItem('contadorClicksInCards') || '0')
 
@@ -1664,77 +1714,10 @@ function hideLoadingPrincSpinner() {
 }
 let searchedPlaces = [];
 
-//Función para obtener datos de googlemaps de los lugares
-async function gleMapsData(lat, lng, rating, pricing, opening) {
-    showLoadingSpinner();
-    const city = elements.cityInput.value;
-    const center = new google.maps.LatLng(lat, lng);
-    const token = getSessionToken();
-    const service = new google.maps.places.PlacesService(map);
-
-    const request = {
-        query: city.toLowerCase(),
-        location: center,
-        radius: 1000,
-        sessionToken: token
-    };
-    try {
-        return new Promise((resolve) => {
-            service.textSearch(request, (results, status) => {
-                if (results && status === google.maps.places.PlacesServiceStatus.OK) {
-                    let filteredPlaces = results
-
-
-                    if (rating !== 'all') {
-                        filteredPlaces = filteredPlaces.filter(res => res.rating >= rating)
-                    }
-                    if (pricing !== 'all') {
-                        filteredPlaces = filteredPlaces.filter(res => res.pricing <= pricing)
-                    }
-                    if (opening !== 'all') {
-                        filteredPlaces = filteredPlaces.filter(res => res.opening_hours.open_noww)
-                    }
-                    setTimeout(() => {
-                        hideLoadingSpinner()
-                    }, 450)
-                    if (parseInt(localStorage.getItem('contadorBusquedas') || '0') >= maxSearches) {
-                        showSweetAlert('¿En busca de las búsquedas? 👀', 'Para buscar ilimitadamente puedes desbloquear premium, si no, puedes esperar 24 horas y podrás volver a realizar 10 búsquedas 😼', 'warning', 'OK')
-                        return
-                    }
-                    if (parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0') === maxSearchesWithoutAdds) {
-                        showInterstitial()
-
-                        localStorage.setItem('contadorBusquedasSinAnuncios', '0')
-                    }
-                    finalizarSesionBusqueda();
-                    if (filteredPlaces) {
-
-                        incrementarContadorBusquedas()
-                        incrementarContadorBusquedasSinAnuncios()
-                        setTimeout(() => {
-                            soundBubble()
-                        }, 450)
-                        resolve(filteredPlaces)
-                    }
-                    else {
-                        reject([])
-
-                        showErrorNotification('No se encontraron lugares con estas características')
-                        return
-                    }
-                }
-            })
-        })
-    }
-    catch (error) {
-        console.log(error)
-        return
-    }
-}
 
 let currentSharedInfoWindow = null;
 async function loadSharePlaces(places) {
-    if(currentSharedInfoWindow){
+    if (currentSharedInfoWindow) {
         currentSharedInfoWindow.close()
     }
     try {
@@ -1756,17 +1739,17 @@ async function loadSharePlaces(places) {
         let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
         const pinScaledVisible = new PinElement({
             scale: .8,
-            glyphColor:'#fff',
+            glyphColor: '#fff',
             background: '#5a4bff',
             borderColor: "#000"
         });
         const pinScaledPrivate = new PinElement({
             scale: .8,
-            glyphColor:'#ccc',
+            glyphColor: '#ccc',
             background: '#0843c1',
             borderColor: "#000"
         });
-        
+
         const marker = new AdvancedMarkerElement({
             position: place.position,
             map: map,
@@ -1811,29 +1794,29 @@ async function loadSharePlaces(places) {
 
 
         // Crear y abrir la ventana de información
-        
+
         currentSharedInfoWindow = new google.maps.InfoWindow({
             content: contentInfowindow,
-            
+
         });
 
         try {
-           
+
             currentSharedInfoWindow.open(map, marker);
-    
+
         } catch (windowError) {
-        
+
             throw windowError;
         }
         marker.addEventListener('click', () => {
-            currentSharedInfoWindow.open(map,marker)
+            currentSharedInfoWindow.open(map, marker)
             const pinScaledVisible = new PinElement({
-            scale: .8,
-            glyphColor:'#fff',
-            background: '#5a4bff',
-            borderColor: "#000"
-        });
-        
+                scale: .8,
+                glyphColor: '#fff',
+                background: '#5a4bff',
+                borderColor: "#000"
+            });
+
         })
         // Add click listener to close button
         // Configurar eventos del infowindow
@@ -1926,7 +1909,7 @@ function getPriceLabel(priceLevel) {
 
 // Función para mostrar lugares guardados
 async function renderSavedPlaces() {
-   
+
     let saveds = []
     const visitedsId = await checkVisitedsPlacesId();
     const user = auth.currentUser
@@ -1995,7 +1978,7 @@ async function renderSavedPlaces() {
             closeSavedPlacesView()
             menuOptions.classList.remove('active')
             javascript
-lTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+            lTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         })
         lastSite.querySelectorAll('.btn.delete-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -2043,7 +2026,7 @@ function attachVisitButtonListeners(place) {
     document.querySelectorAll('.btn-view').forEach(btn => {
         btn.addEventListener('click', () => {
             const position = place.position
-            flyToPlace(place) 
+            flyToPlace(place)
 
         })
     })
@@ -2063,7 +2046,7 @@ function attachVisitButtonListeners(place) {
     })
     document.querySelectorAll('.view-created-searchcard-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            
+
             loadSharePlaces(place)
             closeCreatedsPanel()
             closeMenu()
@@ -2389,29 +2372,29 @@ async function shareCreatedPlaceGoogle(place) {
     try {
         const placeUrl = `https://www.google.com/maps/search/?api=1&query=${place.position.lat},${place.position.lng}`
         if (!place.position.lat || !place.position.lng) return
-        if(window.Capacitor.isNativePlatform()){
-            const {Share} = window.Capacitor?.Plugins || {}
-            if(Share){
+        if (window.Capacitor.isNativePlatform()) {
+            const { Share } = window.Capacitor?.Plugins || {}
+            if (Share) {
                 await Share.share({
                     title: `Destino ${place.name} !!`,
                     text: 'Mira la ubi que he encontrado en UFind!',
-                    url: placeUrl,           
+                    url: placeUrl,
                     dialogTitle: 'Compartir Ubi'
-                  });
+                });
             }
         }
-       else{
-        if(navigator && navigator.canShare){
-            const shareData = {
-                title: place.name || 'Lugar Compartido',
-                text: place.address || '¡Mira este lugar!',
-                url: placeUrl
+        else {
+            if (navigator && navigator.canShare) {
+                const shareData = {
+                    title: place.name || 'Lugar Compartido',
+                    text: place.address || '¡Mira este lugar!',
+                    url: placeUrl
+                }
+                await navigator.share(shareData)
             }
-            await navigator.share(shareData)
         }
-       }
-       
-       
+
+
     }
     catch (err) {
 
@@ -2485,19 +2468,19 @@ async function flyToPlace(place) {
     let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
     // Crear marcador
     const pinScaled = new PinElement({
-                scale: 1.1,
-                glyph: '📍​',
-                background: '#FF5A5F',
-                glyphColor: "#000",
-                borderColor: "#000"
-            })
+        scale: 1.1,
+        glyph: '📍​',
+        background: '#FF5A5F',
+        glyphColor: "#000",
+        borderColor: "#000"
+    })
     const marker = new AdvancedMarkerElement({
-                map,
-                position: place.geometry.location,
-                content: pinScaled.element,
+        map,
+        position: place.geometry.location,
+        content: pinScaled.element,
 
-                zIndex: 100,
-            })
+        zIndex: 100,
+    })
 
     markers.push(marker);
 
@@ -2574,7 +2557,7 @@ async function flyToPlace(place) {
     });
 }
 
-if(elements.form) {
+if (elements.form) {
     // Event listeners
     elements.form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -2582,38 +2565,38 @@ if(elements.form) {
         await searchPlaces();
     });
 
-    
+
 }
-else{
+else {
     console.warn('No se encontró el form')
 }
 
-if(elements.botonGetSites || elements.buttonShowCreateds || elements.buttonShowPrivateCreateds){
+if (elements.botonGetSites || elements.buttonShowCreateds || elements.buttonShowPrivateCreateds) {
     elements.botonGetSites.addEventListener('click', (e) => {
         e.preventDefault()
         soundClick()
         renderSavedPlaces();
         displaySavedsPlaces();
-    
+
     });
-    
+
     elements.buttonShowCreateds.addEventListener('click', (e) => {
         e.preventDefault()
         soundClick()
         displayCreatedsPlaces()
         renderCreatedPlaces()
-    
+
     })
-    
+
     elements.buttonShowPrivateCreateds.addEventListener('click', (e) => {
         e.preventDefault()
         soundClick()
         displayCreatedsPrivatePlaces()
         renderPrivateCreatedsPlaces()
-    
+
     })
 }
-else{
+else {
     console.warn('No se encontraron los botones de abrir menus en el dom')
 }
 
@@ -2624,21 +2607,21 @@ const body = document.body
 //comprobación de que tema tiene elegido el usuario
 if (localStorage.getItem('theme') === 'dark') {
     body.classList.add('dark')
-    
-        
+
+
 }
 
 
 
 
-if(locateMeBtn){
+if (locateMeBtn) {
     locateMeBtn.addEventListener('click', async (e) => {
         e.preventDefault()
         soundClick()
         await searchByMyPosition()
     })
 }
-else{
+else {
     console.warn('No se encontró el botón de buscar por mi posición en el DOM')
 }
 
@@ -2647,14 +2630,14 @@ else{
 const lottieAnim = document.getElementById('lottie-container')
 let isToggled = false;
 
-    const animation = lottie.loadAnimation({
-        container: document.getElementById('lottie-container'),
-        renderer: 'svg',
-        loop: false,
-        autoplay: false,
-        path: 'animaciones/definitivelytogglebutton.json',
-    })
-    
+const animation = lottie.loadAnimation({
+    container: document.getElementById('lottie-container'),
+    renderer: 'svg',
+    loop: false,
+    autoplay: false,
+    path: 'animaciones/definitivelytogglebutton.json',
+})
+
 
 
 
@@ -2737,21 +2720,21 @@ function showSuccessConfetti() {
 }
 
 const buttonToggle = document.getElementById('toggle')
-if(buttonToggle){
+if (buttonToggle) {
     buttonToggle.addEventListener('click', () => {
         body.classList.toggle('dark')
         localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light')
         animation.goToAndStop(0, true);
-    
+
         // Reproduce desde el inicio
         animation.play();
-    
+
         // Opcional: Cambia dirección a normal (por si estaba en reversa)
         animation.setDirection(1);
         location.reload()
     })
 }
-else{
+else {
     console.warn('No se encontró el boton toggle')
 }
 
@@ -2772,25 +2755,25 @@ export function closeSettings() {
         settingsDropdown.style.zIndex = '100000'
     }
 }
-if(buttonSettings){
+if (buttonSettings) {
     buttonSettings.addEventListener('click', () => {
         closeSettings()
         animateButton()
     })
 }
-else{
+else {
     console.warn('No se encontró el boton de settings')
 }
 
 
 
 const searchCard = document.getElementById('search-card')
-if(searchCard){
+if (searchCard) {
     searchCard.addEventListener('input', async () => {
         searchCard.setAttribute('placeholder', '')
         const user = auth.currentUser
         if (!user) return
-    
+
         const searchTerm = searchCard.value.toLowerCase()
         const q = query(collection(db, 'favoritos'), where('userId', '==', user.uid))
         const snapshot = await getDocs(q)
@@ -2798,10 +2781,10 @@ if(searchCard){
             id: doc.id,
             ...doc.data()
         }))
-    
+
         const container = elements.sitesList;
         container.innerHTML = '';
-    
+
         const equals = places.filter(el => el.name.toLowerCase().includes(searchTerm) || el.address.toLowerCase().includes(searchTerm))
         equals.forEach(place => {
             let imageUrl = ''
@@ -2818,7 +2801,7 @@ if(searchCard){
             const visitedBtnHTML = place.visited
                 ? `<button class="btn visit-btn" disabled>Visitado</button>`
                 : `<button class="btn visit-btn" data-id="${place.place_id}">Marcar como visitado</button>`;
-    
+
             container.innerHTML += `
             <div class="site">
             <h3>${place.name}</h3>
@@ -2853,23 +2836,23 @@ if(searchCard){
             attachVisitButtonListeners(place)
             const site = document.querySelector('.site')
             site.style.animation = 'floatingRotate 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-    
+
         })
-    
-    
+
+
     })
 }
-else{
+else {
     console.warn('No se encontró el searchcard de guardados')
 }
 
 
 const searchCreatedsCard = document.getElementById('search-createds-card')
 const createRouteForm = document.getElementById('route-form')
-if(searchCreatedsCard){
+if (searchCreatedsCard) {
     searchCreatedsCard.addEventListener('input', async () => {
         const user = auth.currentUser
-    
+
         if (!user) return
         const q = query(collection(db, 'creados'), where('userId', '==', user.uid),
             where('visibleToAll', '==', true))
@@ -2880,10 +2863,10 @@ if(searchCreatedsCard){
         }))
         const searchTerm = searchCreatedsCard.value.toLowerCase()
         const findeds = places.filter(res => res.name.toLowerCase().includes(searchTerm) || res.address.toLowerCase().includes(searchTerm))
-    
+
         const container = elements.createdsSitesList
         container.innerHTML = ''
-    
+
         findeds.forEach(place => {
             container.innerHTML += `
             <div class="site">
@@ -2918,22 +2901,22 @@ if(searchCreatedsCard){
             </div>
         </div>
     `;
-    
+
             attachVisitButtonListeners(place)
         })
     })
-    
+
 }
-else{
+else {
     console.warn('No se encontró el searchcreatedscard')
 }
 
 
 const searchPrivateCreatedCards = document.getElementById('search-createds-private-card')
-if(searchPrivateCreatedCards){
+if (searchPrivateCreatedCards) {
     searchPrivateCreatedCards.addEventListener('input', async () => {
         const user = auth.currentUser
-    
+
         if (!user) return
         const q = query(collection(db, 'creados'), where('userId', '==', user.uid),
             where('visibleToAll', '==', false))
@@ -2944,10 +2927,10 @@ if(searchPrivateCreatedCards){
         }))
         const searchTerm = searchCreatedsCard.value.toLowerCase()
         const findeds = places.filter(res => res.name.toLowerCase().includes(searchTerm) || res.address.toLowerCase().includes(searchTerm))
-    
+
         const container = elements.privatesCreatedsSitesList
         container.innerHTML = ''
-    
+
         findeds.forEach(place => {
             container.innerHTML += `
             <div class="site">
@@ -2982,13 +2965,13 @@ if(searchPrivateCreatedCards){
             </div>
         </div>
     `;
-    
+
             attachVisitButtonListeners(place)
         })
     })
-        
+
 }
-else{
+else {
     console.warn('No se encontró el search de los lugares creados privados')
 }
 
@@ -3017,12 +3000,12 @@ async function enableCreatePlace() {
                 lat: event.latLng.lat(),
                 lng: event.latLng.lng()
             };
-            
+
             // Remove existing marker if any
             if (creationMarker) {
                 creationMarker.setMap(null);
             }
-            
+
             // Create a new marker at the clicked position
             const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
             const pinScaled = new PinElement({
@@ -3031,17 +3014,17 @@ async function enableCreatePlace() {
                 glyphColor: '#000',
                 borderColor: '#000'
             });
-            
+
             creationMarker = new AdvancedMarkerElement({
                 map,
                 position: position,
                 content: pinScaled.element,
                 title: 'Nuevo lugar'
             });
-            
+
             // Show the place creation form
             showDesktopPlaceCreation(position);
-            
+
         } catch (error) {
             console.error('Error handling map click:', error);
             showErrorNotification('Error al procesar la ubicación');
@@ -3071,13 +3054,13 @@ function cancelCreationPlace() {
     location.reload()
 
 }
-if(buttonCancelCreationMode){
+if (buttonCancelCreationMode) {
     buttonCancelCreationMode.addEventListener('click', (e) => {
         cancelCreationPlace()
         return
     })
 }
-else{
+else {
     console.warn('No se encontró el botón de cancel creation mode')
 }
 
@@ -3086,22 +3069,22 @@ async function handleNewlocation(position) {
     if (creationMarker) {
         creationMarker.setMap(null)
     }
-        let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+    let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
     const pinScaled = new PinElement({
-                scale: 1.1,
-                glyph: '📍​',
-                background: '#FF5A5F',
-                glyphColor: "#000",
-                borderColor: "#000"
-            })
+        scale: 1.1,
+        glyph: '📍​',
+        background: '#FF5A5F',
+        glyphColor: "#000",
+        borderColor: "#000"
+    })
     creationMarker = new AdvancedMarkerElement({
-                map,
-                position: position,
-                content: pinScaled.element,
+        map,
+        position: position,
+        content: pinScaled.element,
 
-                zIndex: 100,
-            })
-            console.log('position:', position)
+        zIndex: 100,
+    })
+    console.log('position:', position)
     await showDesktopPlaceCreation(position)
 
 }
@@ -3109,22 +3092,22 @@ async function handleNewlocation(position) {
 
 
 const buttonDeleteAccount = document.getElementById('delete-account')
-if(buttonDeleteAccount){
+if (buttonDeleteAccount) {
     buttonDeleteAccount.addEventListener('click', () => {
         showSweetDeleteAlert('¿Estas seguro/a?', 'Todos tus datos guardados se borrarán', 'warning')
-    
+
     })
 }
-else{
+else {
     console.warn('No se encontró el boton de delete account')
 }
 
 let downloadURL
 function normalizePosition(pos) {
-  return {
-    lat: typeof pos.lat === 'function' ? parseFloat(pos.lat()) : parseFloat(pos.lat),
-    lng: typeof pos.lng === 'function' ? parseFloat(pos.lng()) : parseFloat(pos.lng),
-  }
+    return {
+        lat: typeof pos.lat === 'function' ? parseFloat(pos.lat()) : parseFloat(pos.lat),
+        lng: typeof pos.lng === 'function' ? parseFloat(pos.lng()) : parseFloat(pos.lng),
+    }
 }
 async function showDesktopPlaceCreation(position) {
     const bounds = new google.maps.LatLngBounds();
@@ -3176,15 +3159,15 @@ async function showDesktopPlaceCreation(position) {
     // Ensure position is a proper LatLng object
     const lat = typeof position.lat === 'function' ? position.lat() : parseFloat(position.lat);
     const lng = typeof position.lng === 'function' ? position.lng() : parseFloat(position.lng);
-    
+
     const latLng = { lat, lng };
-    
+
     // Update bounds
     bounds.extend(latLng);
-    
+
     // Close any existing infowindow
     if (infowindow) infowindow.close();
-    
+
     // Create new infowindow
     infowindow = new google.maps.InfoWindow({
         content: content,
@@ -3198,7 +3181,7 @@ async function showDesktopPlaceCreation(position) {
         map,
         shouldFocus: true
     })
-   
+
     google.maps.event.addListenerOnce(infowindow, 'domready', () => {
         document.getElementById('save-desktop').addEventListener('click', async (e) => {
             e.preventDefault()
@@ -3241,11 +3224,11 @@ async function showDesktopPlaceCreation(position) {
                     document.getElementById('file-upload').addEventListener('change', function (e) {
                         const file = this.files[0];
                         if (file && !file.type.startsWith('image/')) {
-                          showSweetAlert('Videos no permitidos','Solo es posible subir imagenes de tus lugares','warning','OK')
-                          this.value = ''; // limpia el input
-                          return
+                            showSweetAlert('Videos no permitidos', 'Solo es posible subir imagenes de tus lugares', 'warning', 'OK')
+                            this.value = ''; // limpia el input
+                            return
                         }
-                      });
+                    });
                     const userId = auth.currentUser.uid;
                     const fileName = `${Date.now()}_${photoFile.name}`;
                     const filePath = `places/${userId}/${fileName}`;
@@ -3378,21 +3361,21 @@ async function addMarkerToPlace(place) {
             lat: place.position.lat || place.position.latitude,
             lng: place.position.lng || place.position.longitude
         };
-            let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+        let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
         const pinScaledVisible = new PinElement({
             scale: .8,
-            glyphColor:'#fff',
+            glyphColor: '#fff',
             background: '#5a4bff',
             borderColor: "#000"
         });
         const pinScaledPrivate = new PinElement({
             scale: .8,
-            glyphColor:'#ccc',
+            glyphColor: '#ccc',
             background: '#0843c1',
             borderColor: "#000"
         });
-        
+
         const marker = new AdvancedMarkerElement({
             position: position,
             map: map,
@@ -3471,7 +3454,7 @@ async function addMarkerToPlace(place) {
 
                 const count = await getLikesCount(place.place_id);
 
-    
+
                 loadComments(place.place_id)
                 place.visibleToAll ?
                     showLikes.forEach(cnt => {
@@ -3669,7 +3652,7 @@ async function deleteCreatedPlace(placeId) {
 }
 
 async function renderCreatedPlaces() {
-   
+
     const user = auth.currentUser;
     const container = elements.createdsSitesList
     container.innerHTML = ''
@@ -3724,11 +3707,11 @@ async function renderCreatedPlaces() {
         const lastSite = container.lastElementChild
 
         lastSite.querySelector('.btn.btn-view-created').addEventListener('click', () => {
-           
+
             loadSharePlaces(place)
             menuOptions.classList.remove('active')
             closeCreatedsPanel()
-            
+
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         })
 
@@ -3740,7 +3723,7 @@ async function renderCreatedPlaces() {
             })
         })
 
-       
+
     })
 
 
@@ -3748,7 +3731,7 @@ async function renderCreatedPlaces() {
 
 
 async function renderPrivateCreatedsPlaces() {
-   
+
     const user = auth.currentUser;
     const container = elements.privatesCreatedsSitesList
     container.innerHTML = ''
@@ -3872,19 +3855,19 @@ function flyToCreatedPlace(position, place) {
 
     // 6. Crear marcador
     creationMarker = new AdvancedMarkerElement({
-                map,
-                position: place.geometry.location,
-                content: pinScaled.element,
+        map,
+        position: place.geometry.location,
+        content: pinScaled.element,
 
-                zIndex: 100,
-            })
+        zIndex: 100,
+    })
 
 
     markersOfCreateds.push(creationMarker);
 
     // 7. Crear contenido del infowindow
-     const likeButton = "<button class='button-likes'> <img class='action-btn img-share' src='images/mg.webp'></img></button>"
-    const contentInfowindow =  `
+    const likeButton = "<button class='button-likes'> <img class='action-btn img-share' src='images/mg.webp'></img></button>"
+    const contentInfowindow = `
     <div class="card-sites" data-id='${place.place_id}'>
         <button class='close-window'>X</button>
         <h2>${place.name || 'N/D'}</h2>
@@ -3952,14 +3935,14 @@ function showFilters(event) {
     // Si el clic viene de un select, ignorar
     if (event.target.closest('select')) return;
 
-    
+
 }
 
-if(containerSlideFilters){
+if (containerSlideFilters) {
     containerSlideFilters.addEventListener('click', showFilters);
 
 }
-else{
+else {
     console.warn('No se encontró el container de slide filters')
 }
 
@@ -3971,13 +3954,13 @@ document.addEventListener('click', (e) => {
     }
 });
 
-    elements.buttonCreatePlace.addEventListener('click', async (e) => {
-        e.preventDefault()
-        
-        await enableCreatePlace()
-        closeMenu()
-    
-    })
+elements.buttonCreatePlace.addEventListener('click', async (e) => {
+    e.preventDefault()
+
+    await enableCreatePlace()
+    closeMenu()
+
+})
 
 
 function closeCreatedsPanel() {
@@ -3987,7 +3970,7 @@ function closeCreatedsPanel() {
 }
 
 
-   elements.buttonClosePrivateCreateds.addEventListener('click', closePrivatesCreatedsPanel)
+elements.buttonClosePrivateCreateds.addEventListener('click', closePrivatesCreatedsPanel)
 
 
 
@@ -4009,8 +3992,8 @@ function showMenu() {
         counterTransitions++
     }
     soundClick()
-   appState.home = false
-   appState.menuOpen = true
+    appState.home = false
+    appState.menuOpen = true
     menuOptions.classList.add('active')
 
 }
@@ -4021,10 +4004,10 @@ function closeMenu() {
     closeCreatedsPanel()
 }
 
-    elements.buttonCloseCreateds.addEventListener('click', () => {
-        soundClick()
-        closeCreatedsPanel()
-    })
+elements.buttonCloseCreateds.addEventListener('click', () => {
+    soundClick()
+    closeCreatedsPanel()
+})
 
 
 
@@ -4102,12 +4085,12 @@ async function downloadPdf(filepath) {
         showErrorNotification('No se pudo abrir el archivo PDF');
     }
 }
-if(downloadPol || downloadTer){
+if (downloadPol || downloadTer) {
     downloadPol.addEventListener('click', () => downloadPdf('terms-politicy/politicas.pdf'))
     downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/terminos.pdf'))
-    
+
 }
-else{
+else {
     console.warn('No se encontraron los botones de descargar pdf')
 }
 
@@ -4233,171 +4216,171 @@ function showVisit() {
 async function setFlyerPhoto(url) {
     const imgEl = document.querySelector('#customFlyer .img-flyer');
     if (!imgEl) return;
-  
+
     if (!url) {
-      imgEl.style.display = 'none'; // sin foto -> ocultar
-      imgEl.removeAttribute('src');
-      return;
+        imgEl.style.display = 'none'; // sin foto -> ocultar
+        imgEl.removeAttribute('src');
+        return;
     }
-  
+
     imgEl.style.display = 'block';
     imgEl.crossOrigin = 'anonymous';
     imgEl.referrerPolicy = 'no-referrer';
     imgEl.src = url;
-  
+
     try {
-      if (imgEl.decode) {
-        await imgEl.decode();
-      } else {
-        await new Promise((res, rej) => {
-          imgEl.onload = res;
-          imgEl.onerror = rej;
-        });
-      }
+        if (imgEl.decode) {
+            await imgEl.decode();
+        } else {
+            await new Promise((res, rej) => {
+                imgEl.onload = res;
+                imgEl.onerror = rej;
+            });
+        }
     } catch {
-      // Fallback CORS: fetch -> blob
-      try {
-        const resp = await fetch(url, { mode: 'cors' });
-        const blob = await resp.blob();
-        imgEl.src = URL.createObjectURL(blob);
-        await new Promise((res, rej) => {
-          imgEl.onload = res;
-          imgEl.onerror = rej;
-        });
-      } catch {
-        imgEl.style.display = 'none';
-        imgEl.removeAttribute('src');
-      }
+        // Fallback CORS: fetch -> blob
+        try {
+            const resp = await fetch(url, { mode: 'cors' });
+            const blob = await resp.blob();
+            imgEl.src = URL.createObjectURL(blob);
+            await new Promise((res, rej) => {
+                imgEl.onload = res;
+                imgEl.onerror = rej;
+            });
+        } catch {
+            imgEl.style.display = 'none';
+            imgEl.removeAttribute('src');
+        }
     }
-  }
-  
-  async function shareCanvas(place) {
+}
+
+async function shareCanvas(place) {
     const flyer = document.getElementById('customFlyer');
-    
+
     try {
-      // Mostrar loader
-      showLoadingPrincSpinner();
-      
-      // Rellenar textos
-      document.getElementById('flyer-title').textContent = place.name;
-      document.getElementById('flyer-comment').textContent = `"${place.comment || ''}"`;
-      document.querySelector('.flyer-rating').textContent = '⭐'.repeat(place.rating || 4);
-      document.querySelector('.flyer-user strong').textContent =
-        `Creado por ${auth.currentUser?.displayName || 'Usuario'}`;
-  
-      // Cargar la foto si existe
-      if (place.photo) {
-        await setFlyerPhoto(place.photo);
-        await new Promise(resolve => setTimeout(resolve,500))
-      } else {
-        // Limpiar la imagen si no hay URL
-        const imgElement = document.querySelector('.flyer-image img');
-        if (imgElement) imgElement.src = '';
-      }
-  
-      // Mostrar el flyer
-      flyer.style.display = 'block';
-  
-      // Esperar a que se renderice el contenido
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Esperar a que se carguen las fuentes
-      if (document.fonts) {
-        await document.fonts.ready;
-      }
-      
-      // Esperar un frame más para asegurar que todo está renderizado
-      await new Promise(resolve => requestAnimationFrame(resolve));
-  
-      // Configuración de html2canvas
-      const scale = Math.min(2, window.devicePixelRatio || 1);
-      
-      // Crear el canvas con html2canvas
-      const canvas = await html2canvas(flyer, {
-        useCORS: true,
-        allowTaint: true,
-        logging: true,
-        backgroundColor: '#ffffff',
-        scale: scale,
-        onclone: (clonedDoc) => {
-          // Asegurarse de que el clon esté visible
-          const clonedFlyer = clonedDoc.getElementById('customFlyer');
-          if (clonedFlyer) {
-            clonedFlyer.style.display = 'block';
-          }
+        // Mostrar loader
+        showLoadingPrincSpinner();
+
+        // Rellenar textos
+        document.getElementById('flyer-title').textContent = place.name;
+        document.getElementById('flyer-comment').textContent = `"${place.comment || ''}"`;
+        document.querySelector('.flyer-rating').textContent = '⭐'.repeat(place.rating || 4);
+        document.querySelector('.flyer-user strong').textContent =
+            `Creado por ${auth.currentUser?.displayName || 'Usuario'}`;
+
+        // Cargar la foto si existe
+        if (place.photo) {
+            await setFlyerPhoto(place.photo);
+            await new Promise(resolve => setTimeout(resolve, 500))
+        } else {
+            // Limpiar la imagen si no hay URL
+            const imgElement = document.querySelector('.flyer-image img');
+            if (imgElement) imgElement.src = '';
         }
-      });
-  
-      // Ocultar el flyer después de la captura
-      flyer.style.display = 'none';
-  
-      // Convertir a blob
-      const blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(
-          (b) => b ? resolve(b) : reject(new Error('No se pudo generar la imagen')),
-          'image/png',
-          0.92
-        );
-      });
-  
-      // Manejar la descarga o compartición según la plataforma
-      if (window.Capacitor?.isNativePlatform?.()) {
-        // Para Android/iOS
-        const { Filesystem, Share } = window.Capacitor.Plugins;
-        if (!Filesystem || !Share) {
-          throw new Error('Funcionalidad de compartir no disponible');
+
+        // Mostrar el flyer
+        flyer.style.display = 'block';
+
+        // Esperar a que se renderice el contenido
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Esperar a que se carguen las fuentes
+        if (document.fonts) {
+            await document.fonts.ready;
         }
-        
-        const fileName = `ufind_${place.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.png`;
-        const base64Data = await convertBlobToBase64(blob);
-        
-        // Guardar en caché
-        const result = await Filesystem.writeFile({
-          path: fileName,
-          data: base64Data,
-          directory: 'CACHE',
-          recursive: true
+
+        // Esperar un frame más para asegurar que todo está renderizado
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
+        // Configuración de html2canvas
+        const scale = Math.min(2, window.devicePixelRatio || 1);
+
+        // Crear el canvas con html2canvas
+        const canvas = await html2canvas(flyer, {
+            useCORS: true,
+            allowTaint: true,
+            logging: true,
+            backgroundColor: '#ffffff',
+            scale: scale,
+            onclone: (clonedDoc) => {
+                // Asegurarse de que el clon esté visible
+                const clonedFlyer = clonedDoc.getElementById('customFlyer');
+                if (clonedFlyer) {
+                    clonedFlyer.style.display = 'block';
+                }
+            }
         });
-        
-        // Obtener la URI del archivo
-        const fileUri = (await Filesystem.getUri({
-          directory: 'CACHE',
-          path: fileName
-        })).uri;
-        
-        // Compartir el archivo
-        await Share.share({
-          title: `Descubre ${place.name}`,
-          text: 'Mira este lugar en UFind!',
-          url: fileUri,
-          dialogTitle: 'Compartir lugar',
-          files: [fileUri]
+
+        // Ocultar el flyer después de la captura
+        flyer.style.display = 'none';
+
+        // Convertir a blob
+        const blob = await new Promise((resolve, reject) => {
+            canvas.toBlob(
+                (b) => b ? resolve(b) : reject(new Error('No se pudo generar la imagen')),
+                'image/png',
+                0.92
+            );
         });
-      } else {
-        // Para navegador web
-        downloadImage(blob, place.name);
-      }
-      
+
+        // Manejar la descarga o compartición según la plataforma
+        if (window.Capacitor?.isNativePlatform?.()) {
+            // Para Android/iOS
+            const { Filesystem, Share } = window.Capacitor.Plugins;
+            if (!Filesystem || !Share) {
+                throw new Error('Funcionalidad de compartir no disponible');
+            }
+
+            const fileName = `ufind_${place.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${Date.now()}.png`;
+            const base64Data = await convertBlobToBase64(blob);
+
+            // Guardar en caché
+            const result = await Filesystem.writeFile({
+                path: fileName,
+                data: base64Data,
+                directory: 'CACHE',
+                recursive: true
+            });
+
+            // Obtener la URI del archivo
+            const fileUri = (await Filesystem.getUri({
+                directory: 'CACHE',
+                path: fileName
+            })).uri;
+
+            // Compartir el archivo
+            await Share.share({
+                title: `Descubre ${place.name}`,
+                text: 'Mira este lugar en UFind!',
+                url: fileUri,
+                dialogTitle: 'Compartir lugar',
+                files: [fileUri]
+            });
+        } else {
+            // Para navegador web
+            downloadImage(blob, place.name);
+        }
+
     } catch (error) {
-      console.error('Error en shareCanvas:', error);
-      showErrorNotification('Error al generar el flyer: ' + (error?.message || 'Error desconocido'));
+        console.error('Error en shareCanvas:', error);
+        showErrorNotification('Error al generar el flyer: ' + (error?.message || 'Error desconocido'));
     } finally {
-      // Asegurarse de ocultar el flyer y el loader
-      flyer.style.display = 'none';
-      hideLoadingPrincSpinner();
+        // Asegurarse de ocultar el flyer y el loader
+        flyer.style.display = 'none';
+        hideLoadingPrincSpinner();
     }
-  }
-  
-  // Devuelve base64 “puro” (sin prefijo)
-  async function convertBlobToBase64(blob) {
+}
+
+// Devuelve base64 “puro” (sin prefijo)
+async function convertBlobToBase64(blob) {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onerror = reject;
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(blob);
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(blob);
     });
-  }
-  
+}
+
 
 
 // Helper function to download the image
@@ -4414,62 +4397,64 @@ function downloadImage(blob, placeName) {
 }
 
 
-    let appState = {
-        menuOpen : false,
-        home : true
-    }
+let appState = {
+    menuOpen: false,
+    home: true
+}
 
-function goToHome(){
+function goToHome() {
     appState.home = true
     closeMenu()
     closeSavedPlacesView()
     closeCreatedsPanel()
     closePrivatesCreatedsPanel()
 }
-    function handleBackButton(){
-        console.log('Boton de atras presionado')
-        if(appState.menuOpen){
-            closeMenu()
-            return false
-        }
-        if(!appState.home){
-            goToHome()
-            return false
-        }
+function handleBackButton() {
+    console.log('Boton de atras presionado')
+    if (appState.menuOpen) {
+        closeMenu()
+        return false
+    }
+    if (!appState.home) {
+        goToHome()
+        return false
+    }
 
     //Si estamos en home y no hay menus abiertos, permitimos salir de la app
-        return true
-    }
+    return true
+}
 
-    async function initializeCapacitor(){
-        if(window.Capacitor?.isNativePlatform?.()){
-            console.log('Capacitor Detectado')
-            
-            // Usar window.Capacitor
-            const AppPlugin = window.Capacitor?.Plugins?.App;
-            if (AppPlugin?.addListener) {
-              AppPlugin.addListener('backButton', () => {
+async function initializeCapacitor() {
+    if (window.Capacitor?.isNativePlatform?.()) {
+        console.log('Capacitor Detectado')
+
+        // Usar window.Capacitor
+        const AppPlugin = window.Capacitor?.Plugins?.App;
+        if (AppPlugin?.addListener) {
+            AppPlugin.addListener('backButton', () => {
                 const shouldExit = handleBackButton();
                 if (shouldExit) AppPlugin.exitApp?.();
-              });
-            }
-            else{
-                console.warn('Plugin app no disponible')
-            }
+            });
         }
-        else{
-            console.log('Capacitor no detectado')
-
-            document.addEventListener('keydown', (event) => {
-               
-                if(event.key === 'Escape'){
-                    const shouldExit = handleBackButton()
-                    if(shouldExit){
-                        handleBackButton()
-                        
-                    }
-                }
-                
-            })
-        } 
+        else {
+            console.warn('Plugin app no disponible')
+        }
     }
+    else {
+        console.log('Capacitor no detectado')
+
+        document.addEventListener('keydown', (event) => {
+
+            if (event.key === 'Escape') {
+                const shouldExit = handleBackButton()
+                if (shouldExit) {
+                    handleBackButton()
+
+                }
+            }
+
+        })
+    }
+}
+
+
