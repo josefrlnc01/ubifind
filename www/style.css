@@ -1378,7 +1378,7 @@ select:hover{
 }
  .site {
     text-wrap: balance;
-     background:rgb(45 45 45 / 61%);
+    background:#f0f8ff78;
      border-radius: 10px;
      padding:12px 18px;
      box-shadow: var(--shadow);
@@ -1391,16 +1391,26 @@ select:hover{
      gap: 1rem;
      width: 500px;
      font-size: 0.8em;
+     span{
+        color: #4f46e5;
+     }
+}
+
+body.dark .site{
+    background:rgb(45 45 45 / 61%);
+    .p{
+        color: #fff;
+    }
 }
 .site h3{
     color: #4f46e5;
 }
 .site label{
-    color: #fff;
+    color: #000;
 }
 .site p{
     margin-left: 3px;
-    color: #fff;
+    color: #4f46e5;
 }
 .count-likes{
     align-self: flex-end;
@@ -2352,7 +2362,7 @@ font-size: .7em;
     }
     #container-sites span, #container-created-sites span, #container-private-created-sites span{
    
-    color: aliceblue;
+   
      margin-top: .5rem;
 }
      #search-card, #search-createds-card {

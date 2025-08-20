@@ -1524,7 +1524,7 @@ async function searchByMyPosition() {
 }
 
 
-const COOL_DOWN = 30 * 1000 //1 minuto
+const COOL_DOWN = 10 * 1000 //10 segundos
 const KEY_INTERSTITIAL = 'lastInterstitial'
 const setLastTs = (ts = Date.now()) => localStorage.setItem(KEY_INTERSTITIAL, String(ts))
 const getLastTs = () => parseInt(localStorage.getItem(KEY_INTERSTITIAL) || '0', 10)
