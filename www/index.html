@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
    
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta property="og:title" content="Ubifind - Explora lugares">
+    <meta property="og:description" content=" Descubre nuevos lugares y crea los tuyos propios 🌍">
+    <meta property="og:image" content="images/faviconlogo.ico">
+    <meta property="og:url" content="https://ubifindapp.com/">
+    <meta property="og:type" content="website">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; 
       script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://maps.gstatic.com https://js.revenuecat.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; 
       style-src 'self' 'unsafe-inline' https://*.googleapis.com https://maps.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
@@ -193,10 +198,10 @@
 
                     <!-- Menú desplegable de ajustes -->
                     <ul id="settings-menu" class="settings-dropdown" role="menu" aria-label="Menú de ajustes">
-                        <li style="color: rgb(207, 207, 0);" class="section-title" id="premium-title">Premium</li>
+                    <!--  <li style="color: rgb(207, 207, 0);" class="section-title" id="premium-title">Premium</li>
                         <li role="none"><a id="show-premium"  role="menuitem"><span
                             class="icon icon-premium" id="premium-li"> DESCUBRE EL POTENCIAL COMPLETO </span></a></li>
-
+                            -->
 
                             <li class="section-title" style="color: rgba(213, 213, 62, 0.895);">LOGROS</li>
 
@@ -252,115 +257,22 @@
         </header>
 
         <aside class="principal">
-
+          
             <div class="form-container">
-                <form id="form">
-                    <div class="input-city">
-                        
-                        <input type="text"  placeholder=" 🔎" id="city" name="city" required />
-                    </div>
-                    <div class="input-filters-container">
-
-                        <div class="container-slide-filters">
-
-                            <div class="input-filters" id="input-filters">
-
-                                <select id="prices">
-                                    <button type="button">
-                                        <span class="picker">👉</span>
-                                        <span>💶</span>
-
-                                    </button>
-                                    <option value="all">
-                                        <span>Todos los precios 💶</span>
-                                    </option>
-                                    <option value="1">
-                                        <span>💶 Barato</span>
-                                    </option>
-                                    <option value="2">
-                                        <span>💶💶 Moderado</span>
-                                    </option>
-                                    <option value="3">
-                                        <span>💶💶💶 Caro</span>
-                                    </option>
-                                    <option value="4">
-                                        <span>💶💶💶💶 Lujo</span>
-                                    </option>
-                                </select>
-                                <select id="rating">
-                                    <button>
-                                        <span class="picker">👉</span>
-                                        <span>⭐</span>
-
-                                    </button>
-
-                                    <option value="all">
-                                        <span>Todas las valoraciones ⭐</span>
-                                    </option>
-                                    <option value="3">
-                                        <span>3 ⭐</span>
-                                    </option>
-                                    <option value="3.5">
-                                        <span>3.5+ ⭐</span>
-                                    </option>
-                                    <option value="4">
-                                        <span>4 ⭐</span>
-                                    </option>
-                                    <option value="4.5">
-                                        <span>4.5 ⭐</span>
-                                    </option>
-
-                                </select>
-
-                                <select id="opening">
-                                    <button>
-                                        <span class="picker">👉</span>
-                                        <span>🕛</span>
-
-                                    </button>
-
-                                    <option value="all">
-                                        <span>Todos los horarios 🕛</span>
-                                    </option>
-                                    <option value="yes">
-                                        <span>Abierto ahora 🕛</span>
-                                    </option>
-
-
-                                </select>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="buttons-form">
-                        <div class="buttons-princ">
-                            <button class="form-buttons subm" id="search-normal"><i class="fas fa-search"></i>
-                                </button>
-                                <button class="form-buttons rein" id="reini-map" type="reset"> <i class="fas fa-undo"></i>
-                                    </button>
-                        </div>
-                       
-                             <button id="locate-me" class="form-buttons " title="Mi ubicación">
-                        <span></span> <i class="fas fa-location-arrow"></i>Buscar por mi zona
-                        </button>
-                        
-    
-                    </div>
-
-                    
+               
+           <button id="create-place-btn" class="form-buttons">
+                <span>✏️</span>
+            </button>
+            <button id="cancel" class="map-control-btn">Cancelar modo de creación </button>
             </div>
 
 
-
-            </form>
-
+            
 
 
-            </div>
+         
             <div class="map-container" id="map-container">
                 <div id="map" loading="lazy"></div>
-
-                <button id="cancel" class="map-control-btn">Cancelar modo de creación </button>
                
             </div>
 
@@ -423,13 +335,6 @@
         </div>
     
         <div id="container-options">
-            <button id="create-place-btn" class="form-buttons">
-                <span>Crear nuevo lugar</span><span>✏️</span>
-            </button>
-
-            <button id="get" class="btn btn-saved">
-                <span>Mis Lugares Guardados</span> <i class="fas fa fa-bookmark"></i>
-            </button>
             <button id="get-createds" class="btn btn-saved">
                 <span>
                     Mis Lugares Creados Públicos

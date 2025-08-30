@@ -709,116 +709,30 @@ function hideNotification() {
 // Moved to DOMContentLoaded event
 
 //Abrir panel de sitios guardados
-export function displaySavedsPlaces() {
-    document.querySelector('.saved-places-panel').classList.add('active')
-    document.querySelector('.createds-places-panel').classList.remove('active')
-    elements.form.style.display = 'flex'
-}
+
 
 function displayCreatedsPlaces() {
     document.querySelector('.createds-places-panel').classList.add('active')
     document.querySelector('.saved-places-panel').classList.remove('active')
-    elements.form.style.display = 'flex'
+    if(elements.form){
+        elements.form.style.display = 'flex'
+    }
 }
 
 function displayCreatedsPrivatePlaces() {
     document.querySelector('.createds-privates-places-panel').classList.add('active')
     document.querySelector('.saved-places-panel').classList.remove('active')
-
-    elements.form.style.display = 'flex'
-}
-
-//Cerrar el panel de sitios guardados
-function closeSavedPlacesView() {
-    try {
-        soundClick();
-        const savedPanel = document.querySelector('.saved-places-panel');
-        const createdPanel = document.querySelector('.createds-places-panel');
-
-        if (savedPanel) savedPanel.classList.remove('active');
-        if (createdPanel) createdPanel.classList.remove('active');
-        if (searchCard) searchCard.value = '';
-    } catch (error) {
-        console.warn('Error in closeSavedPlacesView:', error);
+    if(elements.form){
+        elements.form.style.display = 'flex'
     }
-}
-
-// Add event listener only if the element exists
-if (elements.closeStorage) {
-    elements.closeStorage.addEventListener('click', closeSavedPlacesView);
-} else {
-    console.warn('closeStorage element not found in the DOM');
+    
 }
 
 
-let counterSaveds = parseInt(localStorage.getItem('contadorGuardados') || '0')
-let maxCounterSaveds = 3
-// Función para guardar lugares en Firestore
-async function savePlaces(place, isVisited = false, isSaved = false) {
-    renderSavedPlaces()
-    places.push(place.place_id)
-    try {
-        const user = auth.currentUser;
-
-        const placeData = {
-            place_id: place.place_id,
-            name: place.name,
-            userId: user.uid,
-            createdAt: serverTimestamp(),
-            address: place.formatted_address,
-            pricing: parseInt(place.price_level),
-            location: {
-                lat: place.geometry?.location.lat(),
-                lng: place.geometry?.location.lng()
-            },
-            rating: place.rating || null,
-            photos: place.photos
-                ? place.photos.map(photo => photo.getUrl({ maxWidth: 400, maxHeight: 300 }))
-                : [],
-            open_now: place.opening_hours?.isOpen?.() ? 'Si' : 'No',
-            timestamp: new Date(),
-            visited: isVisited,
-            saved: isSaved,
-        };
-
-        const q = query(collection(db, 'favoritos'),
-            where('userId', '==', user.uid),
-            where('place_id', '==', place.place_id));
-        const snapshot = await getDocs(q);
-
-        if (snapshot.empty) {
 
 
 
-            await addDoc(favoritosCollection, placeData);
-            showNotification('¡Lugar guardado correctamente! 🤩​');
-            incrementarContadorGuardados();
-            incrementarContadorGuardadosLogro()
-            soundSave()
-            showSuccessConfetti();
 
-            counterSaveds++;
-        } else {
-
-
-            showErrorNotification('Este lugar ya está en tus guardados 🥸​');
-
-            return
-        }
-
-    } catch (error) {
-        console.error("Error al guardar sin getDetails:", error);
-
-        showErrorNotification("Error guardando el lugar");
-    }
-}
-
-export function desbloqueoGuardado() {
-    const hoy = getHoy()
-    localStorage.setItem('guardadoIlimitado', 'true')
-    localStorage.setItem('contadorGuardados', '')
-    localStorage.setItem('fechaDesbloqueo', hoy)
-}
 
 function resetearGuardadoYBusquedasDiarias() {
     if (localStorage.getItem('ultimaFecha') !== getHoy()) {
@@ -918,17 +832,7 @@ function decrementarContadorCreados() {
 }
 
 
-function incrementarContadorBusquedas() {
-    let contador = parseInt(localStorage.getItem('contadorBusquedas') || '0')
-    contador++
-    localStorage.setItem('contadorBusquedas', contador.toString())
-}
 
-function incrementarContadorBusquedasSinAnuncios() {
-    let contador = parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0')
-    contador++
-    localStorage.setItem('contadorBusquedasSinAnuncios', contador.toString())
-}
 
 
 function incrementarContadorGuardados() {
@@ -967,189 +871,6 @@ if (elements.buttonReiniMap) {
     console.warn('buttonReiniMap element not found in the DOM');
 }
 
-
-
-// Función para mostrar los marcadores
-async function displayMarkers(places) {
-    const bounds = new google.maps.LatLngBounds();
-    const visitedsId = await checkVisitedsPlacesId();
-    const savedsId = await checkSavedsPlacesId()
-    const user = auth.currentUser
-
-    if (!user) {
-        showErrorNotification('No estás registrado')
-        return
-    }
-
-    for (const place of places) {
-
-        if (!place || !place.place_id || !place.geometry || !place.geometry.location) {
-            continue; // Salta al siguiente si falta información
-        }
-
-
-
-
-        if (!place.geometry || !place.geometry.location) return;
-        if (visitedsId.includes(place.place_id)) {
-            place.visited = true
-        }
-        if (savedsId.includes(place.place_id)) {
-            place.saved = true
-        }
-        if (place && typeof place !== 'undefined') {
-
-            bounds.extend(place.geometry.location);
-            let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-
-            const pinScaled = new PinElement({
-                scale: 1.1,
-                glyph: '📍​',
-                background: '#FF5A5F',
-                glyphColor: "#000",
-                borderColor: "#000"
-            })
-            const marker = new AdvancedMarkerElement({
-                map,
-                position: place.geometry.location,
-                content: pinScaled.element,
-
-                zIndex: 100,
-            })
-            marker.place_id = place.place_id
-            markers.push(marker)
-
-
-            marker.addListener('click', async () => {
-                soundSucces()
-                const content = `
-            <div class="card-sites" style="overflow:auto">
-            <button class='close-window'>X</button>
-                <h2 text-align:center;">${place.name}</h2>
-                <p><strong>Valoración:</strong> ${place.rating || 'N/A'} ⭐ (${place.user_ratings_total || 0} opiniones)</p>
-                ${place.photos && place.photos.length > 0 && place.photos[0]?.getUrl
-                        ? `<img src="${place.photos[0].getUrl({ maxWidth: 280 })}" class="marker-photo" alt="${place.name}" loading="lazy" style="width:100%; height:auto;" />`
-                        : ''}
-                <p><strong>Rango de Precio:</strong> ${place.price_level ? '💶'.repeat(place.price_level) : 'N/D'}</p>
-                <p><strong>Dirección:</strong> ${place.formatted_address || place.vicinity}</p>
-            
-                
-                
-                <button class='save-btn' data-id="${place.place_id}">${place.saved ? 'Guardado' : 'Guardar'}</button>
-                <button class='visit-btn'  data-id="${place.place_id}">${place.visited ? 'Visitado' : 'Marcar como visitado'}</button>
-                
-                
-                <button class="share-btn">Compartir</button>
-                 <button class='search' target='blank'>Ver en Google</button>
-            </div>
-            `;
-                if (infowindow) infowindow.close();
-                infowindow = new google.maps.InfoWindow()
-                infowindow.setContent(content);
-
-                // Abrir el InfoWindow directamente en la posición del marcador
-                infowindow.open({
-                    anchor: marker,
-                    map,
-                    shouldFocus: true
-                });
-
-                // Ajustar la vista del mapa para asegurar que el InfoWindow sea completamente visible
-
-                // Maneja el evento cuando el contenido del InfoWindow está listo
-                google.maps.event.addListenerOnce(infowindow, 'domready', async () => {
-                    const saveBtn = document.querySelector('.save-btn')
-                    const closeBtn = document.querySelector('.close-window')
-                    const goToBtn = document.querySelector('.go-to-btn')
-                    const visitBtn = document.querySelectorAll('.visit-btn');
-                    const shareBtn = document.querySelector('.share-btn')
-                    const confirmAddButton = document.getElementById('yes-publi')
-                    const declineAddButton = document.getElementById('no-publi')
-                    incrementarCounterClickInCards()
-                    if (counterClicksInCards >= maxClickInCardWithoutAdds) {
-                        showInterstitial()
-                        counterClicksInCards = 0
-                        localStorage.setItem('contadorClicksInCards', counterClicksInCards.toString())
-
-                    }
-                    if (place.saved) {
-
-                        saveBtn.textContent = 'Guardado'
-                    }
-                    if (place.visited) {
-                        visitBtn.textContent = 'Visitado'
-                    }
-                    if (visitBtn) {
-                        visitBtn.forEach(btn => {
-                            btn.addEventListener('click', async () => {
-                                btn.disabled = true
-                                btn.textContent = 'Visitado'
-
-                                await markVisited(place)
-
-
-
-                            })
-                        })
-                    }
-
-                    closeBtn.addEventListener('click', () => {
-                        soundClick()
-                        infowindow.close()
-                    })
-                    saveBtn.addEventListener('click', async () => {
-
-                        if (saveBtn) {
-
-                            confirmAddButton.addEventListener('click', () => {
-
-                                showRewardedAd()
-
-                            })
-                            declineAddButton.addEventListener('click', () => {
-                                closeBannerRewarded()
-                                return
-                            })
-
-                            if (!puedeGuardar()) {
-                                saveBtn.textContent = 'Guardar'
-                            }
-                            else {
-                                saveBtn.textContent = 'Guardado'
-                            }
-
-                            renderSavedPlaces()
-
-                            counterSaveds++
-
-
-                            const isSaved = true
-                            const isVisited = place.visited || false
-                            await savePlaces(place, isVisited, isSaved)
-                            await markSaved(place.place_id)
-                            place.saved = true
-
-                        }
-
-                    })
-                    shareBtn.addEventListener('click', async () => {
-                        await sharePlace(place)
-                    })
-
-                    document.querySelector('.route-btn')?.addEventListener('click', () => {
-                        addToRoute(place)
-                    })
-                    document.querySelector('.search').addEventListener('click', async () => {
-                        showPlaceInGoogle(place)
-                    });
-                });
-
-
-            })
-        }
-        map.fitBounds(bounds);
-    };
-}
 
 
 
@@ -1245,156 +966,6 @@ async function markVisited(place) {
 
 }
 
-//Función para marcar como guardado
-async function markSaved(placeId) {
-
-    const user = auth.currentUser
-    if (!user) return
-    const q = query(collection(db, 'favoritos'),
-        where('place_id', '==', placeId),
-        where('userId', '==', user.uid))
-    const snapshot = await getDocs(q)
-    if (!snapshot.empty) {
-        await updateDoc(snapshot.docs[0].ref, { saved: true });
-    }
-}
-
-
-
-//Función para comprobar si está guardado
-async function checkSavedsPlacesId() {
-    const user = auth.currentUser
-    if (!user) return
-    const q = query(collection(db, 'favoritos'),
-        where('saved', '==', true),
-        where('userId', '==', user.uid))
-    const snapshot = await getDocs(q)
-
-    return snapshot.docs.map(doc => doc.data().place_id)
-}
-
-//Función para comprobar si está visitado
-async function checkVisitedsPlacesId() {
-    const user = auth.currentUser
-    if (!user) return
-    const q = query(collection(db, 'favoritos'),
-        where('visited', '==', true),
-        where('userId', '==', user.uid));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => doc.data().place_id);
-}
-
-// Función para buscar lugares
-async function searchPlaces() {
-    const opening = elements.openingSelect.value;
-    const rating = elements.ratingFilter.value;
-    const city = elements.cityInput.value.trim();
-    const pricing = elements.pricesFilter.value;
-
-    if (!city) {
-
-        showErrorNotification('Rellena el campo para buscar');
-        return;
-    }
-
-    resetMap();
-    clearMarkers();
-
-
-    try {
-        const [location] = await fetchGeocode(city);
-        if (!location) {
-
-            showErrorNotification('No se pudo encontrar la ubicación');
-            return;
-        }
-
-        const lat = location.geometry.location.lat();
-        const lng = location.geometry.location.lng();
-
-        // Asegurarse de que el mapa esté centrado antes de mostrar los marcadores
-        map.setCenter({ lat, lng });
-
-        const cacheKey = `${city}-${rating}-${pricing}-${opening}`.toLowerCase();
-
-        try {
-            // Usar getOrSet para manejar la caché
-            const places = await cacheManager.getOrSet(
-                'placesCache',
-                cacheKey,
-                async () => {
-                    const data = await fetchGoogleMapsData(lat, lng, rating, pricing, opening);
-                    return Array.isArray(data) ? data : [];
-                }
-            );
-
-            if (places && places.length > 0) {
-
-
-                displayMarkers(places);
-            } else {
-                showErrorNotification('No se encontraron lugares con estas características 😑');
-            }
-        } catch (cacheError) {
-            console.error('Error en la caché:', cacheError);
-            // Si hay un error con la caché, intentar sin caché
-            try {
-                const places = await fetchGoogleMapsData(lat, lng, rating, pricing, opening);
-                if (places && places.length > 0) {
-                    displayMarkers(places);
-                    showNotification(`Se encontraron ${places.length} lugares`);
-                } else {
-                    showErrorNotification('No se encontraron lugares con estas características');
-                }
-            } catch (fetchError) {
-                console.error('Error al cargar lugares:', fetchError);
-                showErrorNotification('Error al cargar los lugares. Intenta de nuevo.');
-                return
-            }
-        }
-    } catch (error) {
-        console.error('Error en searchPlaces:', error);
-        showErrorNotification('Ocurrió un error al buscar lugares. Verifica tu conexión.');
-        return
-    }
-}
-
-
-const businessCategories = {
-    tattoo: {
-        types: ['beauty_salon'],
-        keywords: ['tattoo', 'tatuaje', 'ink studio'],
-        icon: '🖌️'
-    },
-    barber: {
-        types: ['barber'],
-        keywords: ['barber', 'barbearía', 'corte masculino'],
-        icon: '✂️'
-    }
-};
-
-
-
-
-const geocodeCache = new Map()
-// Función para geocodificar una ciudad
-async function fetchGeocode(city) {
-    if (geocodeCache.has(city)) {
-        return geocodeCache.get(city)
-    }
-
-    return new Promise((resolve, reject) => {
-        const geocoder = new google.maps.Geocoder()
-        geocoder.geocode({ address: city }, (results, status) => {
-            if (status === google.maps.GeocoderStatus.OK) {
-                resolve(results);
-            } else {
-                showErrorNotification('Error en la geolocalización 😑')
-                reject('Geocode failed: ');
-            }
-        });
-    });
-}
 
 
 
@@ -1411,116 +982,6 @@ function isValidLatLng(lat, lng) {
         lng >= -180 &&
         lng <= 180
     );
-}
-
-async function searchByMyPosition() {
-    const permissionStatus = await navigator.permissions?.query({ name: 'geolocation' }).catch(() => null);
-    if (permissionStatus?.state === 'denied') {
-        showErrorNotification('Activa los permisos de ubicación en ajustes del navegador');
-        return;
-    }
-
-    try {
-        resetMap()
-        clearMarkers()
-        const city = elements.cityInput
-
-        const opening = elements.openingSelect.value
-        const rating = elements.ratingFilter.value
-        const pricing = elements.pricesFilter.value
-
-
-
-
-        const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(
-                resolve,
-                (error) => {
-                    showErrorNotification('No se pudo obtener tu ubicación, asegurate de habilitar los permisos.')
-                    reject(error)
-                },
-                { timeout: 10000, enableHighAccuracy: true }
-            )
-        });
-
-        // Extract coordinates and validate them
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        if (!isValidLatLng(latitude, longitude)) {
-            showErrorNotification('Coordenadas inválidas obtenidas de la geolocalización.');
-            return;
-        }
-
-        // Create valid position object
-        const userPosition = {
-            lat: latitude,
-            lng: longitude
-        };
-        let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-        const pinScaled = new PinElement({
-            scale: 1.3,
-            glyph: '😀',
-            background: '#5a4bff',
-            borderColor: '#fff'
-        });
-
-        const marker = new AdvancedMarkerElement({
-            map,
-            position: userPosition,
-            content: pinScaled.element
-        });
-
-        markers.push(marker);
-
-        const cacheKey = `${city}-${rating}-${pricing}-${opening}`
-        try {
-            const places = await cacheManager.getOrSet(
-                'placesCache',
-                cacheKey,
-                async () => {
-                    const data = await fetchGoogleMapsData(latitude, longitude, rating, pricing, opening);
-                    // Verificar que los datos sean válidos antes de guardar en caché
-                    return Array.isArray(data) ? data : [];
-                }
-            );
-
-            if (places && places.length > 0) {
-                // Pequeño retraso para asegurar que el mapa esté listo
-                setTimeout(() => {
-                    displayMarkers(places);
-                    showNotification(`Se encontraron ${places.length} lugares`);
-                }, 300);
-            } else {
-
-                showErrorNotification('No se encontraron lugares con estas características 😑');
-                return
-            }
-        } catch (cacheError) {
-            console.error('Error en la caché:', cacheError);
-            // Intentar cargar datos directamente si hay un error en la caché
-            try {
-                const places = await fetchGoogleMapsData(lat, lng, rating, pricing, opening);
-                if (places && places.length > 0) {
-                    displayMarkers(places);
-                } else {
-
-                    showErrorNotification('No se encontraron lugares con estas características');
-                    return
-                }
-            } catch (fetchError) {
-                console.error('Error al cargar lugares:', fetchError);
-                showErrorNotification('Error al cargar los lugares. Intenta de nuevo.');
-                return
-            }
-        }
-
-    }
-    catch (error) {
-        console.error(error)
-        showErrorNotification('No se encontraron lugares con estas características 😑')
-        return
-    }
 }
 
 
@@ -1543,16 +1004,21 @@ function desactivateScriptAdds(){
     }
 }
 function activateScriptAds() {
-    const scrptAds1 = document.createElement('script');
-    scrptAds1.async = true;
-    scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
-    scrptAds1.id = POP_TAG_ID
-    scrptAds1.onload = () => setLastTs()
-    scrptAds1.onerror = () => console.error('Error al cargar el script de anuncios')
-    document.head.appendChild(scrptAds1);
-    setTimeout(() => {
-        desactivateScriptAdds()
-    }, COOL_DOWN)
+    
+    if(!inCoolDown()){
+        console.log('activando anuncios')
+        const scrptAds1 = document.createElement('script');
+        scrptAds1.async = true;
+        scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
+        scrptAds1.id = POP_TAG_ID
+        scrptAds1.onload = () => setLastTs()
+        scrptAds1.onerror = () => console.error('Error al cargar el script de anuncios')
+        document.head.appendChild(scrptAds1);
+        setTimeout(() => {
+            desactivateScriptAdds()
+        }, COOL_DOWN)
+    }
+   
 }
 (function resumeScriptAds(){
     const remaining = popRemainingms()
@@ -1572,136 +1038,6 @@ function activateScriptAds() {
         localStorage.removeItem(KEY_INTERSTITIAL)
     }
 })();
-async function fetchGoogleMapsData(lat, lng, rating, pricing, opening) {
-    showLoadingSpinner();
-    const city = elements.cityInput.value;
-    const center = new google.maps.LatLng(lat, lng);
-    const token = getSessionToken();
-    const service = new google.maps.places.PlacesService(map);
-
-    const request = {
-        query: city.toLowerCase(),
-        location: center,
-        radius: 1000,
-        sessionToken: token
-    };
-    if (parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0') >= maxSearchesWithoutAdds) {
-                       
-        const isNative = window.Capacitor.isNativePlatform()
-        if (isNative) {
-
-            showInterstitial()
-            if (parseInt(localStorage.getItem('contadorBusquedas') || '0') >= maxSearches) {
-                showSweetAlert('¿En busca de las búsquedas? 👀', 'Para buscar ilimitadamente puedes desbloquear premium, si no, puedes esperar 24 horas y podrás volver a realizar 10 búsquedas 😼', 'warning', 'OK')
-                return
-            }
-        }
-        else{
-            activateScriptAds()
-        }
-
-
-        localStorage.setItem('contadorBusquedasSinAnuncios', '0')
- 
-
-
-}
-    try {
-        return new Promise((resolve) => {
-            service.textSearch(request, (results, status) => {
-                if (results && status === google.maps.places.PlacesServiceStatus.OK) {
-                    let filteredPlaces = results
-                    console.log(parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0'))
-
-                    if (rating !== 'all') {
-                        filteredPlaces = filteredPlaces.filter(res => res.rating >= rating)
-                    }
-                    if (pricing !== 'all') {
-                        filteredPlaces = filteredPlaces.filter(res => res.price_level <= pricing)
-                    }
-                    if (opening !== 'all') {
-                        filteredPlaces = filteredPlaces.filter(res => res.opening_hours.open_now)
-                    }
-                    setTimeout(() => {
-                        hideLoadingSpinner()
-                    }, 450)
-
-                  
-                    finalizarSesionBusqueda();
-                    if (filteredPlaces) {
-
-                        incrementarContadorBusquedas()
-                        incrementarContadorBusquedasSinAnuncios()
-                        setTimeout(() => {
-                            soundBubble()
-                        }, 450)
-
-                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
-                        resolve(filteredPlaces)
-                    }
-                    else {
-                        reject([])
-
-                        showErrorNotification('No se encontraron lugares con estas características')
-                        return
-                    }
-                }
-            })
-        })
-    }
-    catch (error) {
-        console.log(error)
-        return
-    }
-}
-
-
-function finalizarSesionBusqueda() {
-    sessionToken = null; // Se libera el token y se puede crear uno nuevo
-}
-
-let sessionToken = null
-const SESSION_DURATION = 300000
-let sessionStartTime = 0
-
-function getSessionToken() {
-    const now = Date.now()
-    if (!sessionToken || (now - sessionStartTime) > SESSION_DURATION) {
-        sessionToken = new google.maps.places.AutocompleteSessionToken()
-        sessionStartTime = now
-
-    }
-    return sessionToken
-}
-
-let counterSearchesWithoutAdds = parseInt(localStorage.getItem('contadorBusquedasSinAnuncios') || '0')
-let counterSearches = parseInt(localStorage.getItem('contadorBusquedas') || '0')
-let maxSearchesWithoutAdds = 2
-let maxSearches = 10
-const maxClickInCardWithoutAdds = 10
-let counterClicksInCards = parseInt(localStorage.getItem('contadorClicksInCards') || '0')
-
-function incrementarCounterClickInCards() {
-    let count = parseInt(localStorage.getItem('contadorClicksInCards') || '0')
-    count++
-    localStorage.setItem('contadorClicksInCards', count.toString())
-}
-// Funciones para manejar el spinner de carga
-function showLoadingSpinner() {
-    const loader = document.getElementById('loader');
-    if (loader) {
-        loader.style.opacity = '1'
-        loader.style.visibility = 'visible'
-    }
-}
-
-function hideLoadingSpinner() {
-    const loader = document.getElementById('loader');
-    if (loader) {
-        loader.style.opacity = '0'
-        loader.style.visibility = 'hidden'
-    }
-}
 
 function showLoadingPrincSpinner() {
     const loader = document.getElementById('loader-princ');
@@ -1983,8 +1319,8 @@ async function renderSavedPlaces() {
             flyToPlace(place)
             closeSavedPlacesView()
             menuOptions.classList.remove('active')
-            javascript
-            lTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+           
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         })
         lastSite.querySelectorAll('.btn.delete-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -2414,7 +1750,7 @@ async function shareCreatedPlaceGoogle(place) {
 async function shareCreatedPlace(place) {
     try {
         const deepLink = `https://newplaceapp.com/?creado=${place.place_id}`;
-        const fallbackLink = `https://play.google.com/store/apps/details?id=com.newplace.app`; // Si no la tiene 
+        const fallbackLink = `https://play.google.com/store/apps/details?id=com.ubifind.app`; // Si no la tiene 
         const message = `📍 ¡Descubre ${place.name} en NewPlace!\n\n🔗 ${deepLink}\n\n¿No tienes la app? Descárgala aquí: ${fallbackLink}`;
         //const placeUrl = `https://www.google.com/maps/search/?api=1&query=${place.position.lat},${place.position.lng}`
         if (!place.position.lat || !place.position.lng) return
@@ -2482,7 +1818,7 @@ async function flyToPlace(place) {
     })
     const marker = new AdvancedMarkerElement({
         map,
-        position: place.geometry.location,
+        position: place.location,
         content: pinScaled.element,
 
         zIndex: 100,
@@ -2513,52 +1849,22 @@ async function flyToPlace(place) {
     })
     // Manejar eventos del infowindow
     google.maps.event.addListenerOnce(infowindow, 'domready', async () => {
-
-        const closeBtn = document.querySelectorAll('.close-window');
-        const likesBtn = document.getElementById('button-likes');
-        const shareBtn = document.querySelectorAll('.share');
-        const showLikes = document.getElementById('likes-count');
-        const shareUbiBtn = document.querySelectorAll('.share-ubi');
-        const btnComment = document.querySelectorAll('.btn-comentar');
-        const textComment = document.getElementById(`input-comentario-${place.place_id}`).value;
-        const count = await getLikesCount(place.place_id);
-        loadComments(place.place_id)
-        showLikes.textContent = `${count} ❤️`;
-
-        closeBtn.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeCurrentInfoWindow();
+        const buttonClose = document.querySelectorAll('.close-window')
+        const buttonGoogle = document.querySelectorAll('.show-google')
+        buttonGoogle.forEach(button => {
+            button.addEventListener('click', () => {
+             window.open(`https://www.google.com/maps/search/?api=1&query=${place.location.lat},${place.location.lng}`, '_blank');
+            });
+        });
+        buttonClose.forEach(button => {
+            button.addEventListener('click', () => {
+                infowindow.close();
                 currentMarker = null; // Asegurar que el marcador actual se limpie
             });
         });
-
-        if (place.visibleToAll && likesBtn) {
-            likesBtn.addEventListener('click', async () => {
-                await toggleLike(place.place_id);
-                const newCount = await getLikesCount(place.place_id);
-                showLikes.textContent = `${newCount} ❤️`;
-
-            });
-        }
-
-        btnComment.forEach(button => {
-            button.addEventListener('click', async () => {
-                const input = document.getElementById(`input-comentario-${place.place_id}`);
-                const text = input.value.trim();
-                if (text) {
-                    await addComment(text, place.place_id);
-                    input.value = '';
-
-                }
-            });
-        });
-
-        shareUbiBtn.forEach(button => {
-            button.addEventListener('click', () => {
-                shareCreatedPlaceGoogle(place)
-            });
-        });
+       
+       
+        
 
     });
 }
@@ -2577,14 +1883,6 @@ else {
     console.warn('No se encontró el form')
 }
 
-if (elements.botonGetSites || elements.buttonShowCreateds || elements.buttonShowPrivateCreateds) {
-    elements.botonGetSites.addEventListener('click', (e) => {
-        e.preventDefault()
-        soundClick()
-        renderSavedPlaces();
-        displaySavedsPlaces();
-
-    });
 
     elements.buttonShowCreateds.addEventListener('click', (e) => {
         e.preventDefault()
@@ -2601,10 +1899,8 @@ if (elements.botonGetSites || elements.buttonShowCreateds || elements.buttonShow
         renderPrivateCreatedsPlaces()
 
     })
-}
-else {
-    console.warn('No se encontraron los botones de abrir menus en el dom')
-}
+
+
 
 
 const body = document.body
@@ -2772,85 +2068,6 @@ else {
 }
 
 
-
-const searchCard = document.getElementById('search-card')
-if (searchCard) {
-    searchCard.addEventListener('input', async () => {
-        searchCard.setAttribute('placeholder', '')
-        const user = auth.currentUser
-        if (!user) return
-
-        const searchTerm = searchCard.value.toLowerCase()
-        const q = query(collection(db, 'favoritos'), where('userId', '==', user.uid))
-        const snapshot = await getDocs(q)
-        const places = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }))
-
-        const container = elements.sitesList;
-        container.innerHTML = '';
-
-        const equals = places.filter(el => el.name.toLowerCase().includes(searchTerm) || el.address.toLowerCase().includes(searchTerm))
-        equals.forEach(place => {
-            let imageUrl = ''
-            if (place.photo) {
-                imageUrl = place.photo;
-            } else if (place.photos && place.photos.length > 0) {
-                // Si hay un array de fotos, tomar la primera
-                imageUrl = place.photos[0];
-                if (typeof imageUrl === 'object' && imageUrl.getUrl) {
-                    // Si es un objeto de Google Maps Photo
-                    imageUrl = imageUrl.getUrl({ maxWidth: 400 });
-                }
-            }
-            const visitedBtnHTML = place.visited
-                ? `<button class="btn visit-btn" disabled>Visitado</button>`
-                : `<button class="btn visit-btn" data-id="${place.place_id}">Marcar como visitado</button>`;
-
-            container.innerHTML += `
-            <div class="site">
-            <h3>${place.name}</h3>
-            <p class='rating'>Valoración : ${place.rating ? '⭐'.repeat(place.rating) : 'N/D'} </p> 
-             
-             ${imageUrl ? `
-                <div style="text-align: center; margin: 10px 0;">
-                    <img 
-                        src="${imageUrl}" 
-                        alt="${place.name || 'Imagen del lugar'}" 
-                        style="width: 100%; height: auto; max-height: 200px; border-radius: 8px; object-fit: cover;"
-                        onerror="console.error('Error al cargar la imagen:', this.src); this.parentElement.innerHTML='<div style=\'color:#666;font-style:italic;margin:10px 0;\'>Imagen no disponible</div>';"
-                    >
-                </div>` :
-                    '<div style="text-align: center; color: #666; font-style: italic; margin: 10px 0;">Sin imagen disponible</div>'
-                }
-             <p class="price">Rango de Precio: ${place.pricing ? '💶'.repeat(place.pricing) : 'N/D'}</p>
-            <p>${place.address}</p>
-            <div class="btn-renders">
-                <button class='visit-save-btn' data-id='${place.place_id}'> ${place.visited ? 'Visitado' : 'Marcar como visitado'}</button>
-                <button class="btn view-searchcard-btn" 
-                        data-placeid="${place.place_id}" 
-                        data-lat="${place.location?.lat}" 
-                        data-lng="${place.location?.lng}">
-                    Ver en mapa
-                </button>
-                <button class="btn share-btn">Compartir</button>
-                <button class="btn delete-btn" data-id="${place.id}">Eliminar</button>
-            </div>
-        </div>
-    `;
-            attachVisitButtonListeners(place)
-            const site = document.querySelector('.site')
-            site.style.animation = 'floatingRotate 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-
-        })
-
-
-    })
-}
-else {
-    console.warn('No se encontró el searchcard de guardados')
-}
 
 
 const searchCreatedsCard = document.getElementById('search-createds-card')
@@ -3177,7 +2394,7 @@ async function showDesktopPlaceCreation(position) {
     // Create new infowindow
     infowindow = new google.maps.InfoWindow({
         content: content,
-        pixelOffset: new google.maps.Size(0, 410),
+        pixelOffset: new google.maps.Size(0, 310),
         position: latLng,
         maxWidth: 300,
         disableAutoPan: true
@@ -3275,6 +2492,7 @@ function esNombreValido(nombre) {
     const caracteresPermitidos = /^[a-zA-Z0-9ÁÉÍÓÚáéíóúñÑ\s.,\-()']+$/.test(nombre);
     return largoValido && caracteresPermitidos;
 }
+let marcadoresCreados = [];
 let marcador = null
 async function loadPlaces() {
     // Limpiar marcadores existentes
@@ -3282,7 +2500,7 @@ async function loadPlaces() {
     marcadoresCreados = [];
 
     // Solo cargar lugares si el zoom es 8 o más
-    if (map.getZoom() >= 10) {
+    if (map.getZoom() >= 7) {
         try {
             const bounds = map.getBounds();
             if (!bounds) return;
@@ -3355,7 +2573,7 @@ async function loadPlaces() {
 }
 
 
-let marcadoresCreados = [];
+
 let currentInfoWindow = null;
 let currentMarker = null;
 async function addMarkerToPlace(place) {
@@ -3796,9 +3014,9 @@ async function renderPrivateCreatedsPlaces() {
         const lastSite = container.lastElementChild
 
         lastSite.querySelector('.btn.btn-view-created').addEventListener('click', () => {
-            load
+            loadSharePlaces(place)
             menuOptions.classList.remove('active')
-            closeCreatedsPanel()
+            closePrivatesCreatedsPanel()
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         })
 
@@ -3952,13 +3170,7 @@ else {
     console.warn('No se encontró el container de slide filters')
 }
 
-//Cerrar al hacer clic fuera
-document.addEventListener('click', (e) => {
-    if (!containerSlideFilters.contains(e.target)) {
-        containerSlideFilters.classList.remove('displayed');
 
-    }
-});
 
 elements.buttonCreatePlace.addEventListener('click', async (e) => {
     e.preventDefault()
@@ -4010,8 +3222,6 @@ function showMenu() {
 }
 function closeMenu() {
     menuOptions.classList.remove('active')
-
-    closeSavedPlacesView()
     closeCreatedsPanel()
 }
 

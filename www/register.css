@@ -8,7 +8,7 @@
   }
 
 body{
-    background: rgba(255, 255, 255, 0.606);
+    background: #4f46e554;
     background-blend-mode: overlay;
     box-shadow: inset 0 0 100px rgba(255, 255, 255, 0.05);
     min-height: 110vh;
@@ -41,7 +41,7 @@ h2{
     margin-bottom: 20px;
 }
 form{
-    background:linear-gradient(135deg, #4e46e5d8 0%, #2f05a375 100%);
+    background:linear-gradient(135deg, #4e46e5d8 0%, #4f46e5 100%);
     background-size:contain;
     text-wrap:pretty;
     background-repeat: no-repeat;
@@ -91,7 +91,10 @@ button, .go{
     font-size: 1.2em;
     margin: auto;
     border: none;
+    font-weight: bold;
     background:#080531b8;
+    filter: contrast(1.4);
+    letter-spacing: 1.2px;
     color: #fff;
     transition: var(--transition);
 }

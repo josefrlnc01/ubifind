@@ -9,7 +9,7 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.newplace.app" />
+                  <option name="appId" value="com.chistesapp.app" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
@@ -23,7 +23,7 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.newplace.app" />
+                  <option name="appId" value="com.ubifind.app" />
                   <option name="mobileSdkAppId" value="1:940873643414:android:0aaabf2b7116f57d1c99b7" />
                   <option name="projectId" value="new-day-459708" />
                   <option name="projectNumber" value="940873643414" />

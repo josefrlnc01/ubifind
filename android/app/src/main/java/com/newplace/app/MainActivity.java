@@ -1,4 +1,4 @@
-package com.newplace.app;
+package com.ubifind.app;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;

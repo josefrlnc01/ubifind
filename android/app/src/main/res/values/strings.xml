@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">UFind</string>
-    <string name="title_activity_main">UFind</string>
-    <string name="package_name">com.newplace.app</string>
-    <string name="custom_url_scheme">com.newplace.app</string>
+    <string name="app_name">Ubifind</string>
+    <string name="title_activity_main">Ubifind</string>
+    <string name="package_name">com.ubifind.app</string>
+    <string name="custom_url_scheme">com.ubifind.app</string>
 </resources>
