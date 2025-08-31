@@ -23,6 +23,13 @@ body{
     margin: 0;
     box-sizing: border-box;
 }
+.logo-uf{
+    width: 100px;
+    height: auto;
+    margin-top: 2rem;
+    align-self: center;
+    border-radius: 8px;
+}
 main{
     width: 100vw;
     min-height: 100vh;
@@ -92,17 +99,19 @@ button, .go{
     margin: auto;
     border: none;
     font-weight: bold;
-    background:#080531b8;
+    background: #f5f6fae8;
     filter: contrast(1.4);
     letter-spacing: 1.2px;
-    color: #fff;
-    transition: var(--transition);
+    color: #4f46e5;
+    transition: .4s ease-in-out;
 }
 .go{
     text-align: center;
 }
 .inputContainer.button button:hover {
-    background-color: #080129;
+    background-color:#4e46e575;
+    outline:3px solid #fff;
+    color: #fff;
     cursor: pointer;
   }
 .social{

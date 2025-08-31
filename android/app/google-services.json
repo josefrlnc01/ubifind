@@ -7,14 +7,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:940873643414:android:0aaabf2b7116f57d1c99b7",
+        "mobilesdk_app_id": "1:940873643414:android:7120692a908925bf1c99b7",
         "android_client_info": {
           "package_name": "com.ubifind.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "940873643414-qf2pbobvjriri4c01o2lpciqoo91sr1j.apps.googleusercontent.com",
+          "client_id": "940873643414-dc4uvjjbd27jdcjlm5eqh8fgu2uruef2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +27,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "940873643414-qf2pbobvjriri4c01o2lpciqoo91sr1j.apps.googleusercontent.com",
+              "client_id": "940873643414-dc4uvjjbd27jdcjlm5eqh8fgu2uruef2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -4,7 +4,7 @@ import { auth, db } from './firebaseConfig.js';
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail, getAdditionalUserInfo, sendEmailVerification, signInAnonymously, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { updateProfile } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 const button = document.getElementById('submit');
-const buttonGoogle = document.getElementById('google')
+
 const form = document.getElementById('form')
 const response = document.getElementById('response');
 const regexMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -100,3 +100,24 @@ buttonShowPassword.addEventListener('click', () => {
   
   
 })
+
+const buttonGoogle = document.getElementById('login')
+buttonGoogle.addEventListener('click', async (e) => {
+  e.preventDefault();
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const email = user.email;
+    const name = user.displayName;
+    const placeData = {
+      email: email,
+      premium: false
+    };
+    await addDoc(usuariosCollection, placeData);
+    window.location.href = 'index.html';
+  } catch (error) {
+    console.error(error);
+    response.textContent = 'Error al iniciar sesión con Google.';
+  }
+});

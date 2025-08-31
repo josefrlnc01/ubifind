@@ -587,7 +587,11 @@ body.dark .container-createds-card {
 }
  .form-container {
     background-color: transparent;
-    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    align-items: center;
      backdrop-filter: contrast(.85);
      align-self: center;
      width: 35%;
@@ -596,7 +600,7 @@ body.dark .container-createds-card {
      
      
      border-radius: 20px;
-     border: 3px solid transparent;
+         border: 7px solid #5a4bff;
      margin-top: 4rem;
      overflow: visible;
 }
@@ -1258,7 +1262,7 @@ select:hover{
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: rgba(255, 255, 255, 0.206);
+    background-color: rgb(255 255 255 / 65%);
     backdrop-filter: blur(10px);
     transform: translateY(-100%);
     min-width: 75vw;
@@ -1755,8 +1759,8 @@ body.dark .site{
 }
 
 #create-place-btn:hover{
-    background-color: var(--primary-dark);
-     transform: translateY(-2px);
+    background-color: #4e46e5d3;
+    
      cursor: pointer;
 }
  .rein {

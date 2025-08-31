@@ -2259,7 +2259,7 @@ async function enableCreatePlace() {
     creationListener = map.addListener('click', handleMapTap)
     creationListener = map.addListener('touchend', handleMapTap)
 
-    showNotification('Haz clic en el mapa')
+    showSweetAlert('A crear un nuevo lugar !', 'Haz clic en la zona que quieras del mapa para crear el lugar', 'info', 'Vamos!')
     buttonCancelCreationMode.style.display = 'block'
 }
 const buttonCancelCreationMode = document.getElementById('cancel')
@@ -2287,30 +2287,6 @@ else {
     console.warn('No se encontró el botón de cancel creation mode')
 }
 
-async function handleNewlocation(position) {
-    //eliminación de marcadores y listeners
-    if (creationMarker) {
-        creationMarker.setMap(null)
-    }
-    let { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-    const pinScaled = new PinElement({
-        scale: 1.1,
-        glyph: '📍​',
-        background: '#FF5A5F',
-        glyphColor: "#000",
-        borderColor: "#000"
-    })
-    creationMarker = new AdvancedMarkerElement({
-        map,
-        position: position,
-        content: pinScaled.element,
-
-        zIndex: 100,
-    })
-    console.log('position:', position)
-    await showDesktopPlaceCreation(position)
-
-}
 
 
 
@@ -2326,12 +2302,7 @@ else {
 }
 
 let downloadURL
-function normalizePosition(pos) {
-    return {
-        lat: typeof pos.lat === 'function' ? parseFloat(pos.lat()) : parseFloat(pos.lat),
-        lng: typeof pos.lng === 'function' ? parseFloat(pos.lng()) : parseFloat(pos.lng),
-    }
-}
+
 async function showDesktopPlaceCreation(position) {
     const bounds = new google.maps.LatLngBounds();
     const content = `
