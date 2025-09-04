@@ -23,6 +23,7 @@ body{
     margin: 0;
     box-sizing: border-box;
 }
+
 .logo-uf{
     width: 100px;
     height: auto;
@@ -134,13 +135,18 @@ a:visited{
 .exit{
     position: absolute;
     display: flex;
+   
     min-width: 30px;
     min-height: 30px;
     left: 20px;
     top: 20px;
 }
+.exit a{
+    color: #4f46e5;
+}
 
 span{
+    color:#d63031;
     font-size: .8em;
 }
 .text{
@@ -201,8 +207,31 @@ textarea{
 #anonymous-ini:hover{
     cursor: pointer;
 }
-.fa-google{
-    margin-right: 8px;
+#login-google{
+    margin-top: .5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 1rem;
+        background: linear-gradient(135deg, #7e57c2, #673ab7);
+        color: #fff;
+        font-weight: 600;
+        font-size: 15px;
+        font-family: sans-serif;
+      
+        border: none;
+        border-radius: 8px;
+    font-size: 1.2em;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+      
+}
+#login-google:hover{
+        outline: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(103, 58, 183, 0.3);
+    
 }
 .go:hover{
     cursor: pointer;

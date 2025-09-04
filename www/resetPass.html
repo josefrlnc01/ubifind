@@ -3,37 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset contraseña</title>
-     <link rel="icon" type="image/jpg" href="images/faviconlogo.ico"/>
+    <title data-i18n="changePassword">Cambiar Contraseña</title>
+    <link rel="icon" type="image/jpg" href="images/faviconlogo.ico"/>
     <link rel="stylesheet" href="register.css"/>
     <script type="module" src="resetPass.js" defer></script>
+    <script type="module" src="./js/i18n.js" defer></script>
 </head>
 <body>
-    <main class="form-container ">
-        <button class="exit"><a href="index.html">X</a> </button>
+    <main class="form-container">
+        <button class="exit"><a href="index.html">X</a></button>
         <form class="form" id="form" method="post">
-            
-            
             <div class="inputContainer pass">
-                <label for="password">Escribe tu antigua contraseña</label>
-                <input type="password"  id="last-password" />
+                <label for="last-password" data-i18n="lastPassword">Escribe tu antigua contraseña</label>
+                <input type="password" id="last-password" placeholder="" data-i18n-placeholder="lastPassword"/>
             </div>
             
             <div class="inputContainer pass">
-                <label >Escribe tu nueva contraseña</label>
-                <input type="password"  id="password" />
+                <label for="password" data-i18n="newPassword">Escribe tu nueva contraseña</label>
+                <input type="password" id="password" placeholder="" data-i18n-placeholder="newPassword"/>
             </div>
+            
             <div class="inputContainer pass">
-                <label >Escribe de nuevo tu nueva contraseña</label>
-                <input type="password"  id="password-new" />
+                <label for="password-new" data-i18n="confirmPassword">Escribe de nuevo tu nueva contraseña</label>
+                <input type="password" id="password-new" placeholder="" data-i18n-placeholder="confirmPassword"/>
             </div>
             
             <p id="response"></p>
             <div class="inputContainer button">
-                <button id="submit" type="submit">Cambiar Contraseña</button>
+                <button id="submit" type="submit" data-i18n="changePassword">Cambiar Contraseña</button>
             </div>
         </form>
     </main>
-    
 </body>
 </html>

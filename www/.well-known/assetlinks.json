@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ubifind.app",
+      "sha256_cert_fingerprints": [
+        "73:4B:D3:4E:C9:B5:AE:89:C2:9F:4D:4A:3C:CA:C5:87:15:A9:61:BB:D0:B8:69:E3:E7:7B:E3:FC:39:6E:0B:CC"
+      ]
+    }
+  }
+]

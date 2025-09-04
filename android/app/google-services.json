@@ -14,7 +14,23 @@
       },
       "oauth_client": [
         {
-          "client_id": "940873643414-dc4uvjjbd27jdcjlm5eqh8fgu2uruef2.apps.googleusercontent.com",
+          "client_id": "940873643414-13u2lck1pv368due6qu4smfonlbgh39c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ubifind.app",
+            "certificate_hash": "5a827b45b03a1d3a1dcf030213d81f60e68ccc36"
+          }
+        },
+        {
+          "client_id": "940873643414-4g0274d5emd1dsuv07bo1bh38qcgrn29.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ubifind.app",
+            "certificate_hash": "fb93d4efab39b8023884f23599ad52dde551e121"
+          }
+        },
+        {
+          "client_id": "940873643414-856bc0no2p33f06lr9netrff6c77miul.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +43,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "940873643414-dc4uvjjbd27jdcjlm5eqh8fgu2uruef2.apps.googleusercontent.com",
+              "client_id": "940873643414-856bc0no2p33f06lr9netrff6c77miul.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

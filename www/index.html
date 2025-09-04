@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
    
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Ubifind es la red social para exploradores. Crea, descubre y comparte lugares únicos en el mapa.">
+    <meta name="keywords" content="Ubifind, lugares, explorar, viajes, mapa, sitios, excursion">
     <meta property="og:title" content="Ubifind - Explora lugares">
     <meta property="og:description" content=" Descubre nuevos lugares y crea los tuyos propios 🌍">
     <meta property="og:image" content="images/faviconlogo.ico">
@@ -11,7 +13,7 @@
     <meta property="og:type" content="website">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; 
       script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://maps.gstatic.com https://js.revenuecat.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; 
-      style-src 'self' 'unsafe-inline' https://*.googleapis.com https://maps.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;
+      style-src 'self' 'unsafe-inline' https://*.googleapis.com https://maps.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com;
       img-src 'self' data: blob: https: http: *; 
       connect-src 'self' https: http: wss: *;
       frame-src 'self' https://*.google.com https://apis.google.com https://*.revenuecat.com https://new-day-459708.firebaseapp.com https://new-day-459708.web.app https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep2.adtrafficquality.google *;
@@ -32,31 +34,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
     <link href="https://fonts.googleapis.com/css2?family=Galindo&family=Poppins:wght@400;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.0/lottie.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1639698267501945"
      crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.0/lottie.min.js"></script>
-    <script>
-        window.initGoogleMaps = function() {
-            // Signal that Google Maps is ready
-            window.googleMapsLoaded = true;
-            // Dispatch an event that modules can listen for
-            window.dispatchEvent(new Event('googlemapsloaded'));
-            console.log('Google Maps API loaded');
-            
-        };
-    </script>
+    
+    
     
    
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh7iztz49atmSYgyDhwCvVL2aLjrpdGwU&libraries=places,geometry,marker&v=beta&callback=initGoogleMaps"
-        async defer></script>
+  
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
         <!-- Load Capacitor first -->
@@ -78,6 +75,9 @@
             window.Purchases = window.Capacitor?.Plugins?.Purchases || window.Purchases;
         </script>
         
+        <!-- Translation system -->
+        <script type="module" src="./js/i18n.js"></script>
+        
         <!-- Your application scripts as modules -->
         <script type="module" src="./script.js"></script>
         
@@ -88,6 +88,7 @@
 
 </head>
 
+ 
 <body>
 
     <div class="loader-overlay" id="loader-princ">
@@ -97,96 +98,17 @@
         
         </div>
     </div>
-    <div class="loader-overlay" id="loader">
-        <div class="newplace-spinner">
-          <div class="ring"></div>
-          <div class="dot"></div>
-          <p class="loading-text">Explorando nuevos lugares...</p>
-        </div>
-    </div>
+   
 
    <div id="confeti-container" style="display: none;"></div>
    <div id="lottie-confeti-container" style="display: none;"></div>
 
     </dialog>
 
-    <div id="customFlyer" style="display: none;" >
-        <div class="flyer-container">
-            <div class="flyer-header">
-                <h2 id="flyer-title"></h2>
-              </div>
-          
-          <div class="flyer-content">
-          
-            <img class="img-flyer" alt="Foto del lugar" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-            <p class="flyer-rating"></p>
-            <div class="comment-place">
-                
-            <blockquote id="flyer-comment"></blockquote>
-            
-            </div>
-            
-            <p class="flyer-user"><strong></strong></p>
-           <div class="flyer-footer">
-            <p class="flyer-link">📱 UFind</p>
-           </div>
-          </div>
-        </div>
-    </div>
-      
-    <dialog id="confirm-publi">
-        <div class="container-dialog">
-            <div class="action-dialog">
-                <h3 style="text-align: center; font-size: 1.5em;"> ¿ Te apetece guardar sitios <span style="color: #5649c0; font-weight: bold; letter-spacing: 1.2; margin-left: 1.5px;">ILIMITADOS</span> por <span style="color: #5649c0; font-weight: bold; letter-spacing: 1.2; margin-left: 1.5px">HOY</span> ?</h3>
-                <span id="publi"> ¡ Mira un anuncio para obtener un día entero de guardados ilimitados 👾​ !</span>
-        <div class="buttons-confirm">
-            <button id="yes-publi">Desbloquear 🔥</button>
-            <button id="no-publi">No ❄️​</button>
-            </div>
-            
-        </div>
-        </div>
-            
-
-    </dialog>
-
-    <div id="adblock-modal" class="adblock-modal hidden">
-        <div class="adblock-content">
-          <h2>🔒 AdBlock detectado</h2>
-          <p>Este sitio se mantiene gracias a la publicidad. Por favor, considera desactivar AdBlock para continuar disfrutando de todas las funciones.</p>
-          <button id="continue-with-limits">Continuar con funciones limitadas</button>
-          <button id="reload-after-disable">Ya lo desactivé</button>
-        </div>
-      </div>
-
-    <div id="confirm-premium">
-        <button class="exit" id="close-premium">↰</button>
-        
-        <div class="container-premium">
-            <h4>¿ MODO PREMIUM ? 😎​😎​</h4>
-            <div class="box-premium">
-                <p class="text-premium">¡¡ <em style="font-weight: bold;">LIBRE</em> de anuncios !!</p>
-            </div>
-         
-            <div class="box-premium">
-                <p class="text-premium">Desbloquea todo el potencial de NewPlace con <em style="font-weight: bold;"> BÚSQUEDAS ILIMITADAS</em></p>
-            </div>
-            
-           
-            <button id="show-subscriptions" class="give-premium">
-                <span>🔥 3,59€ / Mes 🔥</span>
-                <span> ​DESBLOQUEAR </span>
-                
-                ​</button>
-                
-            <small style="text-align: center; color: white; text-wrap: pretty;" >Cancela tu suscripción desde Google Play cuando quieras</small>  
-            
-        </div>
-
-    </div>
+   
 
     <main class="container">
-        <header class="titles">
+        <header class="titles" id="header">
 
             <nav class="header-buttons">
                 <div class="settings-container">
@@ -203,52 +125,52 @@
                             class="icon icon-premium" id="premium-li"> DESCUBRE EL POTENCIAL COMPLETO </span></a></li>
                             -->
 
-                            <li class="section-title" style="color: rgba(213, 213, 62, 0.895);">LOGROS</li>
-
-                            <li role="none"><a role="menuitem" href="titles.html" style="margin-right: 8px;"><span
-                                        >🏆</span>Mis logros</a></li>
-
-                        <li class="section-title">Perfil de usuario</li>
-
-                        <li role="none"><a role="menuitem" href="resetPass.html"><span
+                           
+                        <li class="section-title" data-i18n="userPerfil">Perfil de usuario</li>
+                        <li role="none"> <select id="lang-selector">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                            <option value="fr">Français</option>
+                        </select> </li>
+                        <li role="none"><a role="menuitem" href="resetPass.html" data-i18n="changePassword"><span
                                     class="icon icon-password"></span>Cambiar
                                 contraseña</a></li>
-                        <li id="delete-account" role="none"><a role="menuitem" href="#"><span
+                        <li id="delete-account" role="none"><a role="menuitem" data-i18n="deleteAccount" href="#"><span
                                     class="icon icon-delete"></span>Eliminar
                                 cuenta</a></li>
 
-                        <li class="section-title">Preferencias de la app</li>
+                        <li class="section-title" data-i18n="preferences">Preferencias de la app</li>
                         <li role="none"><a role="menuitem" class="toggle-theme" id="toggle"><span
                                     class="icon icon-theme"></span>
                                 <div class="toggle-theme-container">
-                                    <span>Tema claro/oscuro</span>
+                                    <span data-i18n="theme">Tema claro/oscuro</span>
                                     <div id="lottie-container"></div>
                                 </div>
                             </a></li>
 
-                        <li class="section-title">Privacidad y seguridad</li>
-                        <li role="none"><a role="menuitem" id="down-poli"><span
+                        <li class="section-title" data-i18n="privacityAndSecurity">Privacidad y seguridad</li>
+                        <li role="none"><a role="menuitem" data-i18n="politicy" id="down-poli"><span
                                     class="icon icon-privacy"></span>Política de
                                 privacidad</a></li>
-                        <li role="none"><a role="menuitem" id="down-term"><span class="icon icon-terms"></span>Términos
+                        <li role="none"><a role="menuitem" data-i18n="termsAndConditions" id="down-term"><span class="icon icon-terms"></span>Términos
                                 y
                                 condiciones</a></li>
-                        <li class="section-title">Ayuda y soporte</li>
+                        <li class="section-title" data-i18n="help">Ayuda y soporte</li>
                         <!--<li role="none"><a role="menuitem" href="#"><span class="icon icon-faq"></span>Preguntas
                             frecuentes</a></li>-->
-                        <li role="none"><a role="menuitem" href="contact.html"><span
+                        <li role="none"><a role="menuitem" data-i18n="contact" href="contact.html"><span
                                     class="icon icon-contact"></span>Contacto</a></li>
-                        <li role="none"><a role="menuitem" href="problems.html"><span
+                        <li role="none"><a role="menuitem" data-i18n="report" href="problems.html"><span
                                     class="icon icon-report"></span>Reportar
                                 problema</a></li>
 
                         <li class="section-divider"></li> <!-- separador visual opcional -->
-                        <li id="log-out-button" role="none"><a role="menuitem" href="#"><span
+                        <li id="log-out-button" role="none"><a role="menuitem" data-i18n="logOut" href="#"><span
                                     class="icon icon-logout"></span>Cerrar sesión</a>
                         </li>
                     </ul>
                 </div>
-                <button id="toggle-menu">
+                <button type="button" id="toggle-menu">
                     <img class="icono menu" src="images/icons8-menú-50.webp" />
                 </button>
             </nav>
@@ -258,27 +180,14 @@
 
         <aside class="principal">
           
-            <div class="form-container">
+            <div class="map-container" id="map-container">
+                <div id="map"  loading="lazy"></div>
                
-           <button id="create-place-btn" class="form-buttons">
+            </div>
+            <button id="cancel" type="button" class="map-control-btn" data-i18n="cancelCreation">Cancelar modo de creación </button>
+            <button id="create-place-btn" type="button" class="form-buttons">
                 <span>✏️</span>
             </button>
-            <button id="cancel" class="map-control-btn">Cancelar modo de creación </button>
-            </div>
-
-
-            
-
-
-         
-            <div class="map-container" id="map-container">
-                <div id="map" loading="lazy"></div>
-               
-            </div>
-
-
-
-
         </aside>
     </main>
     <aside id="get-sites" class="saved-places-panel">
@@ -336,13 +245,13 @@
     
         <div id="container-options">
             <button id="get-createds" class="btn btn-saved">
-                <span>
+                <span data-i18n="publicCreatedsPlaces">
                     Mis Lugares Creados Públicos
                 </span>
                 <i class="fas fa fa-pen"></i>
             </button>
             <button id="get-public-createds" class="btn btn-saved">
-                <span>Mis Lugares Creados Privados
+                <span data-i18n="privatedCreatedsPlaces">Mis Lugares Creados Privados
 
                 </span>
                 <i class="fas fa fa-pen"></i>

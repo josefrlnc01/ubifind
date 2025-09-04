@@ -27,7 +27,7 @@ send.addEventListener('click', async (e) => {
 
   try {
     await sendPasswordResetEmail(auth, emailValue, actionCodeSettings);
-    response.textContent = 'Correo enviado'
+    response.textContent = 'Correo enviado. Es posible que el correo se encuentre en la bandeja de Spam.'
     console.log("Correo de restablecimiento enviado");
   } catch (error) {
     console.error("Error al enviar el correo:", error.message);

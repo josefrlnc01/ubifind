@@ -24,16 +24,10 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.ubifind.app" />
-                  <option name="mobileSdkAppId" value="1:940873643414:android:0aaabf2b7116f57d1c99b7" />
+                  <option name="mobileSdkAppId" value="1:940873643414:android:7120692a908925bf1c99b7" />
                   <option name="projectId" value="new-day-459708" />
                   <option name="projectNumber" value="940873643414" />
                 </ConnectionSetting>
-              </option>
-              <option name="failureTypes">
-                <list>
-                  <option value="ANR" />
-                  <option value="NON_FATAL" />
-                </list>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
               <option name="timeIntervalDays" value="THIRTY_DAYS" />

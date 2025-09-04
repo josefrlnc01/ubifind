@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Galindo&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="register.css" />
+    <script type="module" src="./js/i18n.js" defer></script>
     <script src="register.js"></script>
 </head>
 
@@ -20,7 +21,7 @@
         <button class="exit"><a href="index.html">X</a> </button>
         <form class="form" id="form" action="https://formspree.io/f/manengnz" method="post">
             <h1><i class="fas fa-map-marked-alt"></i> Ubifind</h1>
-            <h2>Resolución de problemas</h2>
+            <h2 data-i18n="resolution">Resolución de problemas</h2>
 
 
             <div class="inputContainer email">
@@ -28,23 +29,23 @@
                 <input type="email" name="email" id="email" />
             </div>
             <div class="inputContainer password">
-                <label for="problemType">Tipo de problema:</label>
+                <label for="problemType" data-i18n="problemType">Tipo de problema:</label>
                 <select id="problemType" name="problemType" required>
-                    <option value="" disabled selected>Selecciona un problema</option>
-                    <option value="login">Problemas al iniciar sesión</option>
-                    <option value="email">No recibo correos</option>
-                    <option value="map">Error con el mapa o ubicación</option>
-                    <option value="favorites">Problemas con favoritos o rutas</option>
-                    <option value="cuenta">Gestión de cuenta</option>
-                    <option value="otro">Otro</option>
+                    <option value="" disabled selected data-i18n="selectProblem">Selecciona un problema</option>
+                    <option value="login" data-i18n="loginProblem">Problemas al iniciar sesión</option>
+                    <option value="email" data-i18n="emailProblem">No recibo correos</option>
+                    <option value="map" data-i18n="mapProblem">Error con el mapa o ubicación</option>
+                    <option value="favorites" data-i18n="favoritesProblem">Problemas con favoritos </option>
+                    <option value="cuenta" data-i18n="account">Gestión de cuenta</option>
+                    <option value="otro" data-i18n="other">Otro</option>
                 </select>
             </div>
             <div class="inputContainer text">
-                <label for="details">Describe tu problema:</label>
+                <label for="details" data-i18n="details">Describe tu problema:</label>
                 <textarea id="details" name="details" rows="5" required></textarea>
             </div>
             <div class="inputContainer button">
-                <button id="submit" type="submit">Enviar</button>
+                <button id="submit" type="submit" data-i18n="submit">Enviar</button>
             </div>
             
         </form>

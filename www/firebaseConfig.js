@@ -4,6 +4,7 @@ import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/fire
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyBIwh48ONwPE4er9GGwNwdgOv3OVHHQrMo",
   authDomain: "new-day-459708.firebaseapp.com",

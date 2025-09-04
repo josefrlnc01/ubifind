@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Galindo&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
       <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
     <link rel="stylesheet" href="register.css">
     <script type="module" src="register.js" defer></script>
@@ -41,7 +42,7 @@
 
             <div class="inputContainer terms">
                 
-                <p>Acepto los <a href="terms.html">términos y condiciones</a> </p>
+                <p>Acepto los <a id="terms-modal">términos y condiciones</a> </p>
                 <input type="checkbox" id="terms" required/>
            
             </div>
@@ -51,7 +52,7 @@
                 <button id="submit" type="submit">Registrarme</button>
             </div>
             
-             <button id="login">Entrar con Google</button>
+            <button id="login-google" type="button">Registrarme con Google <i class="fa-brands fa-google"></i></button>
             
             <p>Tienes ya una cuenta? <a href="login.html">Inicia sesión</a> </p>
             

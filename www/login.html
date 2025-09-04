@@ -12,22 +12,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Galindo&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="register.css">
    
+    <script type="module" src="./js/i18n.js" defer></script>
     <script type="module" src="login.js" defer></script>
 </head>
 <body>
     <main class="form-container ">
         <form class="form-user" id="form" method="post">
              <img class="logo-uf" loading="lazy" src="images/icon.png" alt="Ubifind Logo"/>
-            <h1> Ubifind</h1>
-            <h2>Inicio de sesión</h2>
+            <h1 data-i18n="appName">Ubifind</h1>
+            <h2 data-i18n="loginTitle">Inicio de sesión</h2>
             
             
             <div class="inputContainer email">
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" />
+                <label for="email" data-i18n="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="" data-i18n-placeholder="email"/>
             </div>
             <div class="inputContainer password">
-                <label for="password">Contraseña</label>
+                <label for="password" data-i18n="password">Contraseña</label>
                 <input type="password" name="password" id="password"/>
                 
             </div>
@@ -38,6 +39,7 @@
             <span id="response">&nbsp;</span>
             <div class="inputContainer button">
                 <button id="submit" type="submit">Iniciar sesión</button>
+                <button id="login-google" type="button">Entrar con Google <i class="fa-brands fa-google"></i></button>
             </div>
            
             </div>
