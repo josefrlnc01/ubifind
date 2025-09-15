@@ -1854,10 +1854,15 @@ footer {
   color: aliceblue;
   margin: auto;
 }
-.notification-banner {
+.notification-banner, .error-notification-banner {
   position: fixed;
   top: 1rem;
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 10px;
+
+
   
   color: white;
   max-width: 95vw;
@@ -1880,38 +1885,17 @@ footer {
   z-index: 10000;
   transition: all 0.3s ease;
 }
-.notification-banner.hidden {
+.hidden {
   transform: translateY(-150%);
   opacity: 0;
 }
-.notification-banner.hiddenError {
-  transform: translateY(-150%);
-  opacity: 0;
-}
-.notification-banner.visible {
+
+.visible {
   transform: translateY(20%);
   width: 100vw;
   opacity: 1;
 }
-.notification-banner.visibleError {
-  animation: banner 0.7s ease-in-out both;
-background-image: url('images/error.svg');
-background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  opacity: 1;
-  z-index: 2000;
-  width: 100vw;
-  height: 20vh;
-  max-height: 75%;
-  background: black;
-  color: white;
-  padding: 1rem;
-  
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
+
 #close-notification {
   background: none;
   border: none;

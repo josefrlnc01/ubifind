@@ -77,7 +77,7 @@ const elements = {
     notificationErrorMessage : document.getElementById('error-notification-message'),
     notificationBanner: document.getElementById('notification-banner'),
     closeBanner: document.getElementById('close-notification'),
-    notificationBannerError: document.getElementById('notification-banner-error'),
+    
     notificationMessage: document.getElementById('notification-message'),
     buttonReiniMap: document.getElementById('reini-map')
 };
@@ -785,26 +785,34 @@ function notify({ key, text, params = '<i class="fa fa-check-circle"></i>', type
 
 
 // --- API pública compatible -------------------------
-export function showNotification(messageOrKey, params = {}, duration = 3000) {
-    const isKey = typeof messageOrKey === 'string' && /^[\w.-]+$/.test(messageOrKey);
-    notify({
-        key: isKey ? messageOrKey : undefined,
-        text: isKey ? undefined : messageOrKey,
-        params,
-        type: 'info',
-        duration
-    });
+export function showNotification(message,  duration = 3000) {
+    const elemBanner = elements.notificationBanner
+    const elemMessage = elements.notificationMessage
+    if(!elemBanner || !elemMessage) {
+        console.warn('Notification elements not found');
+        return;
+    }
+    elemMessage.textContent = message
+    elemBanner.classList.add('visible')
+    elemBanner.classList.remove('hidden')
+    setTimeout(() => {
+        hideNotification()
+    }, duration)
 }
 
-export function showErrorNotification(messageOrKey, params = {}, duration = 3000) {
-    const isKey = typeof messageOrKey === 'string' && /^[\w.-]+$/.test(messageOrKey);
-    notify({
-        key: isKey ? messageOrKey : undefined,
-        text: isKey ? undefined : messageOrKey,
-        params,
-        type: 'error',
-        duration
-    });
+export function showErrorNotification(message, duration = 3000) {
+    const elemErrorBanner = elements.notificationBannerError
+    const elemErrorMessage = elements.notificationErrorMessage
+    if(!elemErrorBanner || !elemErrorMessage) {
+        console.warn('Error notification elements not found');
+        return;
+    }
+    elemErrorMessage.textContent = message
+    elemErrorBanner.classList.add('visible')
+    elemErrorBanner.classList.remove('hidden')
+    setTimeout(() => {
+        hideErrorNotification()
+    }, duration)
 }
 function flashErrorScreen() {
     document.body.classList.add('flash-error');
@@ -813,8 +821,8 @@ function flashErrorScreen() {
 
 //Ocultar baner de notificación de error
 function hideErrorNotification() {
-    elements.notificationBanner.classList.remove('visibleError')
-    elements.notificationBanner.classList.add('hidden')
+    elements.notificationBannerError.classList.remove('visible')
+    elements.notificationBannerError.classList.add('hidden')
 }
 
 //Ocultar banner de notificación

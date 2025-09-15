@@ -260,11 +260,44 @@
     </aside>
 
     <div id="notification-banner" class="notification-banner hidden ">
+         <span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="Success">
+  <title>Success</title>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <!-- Círculo de fondo -->
+  <circle cx="12" cy="12" r="10" fill="url(#g)"/>
+  <!-- Check centrado -->
+  <path d="M9.5 12.5l-1.8-1.8a1 1 0 00-1.4 1.4l2.5 2.5c.39.39 1.03.39 1.42 0l6.2-6.2a1 1 0 00-1.42-1.42l-5.5 5.5z"
+        fill="#fff"/>
+</svg>
+
+       </span>
         <p id="notification-message" style="text-align: center;"></p>
-        
+      
+
     </div>
     
     <div id="error-notification-banner" class="error-notification-banner hidden ">
+        <span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="Error">
+  <title>Error</title>
+  <!-- Círculo con borde rojo -->
+  <circle cx="12" cy="12" r="9" fill="none" stroke="#ef4444" stroke-width="2"/>
+  <!-- X centrada -->
+  <path d="M15 9l-6 6M9 9l6 6"
+        fill="none"
+        stroke="#ef4444"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>
+
+        </span>
         <p id="error-notification-message" style="text-align: center;" ></p>
         
     </div>
