@@ -40,6 +40,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Galindo&family=Poppins:wght@400;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""></script>
@@ -65,6 +69,13 @@
         
         <!-- Scripts de RevenueCat -->
         <script src="https://cdn.jsdelivr.net/npm/@revenuecat/purchases-js@1.12.1/dist/Purchases.umd.js"></script>
+
+        
+        <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/shepherd.js@13.0.0/dist/css/shepherd.css">
+
+<!-- Shepherd UMD: define window.Shepherd -->
+<script defer src="https://cdn.jsdelivr.net/npm/shepherd.js@13.0.0/dist/js/shepherd.min.js"></script>
 
         
         <!-- Initialize global objects -->
@@ -105,7 +116,7 @@
 
     </dialog>
 
-   
+    
 
     <main class="container">
         <header class="titles" id="header">
@@ -127,24 +138,27 @@
 
                            
                         <li class="section-title" data-i18n="userPerfil">Perfil de usuario</li>
-                        <li role="none"> <select id="lang-selector">
-                            <option value="es">Español</option>
-                            <option value="en">English</option>
-                            <option value="fr">Français</option>
-                        </select> </li>
+                       
                         <li role="none"><a role="menuitem" href="resetPass.html" data-i18n="changePassword"><span
                                     class="icon icon-password"></span>Cambiar
                                 contraseña</a></li>
                         <li id="delete-account" role="none"><a role="menuitem" data-i18n="deleteAccount" href="#"><span
                                     class="icon icon-delete"></span>Eliminar
                                 cuenta</a></li>
-
+                                <li class="section-title" data-i18n="languageSelect">Idioma</li>
+                                <li role="none"> <select name="lang" id="lang-selector">
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                    <option value="fr">Français</option>
+                                    <option value="it">Italiano</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="pt">Português</option>
+                                </select> </li>
                         <li class="section-title" data-i18n="preferences">Preferencias de la app</li>
-                        <li role="none"><a role="menuitem" class="toggle-theme" id="toggle"><span
-                                    class="icon icon-theme"></span>
+                        <li role="none"><a role="menuitem" class="toggle-theme" id="toggle">
                                 <div class="toggle-theme-container">
                                     <span data-i18n="theme">Tema claro/oscuro</span>
-                                    <div id="lottie-container"></div>
+                                   
                                 </div>
                             </a></li>
 
@@ -182,59 +196,16 @@
           
             <div class="map-container" id="map-container">
                 <div id="map"  loading="lazy"></div>
-               
+              
             </div>
-            <button id="cancel" type="button" class="map-control-btn" data-i18n="cancelCreation">Cancelar modo de creación </button>
-            <button id="create-place-btn" type="button" class="form-buttons">
-                <span>✏️</span>
-            </button>
+            
+            
+            
         </aside>
     </main>
-    <aside id="get-sites" class="saved-places-panel">
-        <div class="panel-header">
+   
 
-            <div class="panel-actions">
-
-                <button id="closeStorage" class="panel-btn" title="Cerrar">
-                    <i class="fas fa-times" style="text-align: center;"></i>
-                </button>
-            </div>
-        </div>
-        <div id="container-sites">
-            <input type="text" id="search-card" placeholder="Nombre del lugar o de la ciudad" name="search-card" />
-            <div id="sites-list" class="places-grid"></div>
-        </div>
-    </aside>
-
-    <aside id="get-createds-sites" class="createds-places-panel">
-        <div class="panel-header">
-            <div class="panel-actions">
-
-                <button id="close-createds-storage" class="panel-btn" title="Cerrar">
-                    <i class="fas fa-times" style="text-align: center;"></i>
-                </button>
-            </div>
-        </div>
-        <div id="container-created-sites">
-            <input type="text" id="search-createds-card" placeholder="Nombre del lugar" name="search-card" />
-            <div id="sites-createds-list" class="places-grid"></div>
-        </div>
-    </aside>
-
-    <aside id="get-createds-private-sites" class="createds-privates-places-panel">
-        <div class="panel-header">
-            <div class="panel-actions">
-
-                <button id="close-private-createds-storage" class="panel-btn" title="Cerrar">
-                    <i class="fas fa-times" style="text-align: center;"></i>
-                </button>
-            </div>
-        </div>
-        <div id="container-private-created-sites">
-            <input type="text" id="search-createds-private-card" placeholder="Nombre del lugar" name="search-card" />
-            <div id="sites-createds-privates-list" class="places-grid"></div>
-        </div>
-    </aside>
+   
 
     <aside id="get-options" class="options-places-panel">
         <div class="panel-header">
@@ -258,18 +229,61 @@
             </button>
         </div>
     </aside>
+    <aside id="get-createds-sites" class="createds-places-panel">
+        <div class="panel-header">
+            <div class="panel-actions">
 
+                <button id="close-createds-storage" class="panel-btn" title="Cerrar">
+                    <i class="fas fa-times" style="text-align: center;"></i>
+                </button>
+            </div>
+        </div>
+        <div id="container-created-sites">
+            <input type="text" id="search-createds-card" name="search-card" />
+            <div id="sites-createds-list" class="places-grid"></div>
+        </div>
+    </aside>
 
-    <div id="notification-banner" class="notification-banner hidden">
-        <p id="notification-message" style="text-align: end;"></p>
-        <button id="close-notification">✕</button>
+    <aside id="get-createds-private-sites" class="createds-privates-places-panel">
+        <div class="panel-header">
+            <div class="panel-actions">
+
+                <button id="close-private-createds-storage" class="panel-btn" title="Cerrar">
+                    <i class="fas fa-times" style="text-align: center;"></i>
+                </button>
+            </div>
+        </div>
+        <div id="container-private-created-sites">
+            <input type="text" id="search-createds-private-card"  name="search-card" />
+            <div id="sites-createds-privates-list" class="places-grid"></div>
+        </div>
+    </aside>
+
+    <div id="notification-banner" class="notification-banner hidden ">
+        <p id="notification-message" style="text-align: center;"></p>
+        
+    </div>
+    
+    <div id="error-notification-banner" class="error-notification-banner hidden ">
+        <p id="error-notification-message" style="text-align: center;" ></p>
+        
     </div>
 
    
 
-    <footer>
-        <p>© 2025 Explora y crea lugares desde tu dispositivo. </p>
-        <h1 style="color: #5649c0; font-size: small; text-align: center;">Ubifind </h1> 
+    <footer class="footer-btns">
+        
+            <button id="home-btn" type="button" class="form-buttons">
+                <span><i class="fa fa-home home"></i></span>
+            </button>
+             <button id="create-place-btn" type="button" class="form-buttons">
+                <span><i class="fa fa-pen create"></i></span>
+            </button>
+            <button id="map-btn" type="button" class="form-buttons">
+                <span><i class="fa fa-globe globe"></i></span>
+            </button>
+          
+      
 
     </footer>
 

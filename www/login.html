@@ -25,7 +25,7 @@
             
             <div class="inputContainer email">
                 <label for="email" data-i18n="email">Email</label>
-                <input type="email" name="email" id="email" placeholder="" data-i18n-placeholder="email"/>
+                <input type="email" name="email" id="email" />
             </div>
             <div class="inputContainer password">
                 <label for="password" data-i18n="password">Contraseña</label>
@@ -33,18 +33,19 @@
                 
             </div>
             <div class="inputContainer show">
-                <label for="show-password">Mostrar contraseña</label>
+                <label for="show-password" data-i18n="showPassword">Mostrar contraseña</label>
                 <input id="show-password" type="checkbox"/>
             </div>
-            <span id="response">&nbsp;</span>
+            <span id="response" data-i18n="response">&nbsp;</span>
             <div class="inputContainer button">
-                <button id="submit" type="submit">Iniciar sesión</button>
-                <button id="login-google" type="button">Entrar con Google <i class="fa-brands fa-google"></i></button>
+                <button id="submit" type="submit" data-i18n="login">Iniciar sesión</button>
+                <button id="login-google" type="button" data-i18n="google">Entrar con Google <i class="fa-brands fa-google"></i></button>
             </div>
            
             </div>
-            <p>No tienes una cuenta? <a href="register.html">Créala</a> </p>
-            <p><a href="generatePasswordWithEmail.html">Olvidé mi contraseña</a></p>
+            <p><a class="noAccount" data-i18n="noAccount">No tienes una cuenta?</a> <a href="register.html" data-i18n="createAccount">Créala</a></p>
+           
+            <a data-i18n="forgotPassword" href="generatePasswordWithEmail.html">Olvidé mi contraseña</a>
             
         </form>
     </main>

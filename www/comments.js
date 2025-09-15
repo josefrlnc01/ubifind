@@ -61,11 +61,11 @@ export async function loadComments(placeId) {
                 commentElement.className = 'comentario';
                 commentElement.innerHTML = `
                     <div class='text-of-comment'>
-                        <p class='comment-user'><strong style="margin-bottom:4px;">${nombreUsuario}</strong> <br>
+                        <p class='comment-user'><strong>${nombreUsuario}</strong> <br>
                         <span style="font-weight:200;">${data.texto || ''}</span></p>
                     </div>
                     <div class='hour'>
-                        <small style="color:#fff; align-self:flex-end; text-align:end">${timeString}</small>
+                        <small style="align-self:flex-end; text-align:end">${timeString}</small>
                         ${esAutor ? `<button class="btn-delete" data-id="${commentId}" data-place="${placeId}">🗑️</button>` : ''}
                     </div>`;
 

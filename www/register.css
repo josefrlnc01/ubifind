@@ -109,6 +109,10 @@ button, .go{
 .go{
     text-align: center;
 }
+.noAccount{
+    color: var(--light-color);
+    opacity: .7;
+}
 .inputContainer.button button:hover {
     background-color:#4e46e575;
     outline:3px solid #fff;
@@ -123,7 +127,7 @@ button, .go{
     gap: 10px;
 }
 p{
-     color: #bfbfbf ;
+     color: #eeeeee ;
 }
 a{
     color: #fff;

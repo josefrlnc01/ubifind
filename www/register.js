@@ -1,5 +1,6 @@
 import { auth, db } from './firebaseConfig.js';
 import { initSocial } from './script.js';
+import {  translations, getCurrentLanguage } from './js/i18n.js';
 import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
 import { 
   createUserWithEmailAndPassword, 
@@ -14,7 +15,7 @@ import {
 import { showSweetAlert } from './script.js';
 
 const button = document.getElementById('submit');
-
+let lang = getCurrentLanguage();
 const form = document.getElementById('form')
 const response = document.getElementById('response');
 const regexMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -25,41 +26,13 @@ window.addEventListener('load', async () => {
   
 });
 document.addEventListener('DOMContentLoaded',() => {
-  const termsAndConditions = `
-1. Aceptación de los términos
-Al acceder y utilizar la aplicación Ubifind, aceptas cumplir con estos Términos y Condiciones. Si no estás de acuerdo con alguno de los términos aquí establecidos, debes abstenerte de utilizar nuestros servicios.
-
-2. Descripción del servicio
-UFind es una plataforma web que permite descubrir y guardar lugares de ocio a través de mapas interactivos. El servicio puede incluir funciones como autenticación de usuarios, almacenamiento de datos en la nube y uso de APIs de terceros como Google Maps.
-
-3. Registro y cuentas de usuario
-Para acceder a ciertas funcionalidades, debes registrarte y autenticarte. Eres responsable de mantener la confidencialidad de tus credenciales y de todas las actividades realizadas bajo tu cuenta.
-
-4. Uso aceptable
-No está permitido:
-- Usar la plataforma con fines ilegales o no autorizados.
-- Interferir con el funcionamiento del sistema.
-- Compartir contenido que infrinja derechos de terceros.
-
-5. Contenido generado por el usuario
-Los datos que ingresas, como rutas personalizadas o lugares guardados, siguen siendo tuyos, pero Ubifind puede almacenarlos, analizarlos o utilizarlos para mejorar el servicio. No compartiremos información personal sin tu consentimiento explícito.
-
-6. Propiedad intelectual
-Todos los elementos visuales, logotipos, textos y el diseño general de UFind están protegidos por derechos de autor. No se permite copiar ni reproducir partes del servicio sin autorización previa.
-
-7. API y servicios de terceros
-Ubifind integra servicios como Google Maps y Firebase. Al usar Ubifind, también aceptas los términos y políticas de estos proveedores.
-
-8. Cancelación y eliminación de cuenta
-Puedes solicitar la eliminación de tu cuenta en cualquier momento. Nos reservamos el derecho de suspender cuentas que violen estos Términos.
-
-9. Modificaciones
-Ubifind puede actualizar estos términos en cualquier momento. Las modificaciones se comunicarán a través de la aplicación.
+  const termsAndConditionsView = `
+${translations[lang]?.termsAndConditionsView}
 `;
 
 document.getElementById('terms-modal').addEventListener('click', (e) => {
   e.preventDefault();
-  showSweetAlert('Términos y Condiciones', termsAndConditions, 'info', 'Ok');
+  showSweetAlert('Términos y Condiciones', termsAndConditionsView, 'info', 'Ok');
 });
 })
 if (form) {
@@ -80,47 +53,51 @@ form.addEventListener('submit', async (e) => {
     // Verificar si el email ya está registrado
    
     if(!name.value || !email.value || !password.value || !terms.checked){
-      response.textContent = 'Debes rellenar los campos'
+      response.textContent = `${translations[lang]?.fillFields}`
       return
     }
     if(!name.value || !email.value || !password.value && terms.checked){
-      response.textContent = 'Debes rellenar los campos'
+      response.textContent = `${translations[lang]?.fillFields}`
       return
     }
     
     
     if (!regexMail.test(email.value.trim())) {
-      response.textContent = 'Debes introducir un email válido';
+      response.textContent = `${translations[lang]?.invalidEmail}`;
       return;
     }
     
     if (!isPasswordValid) {
-      response.textContent = 'Requisitos de la contraseña no cumplidos: la contraseña debe contener al menos 6 caracteres, una letra mayúscula, una letra minúscula, un carácter numérico y un carácter no alfanumérico.';
+      response.textContent = `${translations[lang]?.publicSaveRequirements}`
       return;
     }
     const methods = await fetchSignInMethodsForEmail(auth, email.value);
     if (methods.length > 0) {
-      response.textContent= 'Este email ya está registrado';
+      response.textContent= `${translations[lang]?.userAlreadyExists}`;
       return;
     }
     
 
-    else {
+    
       const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
       const user = userCredential.user;
       await updateProfile(user, {displayName: name.value});
       await addDoc(usuariosCollection, placeData);
       const additionalInfo = getAdditionalUserInfo(userCredential);
       const isNewUser = additionalInfo?.isNewUser;
-    }
+     
+        localStorage.setItem('firstTime', true)
+     
+      window.location.href = 'index.html'
+    
   } catch (error) {
     const friendly = error?.code === 'auth/weak-password' 
-      ? 'La contraseña es demasiado débil.'
+      ? `${translations[lang]?.weakPassword}`
       : error?.code === 'auth/invalid-email' 
-        ? 'El email no es válido.'
+        ? `${translations[lang]?.invalidEmail}`
         : error?.code === 'auth/email-already-in-use' 
-          ? 'Este email ya está registrado.'
-          : 'Ha ocurrido un error. Inténtalo de nuevo.';
+          ?  `${translations[lang]?.userAlreadyExists}`
+          : `${translations[lang]?.errorOccurred}`;
     response.textContent = friendly;
   }
 });
@@ -212,9 +189,10 @@ if (buttonGoogle) {
             premium: false,
             createdAt: new Date().toISOString()
           });
+          localStorage.setItem('firstTime', true)
         }
       }
-      
+     
       // Redirigir al usuario a la página principal después del inicio de sesión exitoso
       window.location.href = 'index.html';
       

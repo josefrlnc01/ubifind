@@ -1,6 +1,6 @@
 import { auth, db } from './firebaseConfig.js';
 import { initSocial } from './script.js';
-import { applyTranslations, getCurrentLanguage } from './js/i18n.js';
+import { applyTranslations, getCurrentLanguage, translations } from './js/i18n.js';
 import { GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
@@ -17,10 +17,22 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const regexMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-
+let lang = getCurrentLanguage()
 // Initialize translations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+  // Apply translations and update the language selector if it exists
   applyTranslations();
+  
+  // Set up language selector if it exists on the login page
+  const langSelector = document.getElementById('lang-selector');
+  if (langSelector) {
+    langSelector.value = getCurrentLanguage();
+    langSelector.addEventListener('change', (e) => {
+      const lang = e.target.value;
+      localStorage.setItem('lang', lang);
+      applyTranslations();
+    });
+  }
 });
 
 const button = document.getElementById('submit');
@@ -48,20 +60,20 @@ button.addEventListener('click', async (e) => {
     const isNewUser = additionalInfo?.isNewUser
     if(isNewUser){
     window.localStorage.setItem('firstTime','true')
-    window.location.href = 'index.html'
+   
   }
-  else{
+  
 window.location.href = 'index.html'
   }
-  }
+  
   catch(error){
     console.error(error.code,error.message)
     if (error.code === 'auth/wrong-password') {
-    response.textContent = `Email o contraseña incorrectos`;
+    response.textContent = `${translations[lang]?.wrongPassword}`;
   } else if (error.code === 'auth/user-not-found') {
-    response.textContent = `No existe una cuenta con este correo`;
+    response.textContent = `${translations[lang]?.userNotFound}`;
   } else {
-    response.textContent = `Error: Contraseña incorrecta`;
+    response.textContent = `${translations[lang]?.wrongPassword}`;
   }
   }
 
@@ -101,9 +113,9 @@ async function saveUserProfile(user) {
 
 
 
-
 window.addEventListener('load', async () => {
   await initSocial();
+  applyTranslations();
   try {
     const rr = await getRedirectResult(auth);
     if (rr?.user) {
