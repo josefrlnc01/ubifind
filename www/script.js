@@ -740,47 +740,6 @@ export function showSweetCancelAlert(title, text, icon, buttonText, cancelButton
     });
 }
 
-function t(key, params = {}) {
-    const lang = getCurrentLanguage?.() || 'es';
-    let str =
-        translations?.[lang]?.[key] ??
-        translations?.en?.[key] ??
-        key; // fallback: inglés o la propia clave
-
-    // interpolación {name}
-    for (const [k, v] of Object.entries(params)) {
-        str = str.replace(new RegExp(`{${k}}`, 'g'), String(v));
-    }
-    return str;
-}
-
-// --- notificaciones centralizadas -------------------
-function notify({ key, text, params = '<i class="fa fa-check-circle"></i>', type = 'info', duration = 3000 }) {
-    if (!elements?.notificationMessage || !elements?.notificationBanner) {
-        console.warn('Notification elements not found');
-        return;
-    }
-
-    const message = key ? t(key, params) : (text ?? '');
-
-    // Mensaje
-    elements.notificationMessage.textContent = message;
-
-    // Reset estilos
-    elements.notificationBanner.classList.remove('hidden', 'visible', 'visibleError');
-
-    // Tipo
-    if (type === 'error') {
-        try { flashErrorScreen?.(); } catch { }
-        elements.notificationBanner.classList.add('visibleError');
-    } else {
-        elements.notificationBanner.classList.add('visible');
-    }
-
-    // Auto-ocultar
-    window.clearTimeout(elements.__notifyTimer);
-    elements.__notifyTimer = window.setTimeout(hideNotification, duration);
-}
 
 
 

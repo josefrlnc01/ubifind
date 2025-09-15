@@ -1070,11 +1070,7 @@ input:hover {
   transition: all 0.4s ease;
 }
 
-input:focus,
-select:focus {
-  border: 1px solid var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
-}
+
 #stop-route {
   display: none;
   position: absolute;
@@ -1099,7 +1095,7 @@ select {
   transition: all 0.2s ease-in;
   &:open {
     font-size: 0.8em;
-    border: 3px solid #5a4bff;
+   
     scale: 0.95;
   }
   &:open .selected {
@@ -1113,16 +1109,26 @@ select {
     appearance: base-select;
     border: none;
     border-radius: 8px;
-    border: 3px solid #5a4bff;
+    
     line-height: 1.6;
   }
   &&::picker-icon {
     display: none;
   }
+  option{
+    border-bottom: 1px solid #5a4bff;
+    border-radius: none;
+  }
 }
 select:hover {
   cursor: pointer;
   filter: brightness(1.1);
+}
+#lang-selector{
+  margin-left: 10px;
+ display: flex;
+    justify-content: start;
+    align-self: flex-start;
 }
 .input-filters select {
   justify-content: center;
