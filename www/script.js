@@ -433,8 +433,9 @@ window.addEventListener('load', async () => {
             }
             return;
         } else {
+            console.log(user.email)
             if(!user.emailVerified){
-                showSweetEmailConfirmAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
+                showSweetAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
             }
             // Si el usuario está logueado y está en una página pública, redirigir a index
             if (publicPages.includes(currentPage)) {
@@ -796,7 +797,9 @@ export function showErrorNotification(message, duration = 3000) {
         console.warn('Error notification elements not found');
         return;
     }
+
     flashErrorScreen()
+
     elemErrorMessage.textContent = message
     elemErrorBanner.classList.add('visible')
     elemErrorBanner.classList.remove('hidden')
