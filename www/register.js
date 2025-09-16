@@ -5,7 +5,7 @@ import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.2/fi
 import { 
   createUserWithEmailAndPassword, 
   fetchSignInMethodsForEmail, 
-  getAdditionalUserInfo,
+  
   sendEmailVerification, 
   signInWithPopup, 
   GoogleAuthProvider,
@@ -48,6 +48,7 @@ form.addEventListener('submit', async (e) => {
     const isPasswordValid = passwordRegex.test(password.value);
     const placeData = {
       email : email.value,
+      nameWithoutGoogle : name.value,
       premium : false
     }
     // Verificar si el email ya está registrado
@@ -82,9 +83,10 @@ form.addEventListener('submit', async (e) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
       const user = userCredential.user;
       await updateProfile(user, {displayName: name.value});
+      await sendEmailVerification(user)
+      await user.reload();
       await addDoc(usuariosCollection, placeData);
-      const additionalInfo = getAdditionalUserInfo(userCredential);
-      const isNewUser = additionalInfo?.isNewUser;
+     
      
         localStorage.setItem('firstTime', true)
      

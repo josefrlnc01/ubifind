@@ -83,6 +83,8 @@ export const translations = {
         ubiNowText : 'Aquí te encuentras ahora mismo',
         cancelConfirmTitle : 'Cancelar modo de creación', 
         cancelConfirmText : ' ¿Quieres cancelar el modo de creación de lugares?',
+        verifyEmailTitle : 'Verifica tu email',
+        verifyEmailText : 'Revisa tu correo electrónico cuando puedas para verificar tu email, es posible que el mensaje se encuentre en la bandeja de spam',
 
         // Login
         noAccount: '¿No tienes una cuenta?',
@@ -311,6 +313,8 @@ Ubifind puede actualizar estos términos en cualquier momento. Las modificacione
   ubiNowText: 'This is where you are right now',
   cancelConfirmTitle: 'Cancel creation mode',
   cancelConfirmText: 'Do you want to cancel the place creation mode?',
+   verifyEmailTitle: 'Verify your email',
+  verifyEmailText: 'Check your email when you can to verify it, the message may be in the spam folder',
 
         // Login
         noAccount: "Don't have an account?",
@@ -549,6 +553,8 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
   ubiNowText: 'Voici où vous vous trouvez en ce moment',
     cancelConfirmTitle: 'Annuler le mode de création',
   cancelConfirmText: 'Voulez-vous annuler le mode de création de lieux ?',
+   verifyEmailTitle: 'Vérifiez votre e-mail',
+  verifyEmailText: 'Consultez votre boîte mail quand vous pouvez pour le vérifier, le message peut se trouver dans le dossier spam',
 
         // Connexion
         noAccount: "Vous n’avez pas de compte ?",
@@ -701,6 +707,8 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
   ubiNowText: 'Ecco dove ti trovi in questo momento',
     cancelConfirmTitle: 'Annulla modalità di creazione',
   cancelConfirmText: 'Vuoi annullare la modalità di creazione di luoghi?',
+   verifyEmailTitle: 'Verifica la tua email',
+  verifyEmailText: 'Controlla la tua email quando puoi per verificarla, il messaggio potrebbe trovarsi nella cartella spam',
 
 
         tourPresentation: 'Ciao 😝',
@@ -906,6 +914,9 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
   ubiNowText: 'Hier befindest du dich gerade',
     cancelConfirmTitle: 'Erstellungsmodus abbrechen',
   cancelConfirmText: 'Möchtest du den Modus zur Erstellung von Orten abbrechen?',
+    verifyEmailTitle: 'Bestätige deine E-Mail',
+  verifyEmailText: 'Überprüfe deine E-Mails, wenn du kannst, um sie zu bestätigen. Die Nachricht könnte sich im Spam-Ordner befinden',
+
 
         tourPresentation: 'Hallo 😝',
         tourPresentationText: 'Wie wäre es mit einem Mini-Tutorial, um sich mit der App vertraut zu machen?',
@@ -1109,6 +1120,8 @@ Ubifind kann diese Bedingungen jederzeit aktualisieren. Änderungen werden über
         ubiNowText: 'Aqui é onde você está agora',
         cancelConfirmTitle: 'Cancelar modo de criação',
         cancelConfirmText: 'Você quer cancelar o modo de criação de lugares?',
+          verifyEmailTitle: 'Verifique seu e-mail',
+  verifyEmailText: 'Verifique seu e-mail quando puder para confirmá-lo, a mensagem pode estar na pasta de spam',
 
 
         tourPresentation: 'Olá 😝',

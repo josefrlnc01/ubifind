@@ -77,7 +77,7 @@ const elements = {
     notificationErrorMessage : document.getElementById('error-notification-message'),
     notificationBanner: document.getElementById('notification-banner'),
     closeBanner: document.getElementById('close-notification'),
-    notificationBannerError: document.getElementById('notification-banner-error'),
+    
     notificationMessage: document.getElementById('notification-message'),
     buttonReiniMap: document.getElementById('reini-map')
 };
@@ -118,9 +118,15 @@ let pendingDeepLinkPlaceId = null
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', async () => {
-        
+        initializeCapacitor()
        
-        const isNative = !!window.Capacitor?.getPlatform && window.Capacitor.getPlatform() !== 'web';
+        onAuthStateChanged(auth,async (user) => {
+        if(user){
+            if(!user.emailVerified){
+                showSweetAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
+            }
+        }
+    })
 
         if (elements.closeBanner) {
             elements.closeBanner.addEventListener('click', hideNotification);
@@ -409,8 +415,11 @@ function updateBarFromState(){
         buttonCreate.style.opacity = '.8'
     }
 }
-
+const body = document.body
 window.addEventListener('load', async () => {
+     
+
+
 
     showLoadingPrincSpinner()
     onAuthStateChanged(auth, async (user) => {
@@ -424,6 +433,9 @@ window.addEventListener('load', async () => {
             }
             return;
         } else {
+            if(!user.emailVerified){
+                showSweetEmailConfirmAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
+            }
             // Si el usuario está logueado y está en una página pública, redirigir a index
             if (publicPages.includes(currentPage)) {
                 window.location.href = 'index.html';
@@ -453,7 +465,17 @@ window.addEventListener('load', async () => {
             }, 300)
 
             try {
+                
+//comprobación de que tema tiene elegido el usuario
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
+if (localStorage.getItem('theme') === 'dark') {
+    body.classList.add('dark')
 
+
+}
+else {
+    body.classList.remove('dark')
+}
                 if (localStorage.getItem('theme') === 'dark') {
                     body.classList.add('dark')
                 }
@@ -463,7 +485,7 @@ window.addEventListener('load', async () => {
 
                 applyTranslations()
                 await initMap()
-                initializeCapacitor()
+                
                 updateBarFromState()
 
 
@@ -472,31 +494,32 @@ window.addEventListener('load', async () => {
             }
 
             setupPushNotifications()
-            isPremium = await isUserPremiumAtStorage();
+            
 
             // Modificar estilos del header basado en la plataforma
+            const buttonsForm = document.querySelectorAll('.form-buttons')
+        
             const header = document.getElementById('header');
-            if (header) {
+            if (header &&  buttonsForm) {
                 // Aplicar estilos específicos para web con !important
-                if (window.Capacitor.getPlatform() === 'web') {
-                    header.style.cssText += 'padding-top: 0 !important;';
-                } else {
-                    // Asegurarse de que en móvil se mantenga el padding original
-                    header.style.cssText += 'padding-top: 8px !important;';
-                }
-                const buttonsForm = document.querySelectorAll('.form-buttons')
-                if(buttonsForm){
-                    buttonsForm.forEach(btn => {
-                            if(window.Capacitor.getPlatform() === 'web'){
-                                
-                        btn.style.paddingBottom = '1rem'
-                    }
-                    else{
-                        btn.style.paddingBottom = '2rem'
-                        
-                    }
-                    })
+                if (window.Capacitor.isNativePlatform()) {
+                   // Asegurarse de que en móvil se mantenga el padding original
                     
+        buttonsForm.forEach(btn => {
+            btn.style.paddingBottom = '2rem'
+        } )
+        header.style.cssText += 'padding-top: 1.5rem !important;';
+                } else {
+                       header.style.cssText += 'padding-top: 0rem !important;';                  
+
+                    
+                }
+                
+                const textComment = document.querySelectorAll('.site.text-comment')
+                if(textComment){
+                    textComment.forEach(com => {
+                        com.style.padding = '10px'
+                    })
                 }
                 // Ocultar elementos premium si existen
                 const premiumElements = ['premium-title', 'premium-li', 'show-premium'];
@@ -506,11 +529,7 @@ window.addEventListener('load', async () => {
                 });
             }
 
-            if (isPremium) {
-                document.getElementById('premium-title').style.display = 'none'
-                document.getElementById('premium-li').style.display = 'none'
-                document.getElementById('show-premium').style.display = 'none'
-            }
+            
 
 
         } catch (err) {
@@ -518,6 +537,7 @@ window.addEventListener('load', async () => {
             return
         }
     });
+   
 })
 
 const mapBtn = document.getElementById('map-btn')
@@ -556,7 +576,9 @@ async function initMap() {
             lng <= 180
         );
     }
+    
     const mapContainer = document.getElementById('map-container')
+   
     mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
     mapContainer.style.overflowY = 'none'
    
@@ -568,12 +590,19 @@ async function initMap() {
     // Selección robusta de tileLayer
     let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
     if (
-        (localStorage.getItem('theme') === 'dark') ||
-        (prefersDarkScheme.matches && !localStorage.getItem('theme'))
-    ) {
+        (localStorage.getItem('theme') === 'dark')) 
+      
+     {
         tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
     }
-    L.tileLayer(tileUrl, { attribution: atribution }).addTo(map);
+    if(baseLayer){
+            map.removeLayer(baseLayer)
+        }
+        baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
+        baseLayer.addTo(map);
+   
+
+  
 
     let newMap = document.getElementById('map')
     if (newMap) {
@@ -587,7 +616,7 @@ async function initMap() {
 
     try {
         let lat = 2, lng = 0, zoom = 2
-        if (navigator.geolocation) {
+         if (navigator.geolocation) {
             try {
                const pos = await getActualPosition()
                  lat = pos.lat;
@@ -610,6 +639,7 @@ async function initMap() {
                 markers.push(marker);
                 
                 map.setZoom(10)
+
             } catch (geoError) {
                 console.warn(geoError)
                 showErrorNotification(`${translations[lang].geoFail}`);
@@ -681,7 +711,6 @@ document.addEventListener('click', (e) => {
 // Función para mostrar alerta con SweetAlert
 export function showSweetAlert(title, text, icon, buttonText) {
 
-    const lang = getCurrentLanguage();
 
     Swal.fire({
         title: title,
@@ -695,6 +724,7 @@ export function showSweetAlert(title, text, icon, buttonText) {
         confirmButtonColor: '#3085d6',
     });
 }
+
 
 // Función para mostrar alerta de confirmación de eliminación
 export function showSweetDeleteAlert(title, text, icon, buttonText, cancelButtonText) {
@@ -740,71 +770,39 @@ export function showSweetCancelAlert(title, text, icon, buttonText, cancelButton
     });
 }
 
-function t(key, params = {}) {
-    const lang = getCurrentLanguage?.() || 'es';
-    let str =
-        translations?.[lang]?.[key] ??
-        translations?.en?.[key] ??
-        key; // fallback: inglés o la propia clave
-
-    // interpolación {name}
-    for (const [k, v] of Object.entries(params)) {
-        str = str.replace(new RegExp(`{${k}}`, 'g'), String(v));
-    }
-    return str;
-}
-
-// --- notificaciones centralizadas -------------------
-function notify({ key, text, params = '<i class="fa fa-check-circle"></i>', type = 'info', duration = 3000 }) {
-    if (!elements?.notificationMessage || !elements?.notificationBanner) {
-        console.warn('Notification elements not found');
-        return;
-    }
-
-    const message = key ? t(key, params) : (text ?? '');
-
-    // Mensaje
-    elements.notificationMessage.textContent = message;
-
-    // Reset estilos
-    elements.notificationBanner.classList.remove('hidden', 'visible', 'visibleError');
-
-    // Tipo
-    if (type === 'error') {
-        try { flashErrorScreen?.(); } catch { }
-        elements.notificationBanner.classList.add('visibleError');
-    } else {
-        elements.notificationBanner.classList.add('visible');
-    }
-
-    // Auto-ocultar
-    window.clearTimeout(elements.__notifyTimer);
-    elements.__notifyTimer = window.setTimeout(hideNotification, duration);
-}
 
 
 
 // --- API pública compatible -------------------------
-export function showNotification(messageOrKey, params = {}, duration = 3000) {
-    const isKey = typeof messageOrKey === 'string' && /^[\w.-]+$/.test(messageOrKey);
-    notify({
-        key: isKey ? messageOrKey : undefined,
-        text: isKey ? undefined : messageOrKey,
-        params,
-        type: 'info',
-        duration
-    });
+export function showNotification(message,  duration = 3000) {
+    const elemBanner = elements.notificationBanner
+    const elemMessage = elements.notificationMessage
+    if(!elemBanner || !elemMessage) {
+        console.warn('Notification elements not found');
+        return;
+    }
+    elemMessage.textContent = message
+    elemBanner.classList.add('visible')
+    elemBanner.classList.remove('hidden')
+    setTimeout(() => {
+        hideNotification()
+    }, duration)
 }
 
-export function showErrorNotification(messageOrKey, params = {}, duration = 3000) {
-    const isKey = typeof messageOrKey === 'string' && /^[\w.-]+$/.test(messageOrKey);
-    notify({
-        key: isKey ? messageOrKey : undefined,
-        text: isKey ? undefined : messageOrKey,
-        params,
-        type: 'error',
-        duration
-    });
+export function showErrorNotification(message, duration = 3000) {
+    const elemErrorBanner = elements.notificationBannerError
+    const elemErrorMessage = elements.notificationErrorMessage
+    if(!elemErrorBanner || !elemErrorMessage) {
+        console.warn('Error notification elements not found');
+        return;
+    }
+    flashErrorScreen()
+    elemErrorMessage.textContent = message
+    elemErrorBanner.classList.add('visible')
+    elemErrorBanner.classList.remove('hidden')
+    setTimeout(() => {
+        hideErrorNotification()
+    }, duration)
 }
 function flashErrorScreen() {
     document.body.classList.add('flash-error');
@@ -813,8 +811,8 @@ function flashErrorScreen() {
 
 //Ocultar baner de notificación de error
 function hideErrorNotification() {
-    elements.notificationBanner.classList.remove('visibleError')
-    elements.notificationBanner.classList.add('hidden')
+    elements.notificationBannerError.classList.remove('visible')
+    elements.notificationBannerError.classList.add('hidden')
 }
 
 //Ocultar banner de notificación
@@ -848,96 +846,12 @@ function displayCreatedsPrivatePlaces() {
 
 
 
-function resetearGuardadoYBusquedasDiarias() {
-    if (localStorage.getItem('ultimaFecha') !== getHoy()) {
-        localStorage.setItem('guardadoIlimitado', 'false')
-        localStorage.setItem('busquedasIlimitadas', 'false')
-        localStorage.setItem('fechaDesbloqueo', '')
-        localStorage.setItem('contadorGuardados', '0')
-        localStorage.setItem('contadorTrackings', '0')
-        localStorage.setItem('contadorBusquedas', '0')
-        localStorage.setItem('ultimaFecha', getHoy())
-    }
-}
-
-
-
-/*
-function puedeTrackear() {
-    return puedeTrackearMas() && parseInt(localStorage.getItem('contadorTrackings') || '0') < maxTrackings
-}
-
-function puedeTrackearMas (){
-    const hoy = getHoy()
-    const ilimitado = parseInt(localStorage.getItem('busquedasIlimitadas', 'true'))
-    const fechaDesbloqueo = localStorage.getItem('fechaDesbloqueo')
-    return (ilimitado && fechaDesbloqueo === hoy)
-}
-export function desbloqueoTrackings() {
-    return parseInt(localStorage.setItem('contadorTrackings', ''))
-}
-function incrementarContadorTrackings() {
-    let count = parseInt(localStorage.getItem('contadorTrackings') || '0')
-    count++
-    return parseInt(localStorage.setItem('contadorTrackings', count))
-}
-
-*/
-function puedeGuardarMas() {
-    const hoy = getHoy()
-    const fechaDesbloqueo = localStorage.getItem('fechaDesbloqueo')
-    const ilimitado = localStorage.getItem('guardadoIlimitado') === 'true'
-
-    return (ilimitado && fechaDesbloqueo === hoy)
-}
-
-function getHoy() {
-    return new Date().toISOString().split('T')[0]
-}
-function puedeGuardar() {
-
-
-    if (isPremium || puedeGuardarMas()) {
-        return true;
-    }
-    return parseInt(localStorage.getItem('contadorGuardados') || '0') < maxCounterSaveds;
-}
-
-function puedeBuscar() {
-    return isPremium || puedeBuscarMas() || parseInt(localStorage.getItem('contadorBusquedas') || '0') < maxSearches
-}
-
-function puedeBuscarMas() {
-    const hoy = getHoy()
-    const fechaDesbloqueo = localStorage.getItem('fechaDesbloqueo')
-    const ilimitado = localStorage.getItem('guardadoIlimitado') === 'true'
-
-    console.log('Fecha desbloqueo = HOY ?¿')
-    console.log(hoy === fechaDesbloqueo)
-    return (ilimitado && fechaDesbloqueo === hoy)
-}
-export function desbloqueoBusquedas() {
-    return parseInt(localStorage.setItem('contadorBusquedas', '0')), parseInt(localStorage.setItem('contadorBusquedasSinAnuncios', '0'))
-}
-export function desbloqueoCreados() {
-    return parseInt(localStorage.setItem('contadorCreados', '0'))
-}
 
 
 
 
-const maxCounterMenu = 3
-function incrementarContadorMenu() {
-    let count = parseInt(localStorage.getItem('contadorMenu') || '0')
-    count++
-    localStorage.setItem('contadorMenu', count.toString())
-}
 
-function incrementarContadorCreados() {
-    let count = parseInt(localStorage.getItem('contadorCreados') || '0')
-    count++
-    localStorage.setItem('contadorCreados', count.toString())
-}
+
 
 function decrementarContadorCreados() {
     let count = parseInt(localStorage.getItem('contadorCreados') || '0')
@@ -949,13 +863,7 @@ function decrementarContadorCreados() {
 
 
 
-function incrementarContadorGuardados() {
-    let count = parseInt(localStorage.getItem('contadorGuardados') || '0')
-    count++
-    counterSaveds = count;  // Actualiza la variable global
-    localStorage.setItem('contadorGuardados', count.toString())
-    return count;
-}
+
 //Eliminar los marcadores
 function clearMarkers() {
     markers.forEach(marker => {
@@ -966,45 +874,10 @@ function clearMarkers() {
     });
     markers = []; // Vacía el array
 }
-function resetMap() {
-    clearMarkers()
-    map.setCenter({ lat: 40.463667, lng: -3.74922 });
-    map.setZoom(7);
-}
 
 
 
 
-export async function isUserPremiumAtStorage() {
-    try {
-        if (!auth.currentUser) {
-            return false
-        }
-        let premiumInBackend = false
-
-        const q = query(collection(db, 'usuarios'),
-            where('userId', '==', auth.currentUser.uid))
-        const snapshot = await getDocs(q)
-        const doc = snapshot.docs.length > 0 ? snapshot.docs[0] : null
-
-        if (doc && doc.data().premium) {
-            premiumInBackend = true
-        }
-        const Purchases = window.Capacitor?.Plugins?.Purchases
-        if (!Purchases) {
-            return premiumInBackend
-        }
-        const purchaserInfo = await Purchases.getCustomerInfo()
-        const entitlements = purchaserInfo?.entitlements?.active;
-
-        const isEntitlementActive = entitlements['premium_upgrade'].isActive === true
-        return isEntitlementActive || premiumInBackend
-    }
-    catch (error) {
-        console.error('Error checking premium status')
-        return false
-    }
-}
 
 
 
@@ -1026,59 +899,7 @@ function isValidLatLng(lat, lng) {
 }
 
 
-const COOL_DOWN = 10 * 1000 //10 segundos
-const KEY_INTERSTITIAL = 'lastInterstitial'
-const setLastTs = (ts = Date.now()) => localStorage.setItem(KEY_INTERSTITIAL, String(ts))
-const getLastTs = () => parseInt(localStorage.getItem(KEY_INTERSTITIAL) || '0', 10)
-const inCoolDown = () => Date.now() - getLastTs() < COOL_DOWN
-const POP_TAG_ID = 'adsterra-popunder-script';
-const popRemainingms = () => {
-    const elapsed = Date.now() - getLastTs()
-    return Math.max(COOL_DOWN - elapsed, 0)
-}
 
-function desactivateScriptAdds() {
-    const script = document.getElementById(POP_TAG_ID)
-    if (script) {
-        script.remove()
-        localStorage.removeItem(KEY_INTERSTITIAL)
-    }
-}
-function activateScriptAds() {
-
-    if (!inCoolDown()) {
-
-        const scrptAds1 = document.createElement('script');
-        scrptAds1.async = true;
-        scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
-        scrptAds1.id = POP_TAG_ID
-        scrptAds1.onload = () => setLastTs()
-
-        document.head.appendChild(scrptAds1);
-        setTimeout(() => {
-            desactivateScriptAdds()
-        }, COOL_DOWN)
-    }
-
-}
-(function resumeScriptAds() {
-    const remaining = popRemainingms()
-    if (remaining > 0) {
-        if (!document.getElementById(POP_TAG_ID)) {
-            const scrptAds1 = document.createElement('script');
-            scrptAds1.async = true;
-            scrptAds1.src = '//earringprecaution.com/fb/fb/45/fbfb45a1fe3a64a392068aa878a6a4b6.js';
-            scrptAds1.id = POP_TAG_ID
-            document.head.appendChild(scrptAds1);
-        }
-        setTimeout(() => {
-            desactivateScriptAdds()
-        }, remaining)
-    }
-    else {
-        localStorage.removeItem(KEY_INTERSTITIAL)
-    }
-})();
 
 function showLoadingPrincSpinner() {
     const loader = document.getElementById('loader-princ');
@@ -1098,243 +919,6 @@ function hideLoadingPrincSpinner() {
 
 
 let currentSharedInfoWindow = null;
-async function loadSharePlaces(places) {
-    if (currentSharedInfoWindow) {
-        currentSharedInfoWindow.close()
-    }
-    map.on('viewreset', () => {
-        const mapContainer = document.getElementById('map-container')
-        mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
-        mapContainer.style.overflowY = 'none'
-
-
-        map = L.map('map').setView([38.5648, -0.0679], 13)
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
-        const atribution = '<small style="opacity:0.6;">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></small>'
-
-        // Selección robusta de tileLayer
-        let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-        if (
-            (localStorage.getItem('theme') === 'dark') ||
-            (prefersDarkScheme.matches && !localStorage.getItem('theme'))
-        ) {
-            tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
-        }
-        L.tileLayer(tileUrl, { attribution: atribution }).addTo(map);
-    })
-
-
-    try {
-        showLoadingPrincSpinner()
-        const snapShot = await getDoc(doc(db, 'creados', places.place_id));
-        if (!snapShot.exists()) {
-            showErrorNotification(`${translations[lang].loadPlaceGeneric}`);
-            return;
-        }
-
-        const place = snapShot.data();
-        place.place_id = places.place_id;
-
-        // 1. Centrar el mapa y hacer zoom
-        if (map) {
-            map.setView(place.position, 17);
-            map.setZoom(17); // o el zoom que uses para mostrar lugares
-        }
-
-
-        const iconOpacity = place.visibleToAll ? '1' : '.5';
-        const markerHtmlStyles = `
-  background-color: #8A2BE2;
-  width: 1rem;
-  height: 1rem;
-  display: block;
-  
-  top: -1rem;
-  opacity: ${iconOpacity};
-  position: relative;
-  border-radius: 1.5rem 1.5rem 0;
-  transform: rotate(45deg);
-  border: 2px solid white;
-`;
-
-        const icon = L.divIcon({
-            className: "custom-marker",
-            html: `<span style="${markerHtmlStyles}"></span>`,
-        });
-        const marker = L.marker(place.position, { icon: icon })
-        marker.addTo(map)
-
-        const likeButton = `<button class='button-likes'><img class='action-btn img-share' src='images/favorite.webp' alt='Me gusta'></button>`;
-
-        const popupContent = `
-            <div class="card-sites" data-id='${place.place_id}'>
-                <button class='close-window'>X</button>
-                <h2>${place.name || ''}</h2>
-                <div class='container-createds-card rating'>
-                    ${place.visibleToAll ? `<p class='count-likes'>0 ❤️</p>` : ''}
-                    <p>${place.rating ? '⭐'.repeat(place.rating) : ''}</p>
-                </div>
-                <div class='container-createds-card photo'>
-                    <a >${place.photo ? `<img class="place-photo" loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado\'s photo'}'>` : ''}</a>   
-                </div>
-                <div class='container-buttons'>
-                    ${place.visibleToAll ? likeButton : ''}
-                    <button class='share-ubi'><img class='action-btn' src='images/location.webp' alt='Compartir ubicación'></button>
-                    <button class='share-card'><img class='action-btn' src='images/share (2).webp' alt='Compartir tarjeta'></button>
-                </div>
-                <div class='container-createds-card comment'>
-                    <p class='coment-place'><strong>${place.visibleToAll ? place.userName : ''}</strong>${place.comment || ''}</p>
-                </div>`;
-
-        // Bind popup to marker
-        marker.bindPopup(popupContent, {
-            maxWidth: 400,
-            className: 'custom-popup',
-            closeButton: false
-        });
-        hideLoadingPrincSpinner()
-        // Handle popup open event
-        marker.on('popupopen', async function () {
-            map.setView(place.position, 17);
-            setTimeout(() => {
-                map.panBy([0, -250])
-            })
-
-
-            const popup = this.getPopup();
-            const popupElement = popup.getElement();
-
-            // Close button
-            const closeBtn = popupElement.querySelector('.close-window');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    map.closePopup(popup);
-                });
-            }
-
-             const likeBtn = popupElement.querySelectorAll('.button-likes');
-            if (likeBtn && place.visibleToAll) {
-                likeBtn.forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                         e.stopPropagation();
-                         const id = place.place_id
-                    await toggleLike(id, btn);
-                    const newCount = await getLikesCount(place.place_id);
-                    const likeCountElement = popupElement.querySelector('.count-likes');
-                    if (likeCountElement) {
-                        likeCountElement.textContent = `${newCount} ❤️`;
-                    }
-                    })
-                })
-                
-            }
-
-            // Share location button
-            const shareUbiBtn = popupElement.querySelector('.share-ubi');
-            if (shareUbiBtn) {
-                shareUbiBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    shareCreatedPlaceGoogle(place);
-                });
-            }
-
-            // Share card button
-            const shareCardBtn = popupElement.querySelector('.share-card');
-            if (shareCardBtn) {
-                shareCardBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    shareCreatedPlace(place);
-                });
-            }
-
-            // Load comments and likes if visible to all
-            if (place.visibleToAll) {
-                const count = await getLikesCount(place.place_id);
-                const likeCountElement = popupElement.querySelector('.count-likes');
-                if (likeCountElement) {
-                    likeCountElement.textContent = `${count} ❤️`;
-                }
-                // Add comments section to popup content
-                const comentariosSection = `
-                    <div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}"></div>
-                    <div class='comentarios-input'>
-                        <textarea class='text-comment' id="input-comentario-${place.place_id}" placeholder="Escribe tu comentario..."></textarea>
-                        <button class="btn-comentar" type='button' data-id="${place.place_id}">
-                            <img class='action-btn img-share' src='images/send.webp' alt='Enviar comentario'>
-                        </button>
-                    </div>`;
-
-                // Add comments section to popup
-                const popupContentElement = popupElement.querySelector('.card-sites');
-                if (popupContentElement) {
-                    const commentsContainer = document.createElement('div');
-                    commentsContainer.className = 'comments-container';
-                    if (place.visibleToAll) {
-                        commentsContainer.innerHTML = comentariosSection;
-                        popupContentElement.appendChild(commentsContainer);
-
-                        // Load comments
-                        loadComments(place.place_id);
-
-                        // Add comment button handler
-                        const commentBtn = popupContentElement.querySelector('.btn-comentar');
-                        const commentInput = popupContentElement.querySelector('.text-comment');
-
-                        if (commentBtn && commentInput) {
-                            const handleComment = async () => {
-                                const commentText = commentInput.value.trim();
-                                if (commentText) {
-                                    await addComment(commentText, place.place_id);
-                                    commentInput.value = '';
-                                    await loadComments(place.place_id);
-                                }
-                            };
-
-                            commentBtn.addEventListener('click', handleComment);
-                            commentInput.addEventListener('keypress', (e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleComment();
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        });
-
-
-        // Add marker to the map and open its popup
-        marker.addTo(map);
-
-        // Store the marker reference if needed
-        currentMarker = marker;
-
-        // Open the popup for this marker
-        marker.openPopup();
-
-        // All event listeners are now handled in the popupopen event above
-        // No need for additional event listeners here as they're already set up
-
-        // Store the marker to clean up later if needed
-        currentMarker = marker;
-
-    } catch (e) {
-        console.error('Error in loadSharePlaces:', e);
-        showErrorNotification(`${translations[lang].loadPlaceGeneric}`);
-    }
-}
-
-function randomizaterPlaces(places) {
-    return places.sort(() => Math.random() - 0.5)
-}
-
-function getPriceLabel(priceLevel) {
-    if (priceLevel === undefined || priceLevel === null) return 'Precio desconocido';
-    return '€'.repeat(priceLevel + 1); // price_level va de 0 a 4
-}
-
 
 
 //función para enganchar los listeners
@@ -1417,13 +1001,6 @@ async function deleteFromFirebase(placeId) {
 
 }
 
-// Asume que el mapa está inicializado en otro lugar
-
-// ======================
-// FUNCIONES PRINCIPALES
-// ======================
-
-
 
 async function sharePlace(place) {
     try {
@@ -1462,7 +1039,7 @@ async function shareCreatedPlaceGoogle(place) {
             if (Share) {
                 await Share.share({
                     title: `Destino ${place.name} !!`,
-                    text: 'Mira la ubi que he encontrado en UFind!',
+                    text: 'Mira la ubi que he encontrado en Ubifind!',
                     url: placeUrl,
                     dialogTitle: 'Compartir Ubi'
                 });
@@ -1472,7 +1049,7 @@ async function shareCreatedPlaceGoogle(place) {
             if (navigator && navigator.canShare) {
                 const shareData = {
                     title: place.name || 'Lugar Compartido',
-                    text: place.address || '¡Mira este lugar!',
+                    text: place.address || `Ubi de ${place.name}`,
                     url: placeUrl
                 }
                 await navigator.share(shareData)
@@ -1550,69 +1127,15 @@ else {
 
 
 
-const body = document.body
-
-
-//comprobación de que tema tiene elegido el usuario
-const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
-if (prefersDarkScheme.matches || localStorage.getItem('theme') === 'dark') {
-    body.classList.add('dark')
-
-
-}
-else {
-    body.classList.remove('dark')
-}
 
 
 
-
-
-
-
-let confettiAnimation = null;
-
-function showSuccessConfetti() {
-    const container = document.getElementById('confeti-container');
-
-    // Configurar estilos del contenedor
-    container.style.position = 'fixed';
-    container.style.top = '0';
-    container.style.left = '0';
-    container.style.width = '100%';
-    container.style.height = '100%';
-    container.style.pointerEvents = 'none';
-    container.style.zIndex = '9999';
-    container.style.display = 'block';
-
-    // Si ya existe una animación, la detenemos y la eliminamos
-    if (confettiAnimation) {
-        confettiAnimation.destroy();
-    }
-
-    // Cargar la animación de confeti
-    confettiAnimation = lottie.loadAnimation({
-        container: container,
-        renderer: 'svg',
-        loop: false,
-        autoplay: true,
-        path: 'animaciones/bubble.json',
-        rendererSettings: {
-            preserveAspectRatio: 'xMidYMid slice',
-            className: 'confetti-animation'
-        }
-    });
-
-    // Ocultar el contenedor cuando termine la animación
-    confettiAnimation.addEventListener('complete', function () {
-        container.style.display = 'none';
-    });
-}
-
+let baseLayer;
 const buttonToggle = document.getElementById('toggle')
+
 if (buttonToggle) {
     buttonToggle.addEventListener('click', () => {
-        body.classList.toggle('dark')
+        document.body.classList.toggle('dark')
         localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light')
 
         const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
@@ -1620,14 +1143,20 @@ if (buttonToggle) {
 
         // Selección robusta de tileLayer
         let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+        
         if (
             (localStorage.getItem('theme') === 'dark') ||
             (prefersDarkScheme.matches && !localStorage.getItem('theme'))
         ) {
             tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
         }
-        L.tileLayer(tileUrl, { attribution: atribution }).addTo(map);
-
+        if(baseLayer){
+            map.removeLayer(baseLayer)
+        }
+        
+        baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
+        baseLayer.addTo(map);
+        
     })
 }
 else {
@@ -1824,8 +1353,12 @@ async function enableCreatePlace() {
     //Cambio del modo de mapa para una mejora visual
     inGlobal = false
 
-
+    
     const mapContainer = document.getElementById('map-container')
+    if(window.Capacitor.isNativePlatform()){
+        mapContainer.style.height = '70dvh'
+        mapContainer.style.maxHeight = '70dvh'
+    }
     mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
     mapContainer.style.overflowY = 'none'
 
@@ -1875,7 +1408,12 @@ async function enableCreatePlace() {
         ) {
             tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
         }
-        L.tileLayer(tileUrl, { attribution: atribution }).addTo(map);
+        if(baseLayer){
+            map.removeLayer(baseLayer)
+        }
+        baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
+        baseLayer.addTo(map);
+       
 
         if (creationMarker) {
             map.removeLayer(creationMarker)
@@ -2180,47 +1718,13 @@ border: 2px solid white;
     });
 }
 
-// Función de test adicional
-function testPopupElements() {
-    if (!creationMarker) {
-        console.log('No creation marker exists');
-        return;
-    }
-
-    const popup = creationMarker.getPopup();
-    if (!popup) {
-        console.log('No popup exists');
-        return;
-    }
-
-    const popupElement = popup.getElement();
-    if (!popupElement) {
-        console.log('No popup element exists');
-        return;
-    }
-
-    console.log('Popup HTML:', popupElement.outerHTML);
-
-    const saveBtn = popupElement.querySelector('#save-desktop');
-    console.log('Save button found:', !!saveBtn);
-
-    if (saveBtn) {
-        console.log('Save button details:', {
-            id: saveBtn.id,
-            className: saveBtn.className,
-            tagName: saveBtn.tagName,
-            disabled: saveBtn.disabled
-        });
-    }
-}
-
 function esNombreValido(nombre) {
     const largoValido = nombre.length >= 3 && nombre.length <= 50;
     const caracteresPermitidos = /^[a-zA-Z0-9ÁÉÍÓÚáéíóúñÑ\s.,\-()']+$/.test(nombre);
     return largoValido && caracteresPermitidos;
 }
 let marcadoresCreados = [];
-let marcador = null
+
 async function loadPlaces() {
     // Limpiar marcadores existentes
 
@@ -2279,9 +1783,249 @@ async function loadPlaces() {
 
 }
 
+async function loadSharePlaces(places) {
+   
+         if (currentSharedInfoWindow) {
+        currentSharedInfoWindow.close()
+    }
+    
+        const mapContainer = document.getElementById('map-container')
+        mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
+        mapContainer.style.overflowY = 'none'
 
 
-let currentInfoWindow = null;
+        map = L.map('map').setView([38.5648, -0.0679], 13)
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
+        const atribution = '<small style="opacity:0.6;">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></small>'
+
+        // Selección robusta de tileLayer
+        let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+        if (
+            (localStorage.getItem('theme') === 'dark') ||
+            (prefersDarkScheme.matches && !localStorage.getItem('theme'))
+        ) {
+            tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+        }
+        if(baseLayer){
+            map.removeLayer(baseLayer)
+        }
+        baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
+        baseLayer.addTo(map);
+        
+   
+    
+      
+
+    try {
+        showLoadingPrincSpinner()
+        const snapShot = await getDoc(doc(db, 'creados', places.place_id));
+        if (!snapShot.exists()) {
+            showErrorNotification(`${translations[lang].loadPlaceGeneric}`);
+            return;
+        }
+
+        const place = snapShot.data();
+        place.place_id = places.place_id;
+
+        // 1. Centrar el mapa y hacer zoom
+        if (map) {
+            map.setView(place.position, 17);
+            map.setZoom(17); // o el zoom que uses para mostrar lugares
+        }
+
+
+        const iconOpacity = place.visibleToAll ? '1' : '.5';
+        const markerHtmlStyles = `
+  background-color: #8A2BE2;
+  width: 1rem;
+  height: 1rem;
+  display: block;
+  
+  top: -1rem;
+  opacity: ${iconOpacity};
+  position: relative;
+  border-radius: 1.5rem 1.5rem 0;
+  transform: rotate(45deg);
+  border: 2px solid white;
+`;
+
+        const icon = L.divIcon({
+            className: "custom-marker",
+            html: `<span style="${markerHtmlStyles}"></span>`,
+        });
+        const marker = L.marker(place.position, { icon: icon })
+        marker.addTo(map)
+
+        const likeButton = `<button class='button-likes'><img class='action-btn img-share' src='images/favorite.webp' alt='Me gusta'></button>`;
+
+        const popupContent = `
+            <div class="card-sites" data-id='${place.place_id}'>
+                <button class='close-window'>X</button>
+                <h2>${place.name || ''}</h2>
+                <div class='container-createds-card rating'>
+                    ${place.visibleToAll ? `<p class='count-likes'>0 ❤️</p>` : ''}
+                    <p>${place.rating ? '⭐'.repeat(place.rating) : ''}</p>
+                </div>
+                <div class='container-createds-card photo'>
+                    <a >${place.photo ? `<img class="place-photo" loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado\'s photo'}'>` : ''}</a>   
+                </div>
+                <div class='container-buttons'>
+                    ${place.visibleToAll ? likeButton : ''}
+                    <button class='share-ubi'><img class='action-btn' src='images/location.webp' alt='Compartir ubicación'></button>
+                    <button class='share-card'><img class='action-btn' src='images/share (2).webp' alt='Compartir tarjeta'></button>
+                </div>
+                <div class='container-createds-card comment'>
+                    <p class='coment-place'><strong>${place.visibleToAll ? place.createdBy : ''}</strong>${place.comment || ''}</p>
+                </div>`;
+
+        // Bind popup to marker
+        marker.bindPopup(popupContent, {
+            maxWidth: 400,
+            className: 'custom-popup',
+            closeButton: false
+        });
+        hideLoadingPrincSpinner()
+        // Handle popup open event
+        marker.on('popupopen', async function () {
+            document.querySelectorAll('.comment-place').forEach(card => {
+                card.style.display = 'flex'
+                card.style.flexDirection = 'column'
+            })
+            map.setView(place.position, 17);
+            setTimeout(() => {
+                map.panBy([0, -250])
+            })
+
+
+            const popup = this.getPopup();
+            const popupElement = popup.getElement();
+
+            // Close button
+            const closeBtn = popupElement.querySelector('.close-window');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    map.closePopup(popup);
+                });
+            }
+
+             const likeBtn = popupElement.querySelectorAll('.button-likes');
+            if (likeBtn && place.visibleToAll) {
+                likeBtn.forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                         e.stopPropagation();
+                         const id = place.place_id
+                    await toggleLike(id, btn);
+                    const newCount = await getLikesCount(place.place_id);
+                    const likeCountElement = popupElement.querySelector('.count-likes');
+                    if (likeCountElement) {
+                        likeCountElement.textContent = `${newCount} ❤️`;
+                    }
+                    })
+                })
+                
+            }
+
+            // Share location button
+            const shareUbiBtn = popupElement.querySelector('.share-ubi');
+            if (shareUbiBtn) {
+                shareUbiBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    shareCreatedPlaceGoogle(place);
+                });
+            }
+
+            // Share card button
+            const shareCardBtn = popupElement.querySelector('.share-card');
+            if (shareCardBtn) {
+                shareCardBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    shareCreatedPlace(place);
+                });
+            }
+
+            // Load comments and likes if visible to all
+            if (place.visibleToAll) {
+                const count = await getLikesCount(place.place_id);
+                const likeCountElement = popupElement.querySelector('.count-likes');
+                if (likeCountElement) {
+                    likeCountElement.textContent = `${count} ❤️`;
+                }
+                // Add comments section to popup content
+                const comentariosSection = `
+                    <div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}"></div>
+                    <div class='comentarios-input'>
+                        <textarea class='text-comment' id="input-comentario-${place.place_id}" placeholder="Escribe tu comentario..."></textarea>
+                        <button class="btn-comentar" type='button' data-id="${place.place_id}">
+                            <img class='action-btn img-share' src='images/send.webp' alt='Enviar comentario'>
+                        </button>
+                    </div>`;
+
+                // Add comments section to popup
+                 const popupContentElement = popupElement.querySelector('.card-sites');
+                if (popupContentElement) {
+                    const commentsContainer = document.createElement('div');
+                    commentsContainer.className = 'comments-container';
+                    if (place.visibleToAll) {
+
+                        commentsContainer.innerHTML = comentariosSection;
+                        popupContentElement.appendChild(commentsContainer);
+                        applyTranslations()
+                        // Load comments
+                        loadComments(place.place_id);
+
+                        // Add comment button handler
+                        const commentBtn = popupContentElement.querySelector('.btn-comentar');
+                        const commentInput = popupContentElement.querySelector('.text-comment');
+
+                        if (commentBtn && commentInput) {
+                            const handleComment = async () => {
+                                const commentText = commentInput.value.trim();
+                                if (commentText) {
+                                    await addComment(commentText, place.place_id);
+                                    commentInput.value = '';
+                                    await loadComments(place.place_id);
+                                }
+                            };
+
+                            commentBtn.addEventListener('click', handleComment);
+                            commentInput.addEventListener('keypress', (e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleComment();
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        });
+
+
+        // Add marker to the map and open its popup
+        marker.addTo(map);
+
+        // Store the marker reference if needed
+        currentMarker = marker;
+
+        // Open the popup for this marker
+        marker.openPopup();
+
+        // All event listeners are now handled in the popupopen event above
+        // No need for additional event listeners here as they're already set up
+
+        // Store the marker to clean up later if needed
+        currentMarker = marker;
+
+    } catch (e) {
+        console.error('Error in loadSharePlaces:', e);
+        showErrorNotification(`${translations[lang].loadPlaceGeneric}`);
+    }
+}
+
+
+
+
 let currentMarker = null;
 async function addMarkerToPlace(place) {
     try {
@@ -2336,8 +2080,8 @@ async function addMarkerToPlace(place) {
                 </div>
                 <div class='container-createds-card comment'>
                 
-                    <p class='coment-place'><strong>${place.visibleToAll ? place.userName : ''}</strong> <br/> <span> ${place.comment || ''}</span></p>
-                     <div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}"></div>
+                    <p class='coment-place'><strong>${place.visibleToAll ? place.createdBy : ''}</strong>  <span> ${place.comment || ''}</span></p>
+                    
                 
                  </div>      
     </div>`
@@ -2554,7 +2298,7 @@ async function getLikesCount(placeId) {
     const snapshot = await getDocs(likesRef);
     return snapshot.size; // Número de documentos = número de likes
 }
-desbloqueoCreados()
+
 
 async function saveCreatedPlace(position, placeName, comment, rating, photoURL = '') {
     const buttonVisibleToAll = document.getElementById('public')
@@ -2608,8 +2352,8 @@ async function saveCreatedPlace(position, placeName, comment, rating, photoURL =
             await updateDoc(docRef, {
                 place_id: docRef.id
             });
-
             showNotification(`${translations[lang].placeCreated}`);
+            cancelCreationPlace()
             loadPlaces()
             renderCreatedPlaces();
         } else {
@@ -2717,7 +2461,7 @@ async function renderCreatedPlaces() {
                     <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
                 </div>
                 <div class='container-createds-card photo'>
-                    ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='width: 100%; height: auto; max-height: 200px; border-radius: 8px; object-fit: cover;'>` : '<p>Sin imagen</p>'}
+                    ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='width: 100%; height: auto; max-height: 400px; min-height:400px; border-radius: 8px; object-fit: cover;'>` : '<p>Sin imagen</p>'}
                 </div>
                 <div class='container-createds-card comment'>
                     <p>${place.comment ? place.comment : 'N/D'}</p>
@@ -2781,7 +2525,7 @@ async function renderPrivateCreatedsPlaces() {
         console.warn('container element not found in the DOM')
     }
 
-
+    
     try {
         container.innerHTML = ''
         const q = query(collection(db, 'creados'),
@@ -2818,22 +2562,15 @@ async function renderPrivateCreatedsPlaces() {
         <p>${place.rating ? '⭐'.repeat(place.rating) : ''}</p>
         </div>
 
-         <div class='container-createds-card photo'>
-            ${place.photo ? `<img loading='lazy' src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='max-width: 100%; height: auto; border-radius: 8px;'>` : ''}
-        </div>
-
-
-        
-
-
-
+          <div class='container-createds-card photo'>
+                    ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='width: 100%; height: auto; max-height: 400px; min-height:400px; border-radius: 8px; object-fit: cover;'>` : ''}
+                </div>
         <div class='container-createds-card comment'>
         <p>${place.comment ? place.comment : ''}</p>
         </div>
 
         <div class="btn-renders">
             <button class="btn btn-view-created" data-i18n="viewOnMap">Ver en mapa</button>
-            <button class="btn share-btn" data-i18n="share">Compartir</button>
             <button class="btn delete-btn" data-id="${placeId}" data-i18n="deleteCard">Eliminar</button>
         </div>
     </div>
@@ -2874,9 +2611,7 @@ async function renderPrivateCreatedsPlaces() {
                 })
             })
 
-            lastSite.querySelector('.share-btn').addEventListener('click', async () => {
-                await shareCreatedPlaceGoogle(place)
-            })
+            
         })
 
 
@@ -2918,12 +2653,20 @@ async function renderGlobalPlaces() {
     const snapshot = await getDocs(q)
 
     if (snapshot.empty) {
-        showErrorNotification('No hay lugares para mostrar')
+         orNotification('No hay lugares para mostrar')
         return
     }
 
     if (!snapshot) return
     snapshot.forEach(async docSnap => {
+        const commentUser = document.querySelectorAll('.comment-user')
+        commentUser.forEach(box => {
+            box.style.minHeight ='100%'
+            box.style.display = 'flex'
+            box.style.flexDirection = 'column'
+            box.style.alignItems = 'flex-start'
+        
+        })
         const place = docSnap.data()
         const placeId = docSnap.id
         const likeButton = `<button class='button-likes' data-id='${placeId}'><img class='action-btn img-share' src='images/favorite.webp'></button>`;
@@ -2946,7 +2689,7 @@ async function renderGlobalPlaces() {
                 </div>
                 <div class='container-createds-card comment'>
                 
-                    <p class='coment-place'><strong style='opacity:.8;'>${place.visibleToAll ? place.userName : ''}</strong> <br/> <span> ${place.comment || ''}</span></p>
+                    <p class='coment-place'><strong style='opacity:.8;'>${place.visibleToAll ? place.createdBy : ''}</strong> <br/> <span> ${place.comment || ''}</span></p>
                      <div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}"></div>
                     
                         <div class='comentarios-input'>
@@ -3062,6 +2805,10 @@ async function renderGlobalPlaces() {
     })
 }
 
+
+    
+
+
 const homeBtn = document.getElementById('home-btn')
 if (homeBtn) {
     homeBtn.addEventListener('click', () => {
@@ -3094,19 +2841,10 @@ function animateButton() {
 
 
 
-function showFilters(event) {
-    // Si el clic viene de un select, ignorar
-    if (event.target.closest('select')) return;
-
-
-}
-
-
-
 if (elements.buttonCreatePlace) {
     elements.buttonCreatePlace.addEventListener('click', async (e) => {
         e.preventDefault()
-
+        
         await enableCreatePlace()
         appState.create = true
         appState.home = false
@@ -3144,29 +2882,13 @@ function closePrivatesCreatedsPanel() {
 
 
 function showMenu() {
-    /*
-   const isNative = !!window.Capacitor?.getPlatform && window.Capacitor.getPlatform() !== 'web';
-  if (parseInt(localStorage.getItem('contadorMenu') || '0') >= maxCounterMenu) {
-       if (!isNative) {
-           activateScriptAds()
-       }
-       else {
-           showInterstitial()
-       }
-       localStorage.setItem('contadorMenu', '0')
-   }
-       */
-
-
-
     menuOptions.classList.add('active')
-
 }
 function closeMenu() {
     menuOptions.classList.remove('active')
-
-
 }
+
+
 if (elements.buttonCloseCreateds) {
     elements.buttonCloseCreateds.addEventListener('click', () => {
 
@@ -3190,6 +2912,8 @@ document.addEventListener('click', (event) => {
     ) {
         closeSettings()
     }
+    const mediaQuery = window.matchMedia('(max-width:1024px)')
+    if (mediaQuery.matches) return
     if (menuOptions && menuOptions.classList.contains('active') && !event.target.closest('#get-options') && !event.target.closest('#toggle-menu')) {
         closeMenu()
     }
@@ -3281,24 +3005,8 @@ else {
     console.warn('No se encontraron los botones de descargar pdf')
 }
 
-async function showInterstitial() {
-    if (!window.Capacitor.isNativePlatform()) return
-    const { AdMob } = window.Capacitor.Plugins;
-    if (!isPremium) {
-        await AdMob.prepareInterstitial({
-            adId: 'ca-app-pub-1639698267501945/5948105832',
-            isTesting: true
-        });
 
-        await AdMob.showInterstitial();
-    }
-    else {
-        return
-    }
 
-}
-
-let addsCounter = 0
 
 
 
@@ -3353,46 +3061,6 @@ function soundSucces() {
 }
 
 
-async function setFlyerPhoto(url) {
-    const imgEl = document.querySelector('#customFlyer .img-flyer');
-    if (!imgEl) return;
-
-    if (!url) {
-        imgEl.style.display = 'none'; // sin foto -> ocultar
-        imgEl.removeAttribute('src');
-        return;
-    }
-
-    imgEl.style.display = 'block';
-    imgEl.crossOrigin = 'anonymous';
-    imgEl.referrerPolicy = 'no-referrer';
-    imgEl.src = url;
-
-    try {
-        if (imgEl.decode) {
-            await imgEl.decode();
-        } else {
-            await new Promise((res, rej) => {
-                imgEl.onload = res;
-                imgEl.onerror = rej;
-            });
-        }
-    } catch {
-        // Fallback CORS: fetch -> blob
-        try {
-            const resp = await fetch(url, { mode: 'cors' });
-            const blob = await resp.blob();
-            imgEl.src = URL.createObjectURL(blob);
-            await new Promise((res, rej) => {
-                imgEl.onload = res;
-                imgEl.onerror = rej;
-            });
-        } catch {
-            imgEl.style.display = 'none';
-            imgEl.removeAttribute('src');
-        }
-    }
-}
 
 // Devuelve base64 “puro” (sin prefijo)
 async function convertBlobToBase64(blob) {
