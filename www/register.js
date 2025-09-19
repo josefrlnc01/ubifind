@@ -14,7 +14,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js';
 import { showSweetAlert } from './script.js';
 
-const button = document.getElementById('submit');
+
 let lang = getCurrentLanguage();
 const form = document.getElementById('form')
 const response = document.getElementById('response');
@@ -34,7 +34,7 @@ document.getElementById('terms-modal').addEventListener('click', (e) => {
   e.preventDefault();
   showSweetAlert('Términos y Condiciones', termsAndConditionsView, 'info', 'Ok');
 });
-})
+
 if (form) {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -48,7 +48,7 @@ form.addEventListener('submit', async (e) => {
     const isPasswordValid = passwordRegex.test(password.value);
     const placeData = {
       email : email.value,
-      nameWithoutGoogle : name.value,
+     
       premium : false
     }
     // Verificar si el email ya está registrado
@@ -90,7 +90,7 @@ form.addEventListener('submit', async (e) => {
      
         localStorage.setItem('firstTime', true)
      
-      window.location.href = 'index.html'
+      window.location.href = '/app/index.html'
     
   } catch (error) {
     const friendly = error?.code === 'auth/weak-password' 
@@ -196,7 +196,7 @@ if (buttonGoogle) {
       }
      
       // Redirigir al usuario a la página principal después del inicio de sesión exitoso
-      window.location.href = 'index.html';
+      window.location.href = '/app/index.html';
       
     } catch (error) {
       console.error('Error en autenticación con Google:', error);
@@ -219,3 +219,5 @@ if (buttonGoogle) {
 
 // Close the form if statement
 }
+
+})

@@ -18,6 +18,7 @@ import {
     setDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
+
 import { addComment, loadComments } from "./comments.js";
 
 
@@ -73,11 +74,11 @@ const elements = {
     cityInput: document.getElementById('city'),
     openingSelect: document.getElementById('opening'),
     categorySelect: document.getElementById('category'),
-    notificationBannerError : document.getElementById('error-notification-banner'),
-    notificationErrorMessage : document.getElementById('error-notification-message'),
+    notificationBannerError: document.getElementById('error-notification-banner'),
+    notificationErrorMessage: document.getElementById('error-notification-message'),
     notificationBanner: document.getElementById('notification-banner'),
     closeBanner: document.getElementById('close-notification'),
-    
+
     notificationMessage: document.getElementById('notification-message'),
     buttonReiniMap: document.getElementById('reini-map')
 };
@@ -116,22 +117,66 @@ if (buttonCloseMenu) {
 let pendingDeepLinkPlaceId = null
 // Asegurarse de que el DOM esté completamente cargado
 
-if (document.readyState === 'loading') {
+
     document.addEventListener('DOMContentLoaded', async () => {
+        showLoadingPrincSpinner()
         initializeCapacitor()
-       
-        onAuthStateChanged(auth,async (user) => {
-        if(user){
-            if(!user.emailVerified){
+
+        onAuthStateChanged(auth, async (user) => {
+            const publicPages = ['login.html', 'register.html'];
+            const currentPage = window.location.pathname.split('/').pop();
+
+            const isNative = window.Capacitor.isNativePlatform();
+
+            if (isNative) {
+
+                if (!user) {
+                    // Si no hay usuario y está en la app o no es una página pública, redirigir a la landing
+                    if (currentPage === 'index.html' || currentPage === '' || currentPage === '/') {
+                        window.location.href = 'register.html'
+                        return
+                    }
+
+                }
+                else {
+                    if (publicPages.includes(currentPage) || currentPage === '' || currentPage === '/') {
+                        window.location.href = '/app/index.html';
+                        return
+                    }
+
+                }
+            }
+            else {
+
+                if (!user) {
+                    if (currentPage === '/app/index.html') {
+                        window.location.href = 'index.html'
+                        return
+                    }
+                }
+                else {
+                    if (currentPage !== '/app/index.html') {
+                        window.location.href = '/app/index.html'
+                        return
+                    }
+
+                }
+            }
+
+            hideLoadingPrincSpinner()
+            if(!user) return
+            if (!user.emailVerified) {
                 showSweetAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
             }
-        }
-    })
+
+
+
+        
 
         if (elements.closeBanner) {
             elements.closeBanner.addEventListener('click', hideNotification);
         }
-        
+
         const col = await getDocs(collection(db, 'creados'))
         col.docs.forEach(async docSnap => {
             try {
@@ -157,16 +202,100 @@ if (document.readyState === 'loading') {
             } catch (error) {
                 console.error('Error al cargar comentarios:', error);
             }
+            const params = new URLSearchParams(window.location.search)
+            const placeId = params.get('creado')
+            if (placeId) {
+                console.log('ID de lugar encontrado en la URL:', placeId);
+                pendingDeepLinkPlaceId = placeId;
+            }
+            // Espera a que el mapa esté inicializado
+
+            try {
+                document.getElementById('lang-selector').value = getCurrentLanguage();
+                setTimeout(() => {
+                    hideLoadingPrincSpinner()
+                }, 300)
+
+                try {
+
+                    //comprobación de que tema tiene elegido el usuario
+                    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
+                    if (localStorage.getItem('theme') === 'dark') {
+                        body.classList.add('dark')
+
+
+                    }
+                    else {
+                        body.classList.remove('dark')
+                    }
+                    if (localStorage.getItem('theme') === 'dark') {
+                        body.classList.add('dark')
+                    }
+                    else {
+                        body.classList.remove('dark')
+                    }
+
+                    applyTranslations()
+                    await initMap()
+
+                    updateBarFromState()
+
+
+                } catch (error) {
+                    console.warn('Error al inicializar la interfaz:', error);
+                }
+
+                setupPushNotifications()
+
+
+                // Modificar estilos del header basado en la plataforma
+                const buttonsForm = document.querySelectorAll('.form-buttons')
+
+                const header = document.getElementById('header');
+                if (header && buttonsForm) {
+                    // Aplicar estilos específicos para web con !important
+                    if (window.Capacitor.isNativePlatform()) {
+                        // Asegurarse de que en móvil se mantenga el padding original
+
+                        buttonsForm.forEach(btn => {
+                            btn.style.paddingBottom = '2rem'
+                        })
+                        header.style.cssText += 'padding-top: 1.5rem !important;';
+                    } else {
+                        header.style.cssText += 'padding-top: 0rem !important;';
+
+
+                    }
+
+                    const textComment = document.querySelectorAll('.site.text-comment')
+                    if (textComment) {
+                        textComment.forEach(com => {
+                            com.style.padding = '10px'
+                        })
+                    }
+                    // Ocultar elementos premium si existen
+                    const premiumElements = ['premium-title', 'premium-li', 'show-premium'];
+                    premiumElements.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.style.display = 'none';
+                    });
+                }
+
+
+
+
+            } catch (err) {
+                console.warn('Error interno:', err);
+                return
+            }
+
 
         })
 
 
-
+        })
     });
 
-
-
-}
 
 
 
@@ -233,7 +362,7 @@ async function handleDeepLink(placeId) {
 
         // Center and zoom the map
 
-        
+
         console.log('Mapa centrado y con zoom en las coordenadas:', { lat, lng });
 
 
@@ -340,7 +469,7 @@ export async function initSocial() {
     const isNative = !!window.Capacitor?.getPlatform && window.Capacitor.getPlatform() !== 'web';
 
     if (isNative) {
-        console.log('Initializing Google Sign-In for native platform...');
+    
         const SocialLogin = window.Capacitor?.Plugins?.SocialLogin;
         if (!SocialLogin) {
             console.warn('SocialLogin plugin not available.');
@@ -356,9 +485,9 @@ export async function initSocial() {
                 }
             };
 
-            console.log('Initializing SocialLogin with config:', config);
+            
             await SocialLogin.initialize(config);
-            console.log('SocialLogin initialized successfully for native platform');
+          
 
             // Add a small delay to ensure initialization is complete
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -369,190 +498,68 @@ export async function initSocial() {
             setTimeout(initSocial, 2000);
         }
     } else {
-        console.log('Running on web, using Firebase web SDK for Google Sign-In');
+        
     }
 }
 
 
-function updateBarFromState(){
+function updateBarFromState() {
     const buttonHome = document.querySelector('.home')
 
-    if(!buttonHome) return
+    if (!buttonHome) return
     const buttonMap = document.querySelector('.globe')
 
-    if(!buttonMap) return
+    if (!buttonMap) return
 
     const buttonCreate = document.querySelector('.create')
 
-    if(!buttonCreate) return
+    if (!buttonCreate) return
 
-    if(appState.map === true){
-            buttonMap.style.fontSize = '1.1em'
-            buttonMap.style.opacity = '1'
+    if (appState.map === true) {
+        buttonMap.style.fontSize = '1.1em'
+        buttonMap.style.opacity = '1'
     }
-    else{
-            buttonMap.style.fontSize = '1em'
-            buttonMap.style.opacity = '.8'
-        }
+    else {
+        buttonMap.style.fontSize = '1em'
+        buttonMap.style.opacity = '.8'
+    }
 
     if (appState.home === true) {
-            buttonHome.style.fontSize = '1.1em'
-            buttonHome.style.opacity = '1'
+        buttonHome.style.fontSize = '1.1em'
+        buttonHome.style.opacity = '1'
     }
-    else{
+    else {
         buttonHome.style.fontSize = '1em'
-            buttonHome.style.opacity = '.8'
+        buttonHome.style.opacity = '.8'
     }
-    
 
-    if(appState.create === true){
+
+    if (appState.create === true) {
         buttonCreate.style.fontSize = '1.1em'
         buttonCreate.style.opacity = '1'
     }
 
-    else{
+    else {
         buttonCreate.style.fontSize = '1em'
         buttonCreate.style.opacity = '.8'
     }
 }
 const body = document.body
-window.addEventListener('load', async () => {
-     
 
 
-
-    showLoadingPrincSpinner()
-    onAuthStateChanged(auth, async (user) => {
-        const publicPages = ['login.html', 'register.html'];
-        const currentPage = window.location.pathname.split('/').pop();
-
-        if (!user) {
-            // Si el usuario no está logueado y no está en una página pública, redirigir a login
-            if (!publicPages.includes(currentPage)) {
-                window.location.href = 'login.html';
-            }
-            return;
-        } else {
-            console.log(user.email)
-            if(!user.emailVerified){
-                showSweetAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
-            }
-            // Si el usuario está logueado y está en una página pública, redirigir a index
-            if (publicPages.includes(currentPage)) {
-                window.location.href = 'index.html';
-            }
-        }
-
-        const params = new URLSearchParams(window.location.search)
-        const placeId = params.get('creado')
-        if (placeId) {
-            console.log('ID de lugar encontrado en la URL:', placeId);
-            pendingDeepLinkPlaceId = placeId;
-        }
-        // Espera a que el mapa esté inicializado
-
-        try {
-            document.getElementById('lang-selector').value = getCurrentLanguage();
-
-
-
-
-            if (elements.cityInput) {
-                elements.cityInput.value = arrayOfSearches.sort(() => Math.random() - 0.5)[0] || '';
-            }
-
-            setTimeout(() => {
-                hideLoadingPrincSpinner()
-            }, 300)
-
-            try {
-                
-//comprobación de que tema tiene elegido el usuario
-const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
-if (localStorage.getItem('theme') === 'dark') {
-    body.classList.add('dark')
-
-
-}
-else {
-    body.classList.remove('dark')
-}
-                if (localStorage.getItem('theme') === 'dark') {
-                    body.classList.add('dark')
-                }
-                else {
-                    body.classList.remove('dark')
-                }
-
-                applyTranslations()
-                await initMap()
-                
-                updateBarFromState()
-
-
-            } catch (error) {
-                console.warn('Error al inicializar la interfaz:', error);
-            }
-
-            setupPushNotifications()
-            
-
-            // Modificar estilos del header basado en la plataforma
-            const buttonsForm = document.querySelectorAll('.form-buttons')
-        
-            const header = document.getElementById('header');
-            if (header &&  buttonsForm) {
-                // Aplicar estilos específicos para web con !important
-                if (window.Capacitor.isNativePlatform()) {
-                   // Asegurarse de que en móvil se mantenga el padding original
-                    
-        buttonsForm.forEach(btn => {
-            btn.style.paddingBottom = '2rem'
-        } )
-        header.style.cssText += 'padding-top: 1.5rem !important;';
-                } else {
-                       header.style.cssText += 'padding-top: 0rem !important;';                  
-
-                    
-                }
-                
-                const textComment = document.querySelectorAll('.site.text-comment')
-                if(textComment){
-                    textComment.forEach(com => {
-                        com.style.padding = '10px'
-                    })
-                }
-                // Ocultar elementos premium si existen
-                const premiumElements = ['premium-title', 'premium-li', 'show-premium'];
-                premiumElements.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.style.display = 'none';
-                });
-            }
-
-            
-
-
-        } catch (err) {
-            console.warn('Error interno:', err);
-            return
-        }
-    });
-   
-})
 
 const mapBtn = document.getElementById('map-btn')
 if (mapBtn) {
     mapBtn.addEventListener('click', async () => {
         // Map init - only if map element exists
         try {
-            
+
             await initMap()
             appState.map = true
             appState.home = false
             appState.create = false
             updateBarFromState()
-            
+
         }
         catch (error) {
             console.error('Error en inicialización del mapa')
@@ -577,33 +584,36 @@ async function initMap() {
             lng <= 180
         );
     }
-    
+
     const mapContainer = document.getElementById('map-container')
-   
+
     mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
     mapContainer.style.overflowY = 'none'
-   
+
 
     map = L.map('map').setView([20, 0], 2)
-    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
+
     const atribution = '<small style="opacity:0.6;">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></small>'
 
     // Selección robusta de tileLayer
     let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
     if (
-        (localStorage.getItem('theme') === 'dark')) 
-      
-     {
+        (localStorage.getItem('theme') === 'dark')) {
         tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
     }
-    if(baseLayer){
-            map.removeLayer(baseLayer)
-        }
-        baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
-        baseLayer.addTo(map);
-   
+    if (baseLayer) {
+        map.removeLayer(baseLayer)
+    }
+    baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
+    baseLayer.addTo(map);
 
-  
+
+    if (mapContainer) {
+
+
+        mapContainer.style.width = '75vw'
+    }
+
 
     let newMap = document.getElementById('map')
     if (newMap) {
@@ -617,12 +627,12 @@ async function initMap() {
 
     try {
         let lat = 2, lng = 0, zoom = 2
-         if (navigator.geolocation) {
+        if (navigator.geolocation) {
             try {
-               const pos = await getActualPosition()
-                 lat = pos.lat;
-                 lng = pos.lng;
-                 zoom = 13;
+                const pos = await getActualPosition()
+                lat = pos.lat;
+                lng = pos.lng;
+                zoom = 13;
                 if (!isValidLatLng(lat, lng)) {
                     throw new Error('Invalid latitude or longitude values');
                 }
@@ -638,7 +648,7 @@ async function initMap() {
                     showSweetAlert(`${translations[lang].ubiNow}`, `${translations[lang].ubiNowText}`, 'success', 'OK')
                 })
                 markers.push(marker);
-                
+
                 map.setZoom(10)
 
             } catch (geoError) {
@@ -646,10 +656,10 @@ async function initMap() {
                 showErrorNotification(`${translations[lang].geoFail}`);
             }
         }
-        
 
-        map.setView([lat,lng], zoom)
-         const checkMapReady = setInterval(() => {
+
+        map.setView([lat, lng], zoom)
+        const checkMapReady = setInterval(() => {
 
             if (map && pendingDeepLinkPlaceId) {
                 console.log('Mapa listo, procesando deeplink:', pendingDeepLinkPlaceId);
@@ -665,7 +675,7 @@ async function initMap() {
             loadPlaces()
         })
         // Verificar si hay un deep link pendiente después de inicializar el mapa
-       
+
     } catch (error) {
         console.error('Error al inicializar el mapa:', error);
         showErrorNotification(`${translations[lang].mapLoad}`);
@@ -690,7 +700,7 @@ function logOutUser() {
             }
 
             // Redirect to login page
-            window.location.href = 'login.html';
+            window.location.href = '../login.html';
         })
         .catch((error) => {
             showErrorNotification(`${translations[lang].logoutError}`, error);
@@ -774,11 +784,10 @@ export function showSweetCancelAlert(title, text, icon, buttonText, cancelButton
 
 
 
-// --- API pública compatible -------------------------
-export function showNotification(message,  duration = 3000) {
+export function showNotification(message, duration = 3000) {
     const elemBanner = elements.notificationBanner
     const elemMessage = elements.notificationMessage
-    if(!elemBanner || !elemMessage) {
+    if (!elemBanner || !elemMessage) {
         console.warn('Notification elements not found');
         return;
     }
@@ -793,7 +802,7 @@ export function showNotification(message,  duration = 3000) {
 export function showErrorNotification(message, duration = 3000) {
     const elemErrorBanner = elements.notificationBannerError
     const elemErrorMessage = elements.notificationErrorMessage
-    if(!elemErrorBanner || !elemErrorMessage) {
+    if (!elemErrorBanner || !elemErrorMessage) {
         console.warn('Error notification elements not found');
         return;
     }
@@ -904,7 +913,7 @@ function isValidLatLng(lat, lng) {
 
 
 
-function showLoadingPrincSpinner() {
+export function showLoadingPrincSpinner() {
     const loader = document.getElementById('loader-princ');
     if (loader) {
         loader.style.opacity = '1'
@@ -912,7 +921,7 @@ function showLoadingPrincSpinner() {
     }
 }
 
-function hideLoadingPrincSpinner() {
+export function hideLoadingPrincSpinner() {
     const loader = document.getElementById('loader-princ');
     if (loader) {
         loader.style.opacity = '0'
@@ -1026,6 +1035,7 @@ async function sharePlace(place) {
     }
     catch (error) {
         console.log(error)
+        return
     }
 }
 
@@ -1072,7 +1082,7 @@ async function shareCreatedPlaceGoogle(place) {
 
 async function shareCreatedPlace(place) {
     try {
-        const deepLink = `https://ubifindapp.com/?creado=${place.place_id}`;
+        const deepLink = `https://ubifindapp.com/app/?creado=${place.place_id}`;
         const fallbackLink = `https://play.google.com/store/apps/details?id=com.ubifind.app`; // Si no la tiene 
         const message = `📍 ¡Descubre ${place.name} en Ubifind!\n\n🔗 ${deepLink}\n\n¿No tienes la app? Descárgala aquí: ${fallbackLink}`;
         //const placeUrl = `https://www.google.com/maps/search/?api=1&query=${place.position.lat},${place.position.lng}`
@@ -1110,12 +1120,9 @@ if (elements.buttonShowCreateds) {
         e.preventDefault()
 
         displayCreatedsPlaces()
-        
+
 
     })
-}
-else {
-    console.warn('No se encontró el botón de mostrar los sitios creados en el DOM')
 }
 
 if (elements.buttonShowPrivateCreateds) {
@@ -1124,9 +1131,7 @@ if (elements.buttonShowPrivateCreateds) {
         displayCreatedsPrivatePlaces()
     })
 }
-else {
-    console.warn('No se encontró el botón de mostrar los sitios creados privados en el DOM')
-}
+
 
 
 
@@ -1146,25 +1151,23 @@ if (buttonToggle) {
 
         // Selección robusta de tileLayer
         let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-        
+
         if (
             (localStorage.getItem('theme') === 'dark') ||
             (prefersDarkScheme.matches && !localStorage.getItem('theme'))
         ) {
             tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
         }
-        if(baseLayer){
+        if (baseLayer) {
             map.removeLayer(baseLayer)
         }
-        
+
         baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
         baseLayer.addTo(map);
-        
+
     })
 }
-else {
-    console.warn('No se encontró el boton toggle')
-}
+
 
 
 
@@ -1193,9 +1196,6 @@ if (buttonSettings) {
         closeSettings()
         animateButton()
     })
-}
-else {
-    console.warn('No se encontró el boton de settings')
 }
 
 
@@ -1257,9 +1257,7 @@ if (searchCreatedsCard) {
     })
 
 }
-else {
-    console.warn('No se encontró el searchcreatedscard')
-}
+
 
 
 const searchPrivateCreatedCards = document.getElementById('search-createds-private-card')
@@ -1321,10 +1319,7 @@ if (searchPrivateCreatedCards) {
     })
 
 }
-else {
-    console.warn('No se encontró el search de los lugares creados privados')
 
-}
 
 
 async function getActualPosition() {
@@ -1356,9 +1351,9 @@ async function enableCreatePlace() {
     //Cambio del modo de mapa para una mejora visual
     inGlobal = false
 
-    
+
     const mapContainer = document.getElementById('map-container')
-    if(window.Capacitor.isNativePlatform()){
+    if (window.Capacitor.isNativePlatform()) {
         mapContainer.style.height = '70dvh'
         mapContainer.style.maxHeight = '70dvh'
     }
@@ -1369,34 +1364,34 @@ async function enableCreatePlace() {
         let userLocationIcon
         let marker
         let lat = 20, lng = 0, zoom = 2;
-        if(navigator.geolocation){
-            try{
+        if (navigator.geolocation) {
+            try {
                 const pos = await getActualPosition()
                 lat = pos.lat;
                 lng = pos.lng;
                 zoom = 13
 
-             userLocationIcon = L.divIcon({
-            className: 'user-location-icon',
-            html: '<div class="pulse"></div>',
-            iconSize: [25, 40],
-            iconAnchor: [12, 40],
-            popupAnchor: [0, -30]
-        })
+                userLocationIcon = L.divIcon({
+                    className: 'user-location-icon',
+                    html: '<div class="pulse"></div>',
+                    iconSize: [25, 40],
+                    iconAnchor: [12, 40],
+                    popupAnchor: [0, -30]
+                })
 
-        marker = L.marker([lat, lng], { icon: userLocationIcon }).addTo(map);
-        marker.on('click', () => {
-            showSweetAlert(`${translations[lang].ubiNow}`, `${translations[lang].ubiNowText}`, 'success', 'OK')
-        })
+                marker = L.marker([lat, lng], { icon: userLocationIcon }).addTo(map);
+                marker.on('click', () => {
+                    showSweetAlert(`${translations[lang].ubiNow}`, `${translations[lang].ubiNowText}`, 'success', 'OK')
+                })
             }
-            catch(error){
+            catch (error) {
                 console.warn('error en mapa', error)
-                
+
             }
         }
-        
+
         map = L.map('map').setView([lat, lng], zoom)
-        
+
         map.on('moveend', () => {
             loadPlaces()
         })
@@ -1406,17 +1401,16 @@ async function enableCreatePlace() {
         // Selección robusta de tileLayer
         let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
         if (
-            (localStorage.getItem('theme') === 'dark') ||
-            (prefersDarkScheme.matches && !localStorage.getItem('theme'))
+            (localStorage.getItem('theme') === 'dark')
         ) {
             tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
         }
-        if(baseLayer){
+        if (baseLayer) {
             map.removeLayer(baseLayer)
         }
         baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
         baseLayer.addTo(map);
-       
+
 
         if (creationMarker) {
             map.removeLayer(creationMarker)
@@ -1489,11 +1483,8 @@ if (buttonDeleteAccount) {
 
     })
 }
-else {
-    console.warn('No se encontró el boton de delete account')
-}
 
-let downloadURL
+
 
 async function showDesktopPlaceCreation(position) {
 
@@ -1621,7 +1612,7 @@ border: 2px solid white;
         const nameInput = popupElement.querySelector('#name-desktop');
         const ratingInput = popupElement.querySelector('#rates-desktop');
         const comment = popupElement.querySelector('#comment-desktop');
-        
+
         const checkBox = popupElement.querySelector('#public');
 
 
@@ -1635,8 +1626,8 @@ border: 2px solid white;
                 return
             }
             if (checkBox.checked) {
-                if (!nameInput.value || !comment.value || !ratingInput.value || !photoFile ) {
-                    
+                if (!nameInput.value || !comment.value || !ratingInput.value || !photoFile) {
+
                     showErrorNotification(`${translations[lang].publicSaveRequirements}`)
                     return
                 };
@@ -1664,12 +1655,12 @@ border: 2px solid white;
                 showErrorNotification(`${translations[lang].invalidName}`)
                 return
             }
-           
+
             saveDesktop.textContent = `${translations[lang].saving}`
             let photoURL
             if (photoFile) {
                 document.getElementById('file-upload').addEventListener('change', async function (e) {
-                    
+
                     if (photoFile.type.startsWith('image/')) {
                         showSweetAlert('Videos no permitidos', 'Solo es posible subir imagenes de tus lugares', 'warning', 'OK')
                         this.value = ''; // limpia el input
@@ -1684,9 +1675,9 @@ border: 2px solid white;
 
                 await uploadBytes(storageRef, photoFile);
                 photoURL = await getDownloadURL(storageRef);
-                
+
             }
-            
+
             await saveCreatedPlace(position, nameInput.value, comment.value, ratingInput.value, photoURL)
             map.closePopup()
         });
@@ -1787,37 +1778,36 @@ async function loadPlaces() {
 }
 
 async function loadSharePlaces(places) {
-   
-         if (currentSharedInfoWindow) {
+
+    if (currentSharedInfoWindow) {
         currentSharedInfoWindow.close()
     }
-    
-        const mapContainer = document.getElementById('map-container')
-        mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
-        mapContainer.style.overflowY = 'none'
+
+    const mapContainer = document.getElementById('map-container')
+    mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
+    mapContainer.style.overflowY = 'none'
 
 
-        map = L.map('map').setView([38.5648, -0.0679], 13)
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
-        const atribution = '<small style="opacity:0.6;">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></small>'
+    map = L.map('map').setView([38.5648, -0.0679], 13)
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
+    const atribution = '<small style="opacity:0.6;">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></small>'
 
-        // Selección robusta de tileLayer
-        let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-        if (
-            (localStorage.getItem('theme') === 'dark') ||
-            (prefersDarkScheme.matches && !localStorage.getItem('theme'))
-        ) {
-            tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
-        }
-        if(baseLayer){
-            map.removeLayer(baseLayer)
-        }
-        baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
-        baseLayer.addTo(map);
-        
-   
-    
-      
+    // Selección robusta de tileLayer
+    let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+    if (
+        (localStorage.getItem('theme') === 'dark')
+    ) {
+        tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
+    }
+    if (baseLayer) {
+        map.removeLayer(baseLayer)
+    }
+    baseLayer = L.tileLayer(tileUrl, { attribution: atribution })
+    baseLayer.addTo(map);
+
+
+
+
 
     try {
         showLoadingPrincSpinner()
@@ -1859,10 +1849,10 @@ async function loadSharePlaces(places) {
         const marker = L.marker(place.position, { icon: icon })
         marker.addTo(map)
 
-        const likeButton = `<button class='button-likes'><img class='action-btn img-share' src='images/favorite.webp' alt='Me gusta'></button>`;
+        const likeButton = `<button class='button-likes'><img class='action-btn img-share' src='../images/favorite.webp' alt='Me gusta'></button>`;
 
         const popupContent = `
-            <div class="card-sites" data-id='${place.place_id}'>
+            <div class="card-sites" style="height:450px;max-height:450px; max-width:95vw; overflow:auto;"   data-id='${place.place_id}'>
                 <button class='close-window'>X</button>
                 <h2>${place.name || ''}</h2>
                 <div class='container-createds-card rating'>
@@ -1874,8 +1864,8 @@ async function loadSharePlaces(places) {
                 </div>
                 <div class='container-buttons'>
                     ${place.visibleToAll ? likeButton : ''}
-                    <button class='share-ubi'><img class='action-btn' src='images/location.webp' alt='Compartir ubicación'></button>
-                    <button class='share-card'><img class='action-btn' src='images/share (2).webp' alt='Compartir tarjeta'></button>
+                    <button class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
+                    <button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>
                 </div>
                 <div class='container-createds-card comment'>
                     <p class='coment-place'><strong>${place.visibleToAll ? place.createdBy : ''}</strong>${place.comment || ''}</p>
@@ -1912,21 +1902,21 @@ async function loadSharePlaces(places) {
                 });
             }
 
-             const likeBtn = popupElement.querySelectorAll('.button-likes');
+            const likeBtn = popupElement.querySelectorAll('.button-likes');
             if (likeBtn && place.visibleToAll) {
                 likeBtn.forEach(btn => {
                     btn.addEventListener('click', async (e) => {
-                         e.stopPropagation();
-                         const id = place.place_id
-                    await toggleLike(id, btn);
-                    const newCount = await getLikesCount(place.place_id);
-                    const likeCountElement = popupElement.querySelector('.count-likes');
-                    if (likeCountElement) {
-                        likeCountElement.textContent = `${newCount} ❤️`;
-                    }
+                        e.stopPropagation();
+                        const id = place.place_id
+                        await toggleLike(id, btn);
+                        const newCount = await getLikesCount(place.place_id);
+                        const likeCountElement = popupElement.querySelector('.count-likes');
+                        if (likeCountElement) {
+                            likeCountElement.textContent = `${newCount} ❤️`;
+                        }
                     })
                 })
-                
+
             }
 
             // Share location button
@@ -1960,12 +1950,12 @@ async function loadSharePlaces(places) {
                     <div class='comentarios-input'>
                         <textarea class='text-comment' id="input-comentario-${place.place_id}" placeholder="Escribe tu comentario..."></textarea>
                         <button class="btn-comentar" type='button' data-id="${place.place_id}">
-                            <img class='action-btn img-share' src='images/send.webp' alt='Enviar comentario'>
+                            <img class='action-btn img-share' src='../images/send.webp' alt='Enviar comentario'>
                         </button>
                     </div>`;
 
                 // Add comments section to popup
-                 const popupContentElement = popupElement.querySelector('.card-sites');
+                const popupContentElement = popupElement.querySelector('.card-sites');
                 if (popupContentElement) {
                     const commentsContainer = document.createElement('div');
                     commentsContainer.className = 'comments-container';
@@ -2032,7 +2022,7 @@ async function loadSharePlaces(places) {
 let currentMarker = null;
 async function addMarkerToPlace(place) {
     try {
-        
+
 
         // Ensure position is properly formatted
         const position = {
@@ -2062,11 +2052,11 @@ async function addMarkerToPlace(place) {
 
         const marker = L.marker(position, { icon: icon }).addTo(map);
         const likesCount = await getLikesCount(place.place_id)
-        const likeButton = `<button class='button-likes' data-id=${place.place_id}><img class='action-btn img-share' src='images/favorite.webp'></button>`;
+        const likeButton = `<button class='button-likes' data-id=${place.place_id}><img class='action-btn img-share' src='../images/favorite.webp'></button>`;
 
         // Create popup content
         const popupContent = `
-            <div class="card-sites" data-id='${place.place_id}'>
+            <div class="card-sites" style="height:450px;max-height:450px; max-width:95vw; overflow:auto;" data-id='${place.place_id}'>
                 <button class='close-window'>X</button>
                 <h2>${place.name || 'N/D'}</h2>
                 <div class='container-createds-card rating'>
@@ -2078,8 +2068,8 @@ async function addMarkerToPlace(place) {
                 </div>
                 <div class='container-buttons'>
                     ${place.visibleToAll ? likeButton : ''}
-                    <button class='share-ubi'><img class='action-btn' src='images/location.webp' alt='Compartir ubicación'></button>
-                    <button class='share-card'><img class='action-btn' src='images/share (2).webp' alt='Compartir tarjeta'></button>
+                    <button class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
+                    <button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>
                 </div>
                 <div class='container-createds-card comment'>
                 
@@ -2096,7 +2086,7 @@ async function addMarkerToPlace(place) {
 
         // Configurar el contenido y abrir
         currentMarker.bindPopup(popupContent, {
-            maxWidth: 400,
+            maxWidth: 900,
             className: 'custom-popup',
             closeButton: false
         })
@@ -2139,17 +2129,17 @@ async function addMarkerToPlace(place) {
             if (likeBtn && place.visibleToAll) {
                 likeBtn.forEach(btn => {
                     btn.addEventListener('click', async (e) => {
-                         e.stopPropagation();
-                         const id = btn.dataset.id
-                    await toggleLike(id, btn);
-                    const newCount = await getLikesCount(place.place_id);
-                    const likeCountElement = popupElement.querySelector('.count-likes');
-                    if (likeCountElement) {
-                        likeCountElement.textContent = `${newCount} ❤️`;
-                    }
+                        e.stopPropagation();
+                        const id = btn.dataset.id
+                        await toggleLike(id, btn);
+                        const newCount = await getLikesCount(place.place_id);
+                        const likeCountElement = popupElement.querySelector('.count-likes');
+                        if (likeCountElement) {
+                            likeCountElement.textContent = `${newCount} ❤️`;
+                        }
                     })
                 })
-                
+
             }
 
             // Share location button
@@ -2183,7 +2173,7 @@ async function addMarkerToPlace(place) {
                     <div class='comentarios-input'>
                         <textarea class='text-comment' id="input-comentario-${place.place_id}" placeholder="Escribe tu comentario..."></textarea>
                         <button class="btn-comentar" type='button' data-id="${place.place_id}">
-                            <img class='action-btn img-share' src='images/send.webp' alt='Enviar comentario'>
+                            <img class='action-btn img-share' src='../images/send.webp' alt='Enviar comentario'>
                         </button>
                     </div>`;
 
@@ -2377,24 +2367,24 @@ async function saveCreatedPlace(position, placeName, comment, rating, photoURL =
 
 async function toggleLike(placeId, button) {
     const user = auth.currentUser
-   
-    if(!button) return
+
+    if (!button) return
     const likeRef = doc(db, 'creados', placeId, 'likes', user.uid);
     const docSnap = await getDoc(likeRef)
-    
+
     if (docSnap.exists()) {
         // Si ya dio like, quitarlo
         await deleteDoc(likeRef);
-         button.style.filter = 'brightness(1)'
+        button.style.filter = 'brightness(1)'
 
     } else {
         // Si no, agregar like
         await setDoc(likeRef, {
             timestamp: Date.now()
         });
-       
-            button.style.filter = 'brightness(1.75)'
-        
+
+        button.style.filter = 'brightness(1.75)'
+
     }
 
     // (Opcional) actualizar contador total de likes
@@ -2410,6 +2400,7 @@ async function deleteCreatedPlace(placeId) {
         decrementarContadorCreados()
         renderPrivateCreatedsPlaces()
         renderCreatedPlaces()
+
         loadPlaces()
         showNotification(`${translations[lang].placeDeletedSuccess}`)
     }
@@ -2455,16 +2446,16 @@ async function renderCreatedPlaces() {
         const placesData = await Promise.all(placesPromises)
 
         placesData.forEach(({ place, placeId, likesCount }) => {
-           
+
             const html = `
-            <div class="site">
+            <div class="card-sites" style="height:auto; min-height:auto;">
                 <h3>${place.name || 'N/D'}</h3>
                 <div class='container-createds-card rating'>
                     <span>${likesCount} ❤️</span>
                     <p>${place.rating ? '⭐'.repeat(place.rating) : 'N/D'}</p>
                 </div>
                 <div class='container-createds-card photo'>
-                    ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='width: 100%; height: auto; max-height: 400px; min-height:400px; border-radius: 8px; object-fit: cover;'>` : '<p>Sin imagen</p>'}
+                    ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='width: 100%; min-width:100%; height: auto; max-height: 400px; min-height:400px; border-radius: 8px; object-fit: cover;'>` : '<p>Sin imagen</p>'}
                 </div>
                 <div class='container-createds-card comment'>
                     <p>${place.comment ? place.comment : 'N/D'}</p>
@@ -2492,6 +2483,7 @@ async function renderCreatedPlaces() {
                 btn.addEventListener('click', async () => {
                     const thePlaceId = btn.dataset.id
                     closeCreatedsPanel()
+                    closeMenu()
                     Swal.fire({
                         title: `${translations[lang].deleteConfirmTitle}`,
                         text: `${translations[lang].deleteConfirmText}`,
@@ -2528,7 +2520,7 @@ async function renderPrivateCreatedsPlaces() {
         console.warn('container element not found in the DOM')
     }
 
-    
+
     try {
         container.innerHTML = ''
         const q = query(collection(db, 'creados'),
@@ -2557,7 +2549,7 @@ async function renderPrivateCreatedsPlaces() {
         elements.privatesCreatedsSitesList = newContainer
         placesData.forEach(({ place, placeId }) => {
             const html = `
-    <div class="site">
+    <div class="card-sites" style="height:auto; min-height:auto;">
         <h3>${place.name || 'N/D'}</h3>
 
         <div class='container-createds-card rating'>
@@ -2596,7 +2588,7 @@ async function renderPrivateCreatedsPlaces() {
                 btn.addEventListener('click', async () => {
                     const thePlaceId = btn.dataset.id
                     closePrivatesCreatedsPanel()
-
+                    closeMenu()
                     Swal.fire({
                         title: `${translations[lang].deleteConfirmTitle}`,
                         text: `${translations[lang].deleteConfirmText}`,
@@ -2614,7 +2606,7 @@ async function renderPrivateCreatedsPlaces() {
                 })
             })
 
-            
+
         })
 
 
@@ -2656,7 +2648,7 @@ async function renderGlobalPlaces() {
     const snapshot = await getDocs(q)
 
     if (snapshot.empty) {
-         orNotification('No hay lugares para mostrar')
+        orNotification('No hay lugares para mostrar')
         return
     }
 
@@ -2664,16 +2656,16 @@ async function renderGlobalPlaces() {
     snapshot.forEach(async docSnap => {
         const commentUser = document.querySelectorAll('.comment-user')
         commentUser.forEach(box => {
-            box.style.minHeight ='100%'
+            box.style.minHeight = '100%'
             box.style.display = 'flex'
             box.style.flexDirection = 'column'
             box.style.alignItems = 'flex-start'
-        
+
         })
         const place = docSnap.data()
         const placeId = docSnap.id
-        const likeButton = `<button class='button-likes' data-id='${placeId}'><img class='action-btn img-share' src='images/favorite.webp'></button>`;
-        
+        const likeButton = `<button class='button-likes' data-id='${placeId}'><img class='action-btn img-share' src='../images/favorite.webp'></button>`;
+
         const likesCount = await getLikesCount(place.place_id)
         const html = ` <div class="site">
         
@@ -2683,22 +2675,22 @@ async function renderGlobalPlaces() {
                     <p>${place.rating ? '⭐'.repeat(place.rating) : ''}</p>
                 </div>
                 <div class='container-createds-card photo'>
-                 <a  class='download-btn'>${place.photo ? `<img class="place-photo" style='max-width:100%; object-fit:cover; min-width:100%; max-height:400px; min-height:400px; border-radius:12px;' loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado\'s photo'}'>` : ''}</a>   
+                 <a  class='download-btn'>${place.photo ? `<img class="place-photo" style='max-width:100%; object-fit:cover; min-width:100%; max-height:400px; min-height:400px;' loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado\'s photo'}'>` : ''}</a>   
                 </div>
                 <div class='container-buttons'>
                     ${place.visibleToAll ? likeButton : ''}
-                    <button class='share-ubi'><img class='action-btn' src='images/location.webp' alt='Compartir ubicación'></button>
-                    <button class='share-card'><img class='action-btn' src='images/share (2).webp' alt='Compartir tarjeta'></button>
+                    <button class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
+                    <button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>
                 </div>
                 <div class='container-createds-card comment'>
                 
-                    <p class='coment-place'><strong style='opacity:.8;'>${place.visibleToAll ? place.createdBy : ''}</strong> <br/> <span> ${place.comment || ''}</span></p>
+                    <p class='coment-place'><strong style='opacity:.8;'>${place.visibleToAll ? place.createdBy : ''}</strong> <span> ${place.comment || ''}</span></p>
                      <div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}"></div>
                     
                         <div class='comentarios-input'>
                             <textarea class='text-comment' id="input-comentario-${placeId}" data-i18n-placeholder="writeYourComment"></textarea>
                             <button class="btn-comentar" type='button' data-id="${place.place_id}">
-                                <img class='action-btn img-share' src='images/send.webp' alt='Enviar comentario'>
+                                <img class='action-btn img-share' src='../images/send.webp' alt='Enviar comentario'>
                             </button>
                         </div>
                  </div>      
@@ -2737,18 +2729,18 @@ async function renderGlobalPlaces() {
         const likeBtn = lastSite.querySelectorAll('.button-likes');
         if (likeBtn && place.visibleToAll) {
             likeBtn.forEach(btn => {
-               btn.addEventListener('click', async  (e) => {
-                 e.stopPropagation();
-                 const id = btn.dataset.id
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id
                     await toggleLike(id, btn);
                     const newCount = await getLikesCount(place.place_id);
                     const likeCountElement = lastSite.querySelector('.count-likes');
                     if (likeCountElement) {
                         likeCountElement.textContent = `${newCount} ❤️`;
                     }
-               })
+                })
             })
-                
+
 
         }
 
@@ -2809,7 +2801,7 @@ async function renderGlobalPlaces() {
 }
 
 
-    
+
 
 
 const homeBtn = document.getElementById('home-btn')
@@ -2817,14 +2809,10 @@ if (homeBtn) {
     homeBtn.addEventListener('click', () => {
         renderGlobalPlaces()
         appState.home = true
-    appState.map = false
-    appState.create = false
-    updateBarFromState()
+        appState.map = false
+        appState.create = false
+        updateBarFromState()
     })
-    
-}
-else {
-    console.warn('No se encontró el botón en el DOM')
 
 }
 
@@ -2847,7 +2835,7 @@ function animateButton() {
 if (elements.buttonCreatePlace) {
     elements.buttonCreatePlace.addEventListener('click', async (e) => {
         e.preventDefault()
-        
+
         await enableCreatePlace()
         appState.create = true
         appState.home = false
@@ -2857,9 +2845,7 @@ if (elements.buttonCreatePlace) {
     })
 
 }
-else {
-    console.warn('No se encontró el botón de crear lugar')
-}
+
 
 
 function closeCreatedsPanel() {
@@ -2868,9 +2854,6 @@ function closeCreatedsPanel() {
 
 if (elements.buttonClosePrivateCreateds) {
     elements.buttonClosePrivateCreateds.addEventListener('click', closePrivatesCreatedsPanel)
-}
-else {
-    console.warn('No se encontró el botón de cerrar panel de lugares creados privados')
 }
 
 
@@ -2898,9 +2881,7 @@ if (elements.buttonCloseCreateds) {
         closeCreatedsPanel()
     })
 }
-else {
-    console.warn('No se encontró el botón de cerrar panel de lugares creados')
-}
+
 
 
 const menuOptions = document.getElementById('get-options')
@@ -3004,9 +2985,7 @@ if (downloadPol || downloadTer) {
         downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/TERMOS-E-CONDIÇÕES.pdf'))
     }
 }
-else {
-    console.warn('No se encontraron los botones de descargar pdf')
-}
+
 
 
 

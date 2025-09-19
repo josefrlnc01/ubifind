@@ -4,6 +4,8 @@
   "description": "A project by the people, for the people",
   "main": "script.js",
   "scripts": {
+    "start": "node server-simple.js",
+    "dev": "http-server www -p 3000 -o",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -35,6 +37,9 @@
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
-    "cordova-res": "^0.15.4"
+    "connect-history-api-fallback": "^2.0.0",
+    "cordova-res": "^0.15.4",
+    "express": "^5.1.0",
+    "http-server": "^14.1.1"
   }
 }

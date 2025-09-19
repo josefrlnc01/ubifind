@@ -138,7 +138,7 @@ export async function addComment(text, placeId) {
         
         // Añadir el documento
         const docRef = await addDoc(comentariosRef, comentario);
-        console.log('Comentario añadido con ID:', docRef.id);
+        
         
         // Actualizar la interfaz de usuario
         await loadComments(placeId);

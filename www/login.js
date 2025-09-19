@@ -18,6 +18,8 @@ import {
 
 const regexMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 let lang = getCurrentLanguage()
+
+
 // Initialize translations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   // Apply translations and update the language selector if it exists
@@ -63,7 +65,7 @@ button.addEventListener('click', async (e) => {
    
   }
   
-window.location.href = 'index.html'
+window.location.href = '/app/index.html'
   }
   
   catch(error){
@@ -168,7 +170,7 @@ btn.addEventListener('click', async (e) => {
    
          
        }
-       window.location.href = 'index.html';
+       window.location.href = '/app/index.html';
   } catch (err) {
     console.error(err);
     alert('Error al iniciar sesión con Google: ' + (err?.message || err));

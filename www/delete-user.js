@@ -1,13 +1,16 @@
-import { deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { deleteUser, EmailAuthProvider, reauthenticateWithCredential, GoogleAuthProvider, reauthenticateWithPopup, reauthenticateWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import { auth } from "./firebaseConfig.js";
 
 export async function deleteUserAccount() {
     const user = auth.currentUser;
     if (!user) return;
-    
+    const provider = user.providerData[0]?.providerId;
     try {
+        
         // Prompt user for their password for re-authentication
-        const { value: password } = await Swal.fire({
+        if(provider === 'password'){
+            
+            const { value: password } = await Swal.fire({
             title: 'Confirmar eliminación',
             text: 'Por seguridad, ingresa tu contraseña para continuar con la eliminación de la cuenta',
             input: 'password',
@@ -31,7 +34,20 @@ export async function deleteUserAccount() {
 
         // Re-authenticate user
         const credential = EmailAuthProvider.credential(user.email, password);
-        await reauthenticateWithCredential(user, credential);
+        reauthenticateWithCredential(user, credential)
+        
+        }
+        if(provider === 'google'){
+             const provider = new GoogleAuthProvider()
+            if(!window.capacitor.isNativePlatform()){
+               
+            reauthenticateWithPopup(user,provider)
+            }
+            else{
+                reauthenticateWithRedirect(user, provider)
+                const result = await getRedirectResult(auth)
+            }
+        }
         
         // If re-authentication is successful, delete the account
         await deleteUser(user);

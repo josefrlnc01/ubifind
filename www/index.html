@@ -1,334 +1,157 @@
+<!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8" />
-   
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="Ubifind es la red social para exploradores. Crea, descubre y comparte lugares únicos en el mapa.">
-    <meta name="keywords" content="Ubifind, lugares, explorar, viajes, mapa, sitios, excursion">
-    <meta property="og:title" content="Ubifind - Explora lugares">
-    <meta property="og:description" content=" Descubre nuevos lugares y crea los tuyos propios 🌍">
-    <meta property="og:image" content="images/faviconlogo.ico">
-    <meta property="og:url" content="https://ubifindapp.com/">
-    <meta property="og:type" content="website">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob: https:; 
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://maps.gstatic.com https://js.revenuecat.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; 
-      style-src 'self' 'unsafe-inline' https://*.googleapis.com https://maps.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com;
-      img-src 'self' data: blob: https: http: *; 
-      connect-src 'self' https: http: wss: *;
-      frame-src 'self' https://*.google.com https://apis.google.com https://*.revenuecat.com https://new-day-459708.firebaseapp.com https://new-day-459708.web.app https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep2.adtrafficquality.google *;
-      font-src 'self' https: http: data: *;
-      worker-src 'self' blob: *;
-      script-src-elem 'self' 'unsafe-inline' https://*.googleapis.com https://apis.google.com https://maps.gstatic.com https://js.revenuecat.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://googleads.g.doubleclick.net *;
-      child-src 'self' blob: https: http: *;
-      media-src 'self' blob: https: http: data: *;
-      object-src 'none';
-      base-uri 'self';
-      form-action 'self';
-      upgrade-insecure-requests;"
-      http-equiv="Content-Security-Policy">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ubifind</title>
+  
+    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Galindo&display=swap" rel="stylesheet">
     <link rel="icon" type="image/jpg" href="images/faviconlogo.ico" />
-    <link rel="stylesheet" href="style.css" />
-  
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
-    <link href="https://fonts.googleapis.com/css2?family=Galindo&family=Poppins:wght@400;600;700&display=swap"
-        rel="stylesheet">
+        
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="landing/style.css"/>
 
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.0/lottie.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1639698267501945"
-     crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.0/lottie.min.js"></script>
-    
-    
-    
-   
-  
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-        <!-- Load Capacitor first -->
-        <script src="https://cdn.jsdelivr.net/npm/@capacitor/core@7.3.0/dist/capacitor.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@capacitor/app@7.3.0/dist/plugin.js"></script>
-        
-        <!-- Other dependencies -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.2/web-animations.min.js"></script>
-        
-        <!-- Scripts de RevenueCat -->
-        <script src="https://cdn.jsdelivr.net/npm/@revenuecat/purchases-js@1.12.1/dist/Purchases.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
 
-        
-        <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/shepherd.js@13.0.0/dist/css/shepherd.css">
+    <script src="https://cdn.jsdelivr.net/npm/@capacitor/core@7.3.0/dist/capacitor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@capacitor/app@7.3.0/dist/plugin.js"></script>
 
-<!-- Shepherd UMD: define window.Shepherd -->
-<script defer src="https://cdn.jsdelivr.net/npm/shepherd.js@13.0.0/dist/js/shepherd.min.js"></script>
-
-        
-        <!-- Initialize global objects -->
-        <script>
-            // Initialize global objects that need to be available before modules load
-            window.googleMapsLoaded = false;
-            window.Capacitor = window.Capacitor || {};
-            window.Purchases = window.Capacitor?.Plugins?.Purchases || window.Purchases;
-        </script>
-        
-        <!-- Translation system -->
-        <script type="module" src="./js/i18n.js"></script>
-        
-        <!-- Your application scripts as modules -->
-        <script type="module" src="./script.js"></script>
-        
-        <!-- Capacitor platform-specific scripts -->
-        <script nomodule src="cordova.js"></script>
-        <script nomodule src="capacitor.js"></script>
-        <script nomodule src="capacitor-windows.js"></script>
-
+     <script nomodule src="cordova.js"></script>
+    <script nomodule src="capacitor.js"></script>
+    <script nomodule src="capacitor-windows.js"></script>
 </head>
-
- 
-<body>
-
-    <div class="loader-overlay" id="loader-princ">
-        <div class="newplace-spinner">
-          <div class="ring"></div>
-          <div class="dot"></div>
-        
+<body class="relative">
+    <div class="absolute -z-10 inset-0  h-full w-full bg-black"><div class="absolute inset-0 bg-[radial-gradient(circle_800px_at_40%_40%,#4c1d95,transparent)] opacity-60"></div><div class="absolute inset-0 bg-[radial-gradient(circle_600px_at_60%_60%,#1d4ed8,transparent)] opacity-60"></div><div class="absolute inset-0 bg-[radial-gradient(circle_900px_at_50%_50%,#0f172a,transparent)] opacity-40"></div><div class="absolute inset-0 [background-image:url(&#x27;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1Ii8+PC9zdmc+&#x27;)] opacity-50"></div></div>
+    <header class="header">
+        <div class="header-title-container">
+            <img class="logo" src="landing/images/icon (1).webp" width="45px" height="45px"/>
+            <h1 onclick="window.scrollTo({top:0, behavior:'smooth'})">Ubifind</h1>
+            
         </div>
-    </div>
-   
-
-   <div id="confeti-container" style="display: none;"></div>
-   <div id="lottie-confeti-container" style="display: none;"></div>
-
-    </dialog>
-
-    
-
-    <main class="container">
-        <header class="titles" id="header">
-
-            <nav class="header-buttons">
-                <div class="settings-container">
-                    <!-- Botón que abre/cierra el menú -->
-                    <button id="settings-button">
-                        <img class="icono ajustes" alt="icono de ajustes" src="images/icons8-ajustes-50.webp" />
-                        <!-- Puede usar un SVG o fuente de iconos real aquí -->
-                    </button>
-
-                    <!-- Menú desplegable de ajustes -->
-                    <ul id="settings-menu" class="settings-dropdown" role="menu" aria-label="Menú de ajustes">
-                    <!--  <li style="color: rgb(207, 207, 0);" class="section-title" id="premium-title">Premium</li>
-                        <li role="none"><a id="show-premium"  role="menuitem"><span
-                            class="icon icon-premium" id="premium-li"> DESCUBRE EL POTENCIAL COMPLETO </span></a></li>
-                            -->
-
-                           
-                        <li class="section-title" data-i18n="userPerfil">Perfil de usuario</li>
-                       
-                        <li role="none"><a role="menuitem" href="resetPass.html" data-i18n="changePassword"><span
-                                    class="icon icon-password"></span>Cambiar
-                                contraseña</a></li>
-                        <li id="delete-account" role="none"><a role="menuitem" data-i18n="deleteAccount" href="#"><span
-                                    class="icon icon-delete"></span>Eliminar
-                                cuenta</a></li>
-                                <li class="section-title" data-i18n="languageSelect">Idioma</li>
-                                <li role="none"> <select name="lang" id="lang-selector">
-                                    <option value="en">English</option>
-                                    <option value="es">Español</option>
-                                    <option value="fr">Français</option>
-                                    <option value="it">Italiano</option>
-                                    <option value="de">Deutsch</option>
-                                    <option value="pt">Português</option>
-                                </select> </li>
-                        <li class="section-title" data-i18n="preferences">Preferencias de la app</li>
-                        <li role="none"><a role="menuitem" class="toggle-theme" id="toggle">
-                                <div class="toggle-theme-container">
-                                    <span data-i18n="theme">Tema claro/oscuro</span>
-                                   
-                                </div>
-                            </a></li>
-
-                        <li class="section-title" data-i18n="privacityAndSecurity">Privacidad y seguridad</li>
-                        <li role="none"><a role="menuitem" data-i18n="politicy" id="down-poli"><span
-                                    class="icon icon-privacy"></span>Política de
-                                privacidad</a></li>
-                        <li role="none"><a role="menuitem" data-i18n="termsAndConditions" id="down-term"><span class="icon icon-terms"></span>Términos
-                                y
-                                condiciones</a></li>
-                        <li class="section-title" data-i18n="help">Ayuda y soporte</li>
-                        <!--<li role="none"><a role="menuitem" href="#"><span class="icon icon-faq"></span>Preguntas
-                            frecuentes</a></li>-->
-                        <li role="none"><a role="menuitem" data-i18n="contact" href="contact.html"><span
-                                    class="icon icon-contact"></span>Contacto</a></li>
-                        <li role="none"><a role="menuitem" data-i18n="report" href="problems.html"><span
-                                    class="icon icon-report"></span>Reportar
-                                problema</a></li>
-
-                        <li class="section-divider"></li> <!-- separador visual opcional -->
-                        <li id="log-out-button" role="none"><a role="menuitem" data-i18n="logOut" href="#"><span
-                                    class="icon icon-logout"></span>Cerrar sesión</a>
-                        </li>
-                    </ul>
-                </div>
-                <button type="button" id="toggle-menu">
-                    <img class="icono menu" src="images/icons8-menú-50.webp" />
-                </button>
+        <div class="header-links-container">
+            <svg class="menu"  xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#EFEFEF"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
+           
+        </div>
+         <nav class="header-links-nav-desktop">
+                <ul class="header-links-list">
+                    
+                        <li class="login"><a href="login.html" class="header-link">Inicia sesión</a></li>
+                    <li class="contact"><a href="#contact-form">Contacto</a></li>
+                </ul>
+            </nav>
+        <div class="floating-navbar relative">
+            
+         <nav class="header-links-nav">
+                <ul class="header-links-list">
+                    <li class="download"><a class="header-link" href="https://play.google.com/apps/testing/com.ubifind.app">Descargar</a></li>
+                    
+                    <li class="contact"><a href="#contact-form" class="header-link">Contacto</a></li>
+                </ul>
             </nav>
 
+    </div>
+    </header>
 
-        </header>
+    <div class="header-links-container-mobile">
+            <nav class="header-links-nav-mobile">
+                
+                
+                
+            </nav>
+        </div>
+    <main class="principal">
+        <button class="login-button">
+            <a href="login.html" class="header-link-mobile">Inicia sesión</a>
+        </button>
+        <div class="title-section">
+            <h2>Una experiencia de 'Estar como en casa'</h2>
+            <p class="text-principal">Interfaz clara y agradable con un enfoque minimalista y cotidiano.</p>
+        </div>
+       
+    
 
-        <aside class="principal">
-          
-            <div class="map-container" id="map-container">
-                <div id="map"  loading="lazy"></div>
-              
-            </div>
-            
-            
-            
-        </aside>
+
+
+        <section class="why-use-it">
+            <aside class="reasons-use-container">
+                <h2 class="title-reasons">¿Que es Ubifind?</h2>
+                <p class="subtitle-reasons">Ubifind es una red social para encontrar/publicar lugares y poder compartir tus experiencias con todo el mundo.</p>
+                <div class="grid-reasons">
+
+                    <div class="reason">
+                        <div class="reason-icon">✏️​</div>
+                        <h3 class="reason-title">Creación de lugares</h3>
+                        <p class="reason-text">Crea tarjetas de lugares personalizadas que serán visibles para todo el mundo ¡puedes comentar y likear las de los demás!</p>
+                    </div>
+                    <div class="reason">
+                        <div class="reason-icon">📍</div>
+                        <h3 class="reason-title"> Comparte tus lugares</h3>
+                        <p class="reason-text">Comparte la ubicación de tus lugares favoritos con tus amigos y la comunidad.</p>
+                    </div>
+
+
+                    <div class="reason">
+                        <div class="reason-icon">🔍</div>
+                        <h3 class="reason-title">Facilidad para encontrar tus creados</h3>
+                        <p class="reason-text">Una vez tengas lugares creados puedas buscar sus tarjetas de información gracias a una barra de búsqueda especializada.</p>
+                    </div>
+
+                    <div class="reason">
+                        <div class="reason-icon">​✔️​​</div>
+                        <h3 class="reason-title">Intuitivo y personalizado</h3>
+                        <p class="reason-text">Al poco tiempo de utilizar la aplicación te familiarizas con ella y se hace muy sencillo su uso.</p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+
+
+
+      
+
+
+
+       
     </main>
-   
-
-   
-
-    <aside id="get-options" class="options-places-panel">
-        <div class="panel-header">
-            <button id="close-menu" class="panel-btn" title="Cerrar">
-                <i class="fas fa-times" style="text-align: center;"></i>
-            </button>
-        </div>
-    
-        <div id="container-options">
-            <button id="get-createds" class="btn btn-saved">
-                <span data-i18n="publicCreatedsPlaces">
-                    Mis Lugares Creados Públicos
-                </span>
-                <i class="fas fa fa-pen"></i>
-            </button>
-            <button id="get-public-createds" class="btn btn-saved">
-                <span data-i18n="privatedCreatedsPlaces">Mis Lugares Creados Privados
-
-                </span>
-                <i class="fas fa fa-pen"></i>
-            </button>
-        </div>
-    </aside>
-    <aside id="get-createds-sites" class="createds-places-panel">
-        <div class="panel-header">
-            <div class="panel-actions">
-
-                <button id="close-createds-storage" class="panel-btn" title="Cerrar">
-                    <i class="fas fa-times" style="text-align: center;"></i>
-                </button>
-            </div>
-        </div>
-        <div id="container-created-sites">
-            <input type="text" id="search-createds-card" name="search-card" />
-            <div id="sites-createds-list" class="places-grid"></div>
-        </div>
-    </aside>
-
-    <aside id="get-createds-private-sites" class="createds-privates-places-panel">
-        <div class="panel-header">
-            <div class="panel-actions">
-
-                <button id="close-private-createds-storage" class="panel-btn" title="Cerrar">
-                    <i class="fas fa-times" style="text-align: center;"></i>
-                </button>
-            </div>
-        </div>
-        <div id="container-private-created-sites">
-            <input type="text" id="search-createds-private-card"  name="search-card" />
-            <div id="sites-createds-privates-list" class="places-grid"></div>
-        </div>
-    </aside>
 
     
-    <div id="notification-banner" class="notification-banner hidden ">
-         <span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="Success">
-  <title>Success</title>
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#34d399"/>
-      <stop offset="1" stop-color="#10b981"/>
-    </linearGradient>
-  </defs>
-  <!-- Círculo de fondo -->
-  <circle cx="12" cy="12" r="10" fill="url(#g)"/>
-  <!-- Check centrado -->
-  <path d="M9.5 12.5l-1.8-1.8a1 1 0 00-1.4 1.4l2.5 2.5c.39.39 1.03.39 1.42 0l6.2-6.2a1 1 0 00-1.42-1.42l-5.5 5.5z"
-        fill="#fff"/>
-</svg>
 
-       </span>
-        <p id="notification-message" style="text-align: center;"></p>
-      
-
-    </div>
-    
-    <div id="error-notification-banner" class="error-notification-banner hidden ">
-        <span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" role="img" aria-label="Error">
-  <title>Error</title>
-  <!-- Círculo con borde rojo -->
-  <circle cx="12" cy="12" r="9" fill="none" stroke="#ef4444" stroke-width="2"/>
-  <!-- X centrada -->
-  <path d="M15 9l-6 6M9 9l6 6"
-        fill="none"
-        stroke="#ef4444"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"/>
-</svg>
-
-        </span>
-        <p id="error-notification-message" style="text-align: center;" ></p>
+    <section class="form-users-section" id="contact-form">
+        <h3>¿Tienes alguna duda sobre Ubifind o incluirías alguna mejora? ¡No dudes en contactar!</h3>
         
-    </div>
-
-
-   
-
-    <footer class="footer-btns">
-        
-            <button id="home-btn" type="button" class="form-buttons">
-                <span><i class="fa fa-home home"></i></span>
-            </button>
-             <button id="create-place-btn" type="button" class="form-buttons">
-                <span><i class="fa fa-pen create"></i></span>
-            </button>
-            <button id="map-btn" type="button" class="form-buttons">
-                <span><i class="fa fa-globe globe"></i></span>
-            </button>
-          
-      
-
+        <form class="form-users" action="https://formspree.io/f/manengnz" method="post" >
+           
+            <div class="inputContainer">
+                <label for="name">Nombre y apellidos</label>
+                <input type="text" name="name" id="name"/>
+            </div>
+            <div class="inputContainer">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email"/>
+            </div>
+            <div class="inputContainer">
+                <label for="message">Escribe aquí tu mensaje</label>
+                <textarea name="message" id="message"></textarea>
+            </div>
+            <div class="inputContainer button">
+                <button class="send-form">Enviar</button>
+            </div>
+        </form>
+       
+    </section>
+    <footer class="footer">
+        <div class="footer-links-container">
+            <small style="margin-right: 1rem;"> 2025 © <strong style="color: #5a4bff; margin-left: .1rem; margin-right: 1rem;">Ubifind </strong>- Explora lugares desde tu dispositivo. </small>
+            <nav class="footer-links-nav">
+                <a href="https://www.tiktok.com/@ubifind"><i class="fab fa-tiktok"></i></a>
+            </nav>
+        </div>
     </footer>
-
-
-
-
-
-
-
-
+    
+    <script src="landing/script.js" type="module" defer></script>
 </body>
-
 </html>

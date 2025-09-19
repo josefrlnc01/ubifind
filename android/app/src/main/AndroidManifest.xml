@@ -8,90 +8,105 @@
         <package android:name="com.google.android.apps.maps" />
     </queries>
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/AppTheme"
+  >
         <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-1639698267501945~9046694854"
-        />
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="ca-app-pub-1639698267501945~9046694854"
+    />
 
         <!-- Google Play Services -->
         <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"
-        />
+      android:name="com.google.android.gms.version"
+      android:value="@integer/google_play_services_version"
+    />
 
         <!-- Google Sign-In Configuration -->
         <meta-data
-            android:name="com.google.android.gms.auth.api.signin.credentials.ENABLE_CREDENTIALS"
-            android:value="true"
-        />
+      android:name="com.google.android.gms.auth.api.signin.credentials.ENABLE_CREDENTIALS"
+      android:value="true"
+    />
 
         <!-- Web client ID for server verification -->
         <meta-data
-            android:name="com.google.android.gms.auth.api.signin.credentials.SERVER_CLIENT_ID"
-            android:value="940873643414-856bc0no2p33f06lr9netrff6c77miul.apps.googleusercontent.com"
-        />
+      android:name="com.google.android.gms.auth.api.signin.credentials.SERVER_CLIENT_ID"
+      android:value="940873643414-856bc0no2p33f06lr9netrff6c77miul.apps.googleusercontent.com"
+    />
 
         <!-- Google Sign-In -->
         <meta-data
-            android:name="com.google.android.gms.auth.api.signin.credentials.ACCOUNT_NAME"
-            android:value="@string/app_name"
-        />
+      android:name="com.google.android.gms.auth.api.signin.credentials.ACCOUNT_NAME"
+      android:value="@string/app_name"
+    />
 
         <!-- Google Play Services -->
-        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
+        <meta-data
+      android:name="com.google.android.gms.wallet.api.enabled"
+      android:value="true"
+    />
 
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
-            android:name=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBarLaunch"
-            android:launchMode="singleTask"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="new-day-459708.firebaseapp.com" android:scheme="https" />
-            </intent-filter>
-            <intent-filter android:autoVerify="true">
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
+      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
+      android:name=".MainActivity"
+      android:windowSoftInputMode="adjustResize"
+      android:screenOrientation="portrait"
+      android:label="@string/title_activity_main"
+      android:theme="@style/AppTheme.NoActionBarLaunch"
+      android:launchMode="singleTask"
+      android:exported="true"
+    >
 
-    <data
-        android:scheme="https"
-        android:host="ubifindapp.com"
-        android:pathPrefix="/creado" />
-</intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+             <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="ubifindapp.com"
+                    android:pathPrefix="/app/"
+                    />
+            </intent-filter>
+
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="newplaceapp.com" android:pathPrefix="/" />
+                <data
+          android:host="new-day-459708.firebaseapp.com"
+          android:scheme="https"
+        />
             </intent-filter>
+           
+            
+           
         </activity>
         <activity
-            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-        />
+      android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+      android:exported="false"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"
+    />
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
+      android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.fileprovider"
+      android:exported="false"
+      android:grantUriPermissions="true"
+    >
+            <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths"
+      />
         </provider>
     </application>
 
