@@ -90,6 +90,7 @@
 </head>
 
 <body>
+    <div class="ring-charge"></div>
     <div class="loader-overlay" id="loader-princ">
         <div class="newplace-spinner">
             <div class="ring"></div>
@@ -119,7 +120,7 @@
                         </li>
 
                         <li role="none">
-                            <a role="menuitem" href="resetPass.html" data-i18n="changePassword"><span
+                            <a role="menuitem" href="../resetPass.html" data-i18n="changePassword"><span
                                     class="icon icon-password"></span>Cambiar contraseña</a>
                         </li>
                         <li id="delete-account" role="none">
@@ -165,20 +166,20 @@
                         <!--<li role="none"><a role="menuitem" href="#"><span class="icon icon-faq"></span>Preguntas
                             frecuentes</a></li>-->
                         <li role="none">
-                            <a role="menuitem" data-i18n="contact" href="contact.html"><span
+                            <a role="menuitem" data-i18n="contact" href="../contact.html"><span
                                     class="icon icon-contact"></span>Contacto</a>
                         </li>
                         <li role="none">
-                            <a role="menuitem" data-i18n="report" href="problems.html"><span
+                            <a role="menuitem" data-i18n="report" href="../problems.html"><span
                                     class="icon icon-report"></span>Reportar problema</a>
                         </li>
 
                         <li class="section-divider"></li>
                         <!-- separador visual opcional -->
                         <li id="log-out-button" role="none">
-                            <span  data-i18n="logOut"  class="icon icon-logout">
+                            <a data-i18n="logOut" >
                                 Cerrar sesión
-                            </span>
+                            </a>
                                 
                         </li>
                     </ul>
@@ -192,6 +193,7 @@
         <aside class="principal">
             <div class="map-container" id="map-container">
                 <div id="map" loading="lazy"></div>
+                
             </div>
         </aside>
 

@@ -1,6 +1,6 @@
 {
   "appId": "com.ubifind.app",
-  "appName": "UFind",
+  "appName": "Ubifind",
   "webDir": "www",
   "server": {
     "cleartext": true,
@@ -29,12 +29,9 @@
       "androidScheme": "https"
     },
   "CustomURLScheme": {
-    "scheme": "newplaceapp",
+    "scheme": "ubifindapp",
     "host": "open"
   },
-    "Purchases": {
-      "apiKey": "goog_YhBEczdwaWegvjAeukgWXnDDDen"
-    }
    
   },
   "android": {

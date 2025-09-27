@@ -9,15 +9,15 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-    implementation project(':capacitor-community-admob')
     implementation project(':capacitor-browser')
     implementation project(':capacitor-filesystem')
     implementation project(':capacitor-push-notifications')
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
+    implementation project(':capawesome-team-capacitor-file-opener')
     implementation project(':capgo-capacitor-social-login')
     implementation project(':revenuecat-purchases-capacitor')
-    implementation "com.android.billingclient:billing:3.0.3"
+
 }
 
 

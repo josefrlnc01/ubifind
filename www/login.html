@@ -39,13 +39,16 @@
             <span id="response" data-i18n="response">&nbsp;</span>
             <div class="inputContainer button">
                 <button id="submit" type="submit" data-i18n="login">Iniciar sesión</button>
-                <button id="login-google" type="button" data-i18n="google">Entrar con Google <i class="fa-brands fa-google"></i></button>
+                <button id="login-google" type="button" >
+                    <img src="images/google.webp" alt="Google logo" width="32" height="32"/>
+                    <p data-i18n="google"> Entrar con Google</p> 
+                </button>
             </div>
            
             </div>
-            <p><a class="noAccount" data-i18n="noAccount">No tienes una cuenta?</a> <a href="register.html" data-i18n="createAccount">Créala</a></p>
+            <p><a class="noAccount" data-i18n="noAccount">No tienes una cuenta?</a> <a class="createAccount" href="register.html" data-i18n="createAccount">Créala</a></p>
            
-            <a data-i18n="forgotPassword" href="generatePasswordWithEmail.html">Olvidé mi contraseña</a>
+            <a data-i18n="forgotPassword" class="forgot" href="generatePasswordWithEmail.html">Olvidé mi contraseña</a>
             
         </form>
     </main>

@@ -129,8 +129,8 @@ if (buttonGoogle) {
       return;
     }
     
-    console.log('Iniciando autenticación con Google...');
-    response.textContent = 'Iniciando sesión con Google...';
+    
+    
 
     const isNative = !!window.Capacitor?.getPlatform && window.Capacitor.getPlatform() !== 'web';
     const provider = new GoogleAuthProvider();

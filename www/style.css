@@ -52,6 +52,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 body {
   margin: 0;
@@ -889,6 +890,7 @@ body.dark .card-sites p span{
   cursor: pointer;
 }
 .place-photo{
+  animation: showImage .5s ease-in-out;
   max-width: 100%;
     object-fit: cover;
     min-width: 100%;
@@ -1367,8 +1369,9 @@ p {
   width: 100%;
   margin: auto;
 }
-.comment {
-  width: 95%;
+
+.comment-form {
+  width: 100%;
   margin: auto;
   flex-direction: column;
   text-align: start;
@@ -1501,6 +1504,14 @@ body.dark .container-createds-card label {
     min-width: 100%;
     max-width: 100%;
   }
+
+   .comment-card{
+  width: 95% !important;
+  margin: auto;
+  flex-direction: column;
+  text-align: start;
+  gap: 12px;
+}
 .btn-comentar {
   filter: contrast(1.3);
   background:#5a4bff;
@@ -1692,10 +1703,14 @@ body.dark .price {
   margin: auto;
   width: 95%;
   justify-content: center;
-  gap:0rem;
+  
   padding: 2px;
 
   
+}
+.container-buttons-form{
+  display: flex;
+  justify-content: space-around;
 }
 .button-likes{
   border-radius: 6px 0px 0px 6px;
@@ -1980,23 +1995,7 @@ footer {
   cursor: pointer;
 }
 
-/* Estilos para el spinner de carga */
-#loader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, #504582, #9b86fca8);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+
 
 #loader-princ {
   position: fixed;
@@ -2004,7 +2003,7 @@ footer {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, #6c5ce7, #1c05c5);
+  background: linear-gradient(120deg, #6c5ce700, #1c05c500);
   backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
@@ -2117,7 +2116,19 @@ select {
   flex-direction: column;
   align-items: center;
 }
+.ring-charge{
+  width: 20px;
+    height: 0px;
+    border: 10px solid rgba(255, 255, 255, 0.658);
+    border-radius: 50%;
+    
+    box-shadow: 0 0 10px white;
+    animation: spin 1s ease-in-out infinite;
 
+    display: none;
+    border-top-color: #5649c0;
+    filter: contrast(2);
+}
 .ring {
   width: 100px;
   height: 100px;
@@ -2141,90 +2152,8 @@ select {
   animation: fadeIn 0.4s ease forwards;
 }
 
-.adblock-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  transition: opacity 0.3s ease;
-}
 
-.adblock-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  max-width: 90%;
-  text-align: center;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
 
-.adblock-content h2 {
-  margin-top: 0;
-}
-
-.adblock-content button {
-  margin: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  background: #5a4bff;
-  color: white;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.adblock-content button:hover {
-  background: #4a3ce0;
-}
-
-.flyer-container {
-  min-width: 600px;
-  min-height: 600px;
-  background: #1e1e2f;
-  color: white;
-  font-family: "Segoe UI", sans-serif;
-  border-radius: 16px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-}
-.flyer-header {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-#flyer-title {
-  font-size: 1.6em;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: #4a3aff;
-}
-.img-flyer {
-  width: 250px;
-  border-radius: 8px;
-  margin: auto;
-}
-.flyer-content {
-  padding: 24px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  font-size: 1.2em;
-  justify-content: center;
-  align-items: center;
-}
 
 .comment-place {
   width: 100%;
@@ -2613,10 +2542,6 @@ h4 {
     padding: 0.75rem;
     width: 45%;
   }
-  .container-buttons {
-    justify-content: space-around;
-   
-  }
   
 }
 @media (max-width: 400px) {
@@ -2964,13 +2889,23 @@ input[type="file"] {
 }
 @keyframes fadeIn {
   from {
+    
     opacity: 0;
   }
   to {
     opacity: 1;
   }
 }
-
+@keyframes showImage {
+  from{
+    opacity: 0;
+    filter: blur(20px);
+  }
+  to{
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
 @keyframes zoomFadeIn {
   0% {
     z-index: 0;

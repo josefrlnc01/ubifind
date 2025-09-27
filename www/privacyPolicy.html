@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="register.css"/>
+    <script type="module" src="js/i18n.js"></script>
+    <script type="module" src="script.js"></script>
+    <title>Privacy and Politicy</title>
+</head>
+<body style="min-height: 100vh; position: relative;">
+
+     <button class="exit">x</button>
+    <div data-i18n="privacyPolicy" style="margin-top: 5rem; max-width: 800px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; padding: 40px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">
+    </div>
+</body>
+<script>
+    document.querySelector('.exit').addEventListener('click', () => {
+        window.location.href = 'app/index.html'
+    })
+</script>
+</html>

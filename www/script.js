@@ -24,12 +24,12 @@ import { addComment, loadComments } from "./comments.js";
 
 // Capacitor is available globally via window.Capacitor
 
-// Google Maps components will be accessed through getGoogleMapsComponents()
+//  Leaflet components will be accessed through getGoogleMapsComponents()
 let userInitiatedSearch = false;
 document.getElementById('search-normal')?.addEventListener('click', () => userInitiatedSearch = true);
 document.getElementById('locate-me')?.addEventListener('click', () => userInitiatedSearch = true);
 
-// Variables para almacenar los componentes de Google Maps
+// Variables para almacenar los componentes de  Leaflet
 
 
 // Inicializa Firebase
@@ -37,9 +37,6 @@ export let isPremium = false;
 
 
 let lang = getCurrentLanguage();
-
-
-
 
 
 const appState = {
@@ -64,7 +61,7 @@ const elements = {
     pricesFilter: document.getElementById('prices'),
     ratingFilter: document.getElementById('rating'),
     filterQuantity: document.getElementById('quantity'),
-    mapContainer: document.getElementById('map'),
+    mapContainer: document.getElementById('map-container'),
     getSitesContainer: document.getElementById('get-sites'),
     getSitesCreatedContainer: document.getElementById('get-createds-sites'),
     sitesList: document.getElementById('sites-list'),
@@ -118,63 +115,72 @@ let pendingDeepLinkPlaceId = null
 // Asegurarse de que el DOM esté completamente cargado
 
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        showLoadingPrincSpinner()
-        initializeCapacitor()
+document.addEventListener('DOMContentLoaded', async () => {
+    showLoadingPrincSpinner()
+    initializeCapacitor()
 
-        onAuthStateChanged(auth, async (user) => {
-            const publicPages = ['login.html', 'register.html'];
-            const currentPage = window.location.pathname.split('/').pop();
+    onAuthStateChanged(auth, async (user) => {
+        const publicPages = ['login.html', 'register.html'];
+        const currentPage = window.location.pathname.split('/').pop();
 
-            const isNative = window.Capacitor.isNativePlatform();
+        const isNative = window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function'
+            ? window.Capacitor.isNativePlatform()
+            : false;
 
-            if (isNative) {
+        if (isNative) {
 
-                if (!user) {
-                    // Si no hay usuario y está en la app o no es una página pública, redirigir a la landing
-                    if (currentPage === 'index.html' || currentPage === '' || currentPage === '/') {
-                        window.location.href = 'register.html'
-                        return
-                    }
-
+            if (!user) {
+                // Si no hay usuario y está en la app o no es una página pública, redirigir a la landing
+                if (currentPage === 'index.html' || currentPage === '' || currentPage === '/') {
+                    window.location.href = 'register.html'
+                    return
                 }
-                else {
-                    if (publicPages.includes(currentPage) || currentPage === '' || currentPage === '/') {
-                        window.location.href = '/app/index.html';
-                        return
-                    }
 
+            }
+            else {
+                if (publicPages.includes(currentPage) || currentPage === '' || currentPage === '/') {
+                    window.location.href = '/app/index.html';
+                    return
+                }
+
+            }
+        }
+        else {
+
+            if (!user) {
+                if (currentPage === '/app/index.html') {
+                    window.location.href = 'index.html'
+                    return
                 }
             }
             else {
-
-                if (!user) {
-                    if (currentPage === '/app/index.html') {
-                        window.location.href = 'index.html'
-                        return
-                    }
+                if (publicPages.includes(currentPage)) {
+                    window.location.href = '/app/index.html'
+                    return
                 }
-                else {
-                    if (currentPage !== '/app/index.html') {
-                        window.location.href = '/app/index.html'
-                        return
-                    }
 
-                }
             }
+        }
 
-            hideLoadingPrincSpinner()
-            if(!user) return
-            if (!user.emailVerified) {
-                showSweetAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
-            }
+        hideLoadingPrincSpinner()
+        if (!user) return
+        if (!user.emailVerified) {
+            showSweetAlert(`${translations[lang]?.verifyEmailTitle}`, `${translations[lang]?.verifyEmailText}`, 'warning', `${translations[lang]?.confirmButtonText}`)
+        }
 
 
 
-        
 
         if (elements.closeBanner) {
             elements.closeBanner.addEventListener('click', hideNotification);
+        }
+        if (elements.mapContainer) {
+            elements.mapContainer.addEventListener('scroll', () => {
+                const { scrollTop, scrollHeight, clientHeight } = elements.mapContainer;
+                if (scrollTop + clientHeight >= scrollHeight + 50) {
+                    renderNextPlaces()
+                }
+            })
         }
 
         const col = await getDocs(collection(db, 'creados'))
@@ -205,45 +211,45 @@ let pendingDeepLinkPlaceId = null
             const params = new URLSearchParams(window.location.search)
             const placeId = params.get('creado')
             if (placeId) {
-                console.log('ID de lugar encontrado en la URL:', placeId);
+
                 pendingDeepLinkPlaceId = placeId;
             }
             // Espera a que el mapa esté inicializado
 
             try {
+                applyTranslations()
+                await initMap()
+
+                updateBarFromState()
                 document.getElementById('lang-selector').value = getCurrentLanguage();
                 setTimeout(() => {
                     hideLoadingPrincSpinner()
                 }, 300)
 
-                try {
-
-                    //comprobación de que tema tiene elegido el usuario
-                    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
-                    if (localStorage.getItem('theme') === 'dark') {
-                        body.classList.add('dark')
 
 
-                    }
-                    else {
-                        body.classList.remove('dark')
-                    }
-                    if (localStorage.getItem('theme') === 'dark') {
-                        body.classList.add('dark')
-                    }
-                    else {
-                        body.classList.remove('dark')
-                    }
-
-                    applyTranslations()
-                    await initMap()
-
-                    updateBarFromState()
 
 
-                } catch (error) {
-                    console.warn('Error al inicializar la interfaz:', error);
+                //comprobación de que tema tiene elegido el usuario
+                const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
+                if (localStorage.getItem('theme') === 'dark') {
+                    body.classList.add('dark')
+
+
                 }
+                else {
+                    body.classList.remove('dark')
+                }
+                if (localStorage.getItem('theme') === 'dark') {
+                    body.classList.add('dark')
+                }
+                else {
+                    body.classList.remove('dark')
+                }
+
+
+
+
 
                 setupPushNotifications()
 
@@ -293,8 +299,8 @@ let pendingDeepLinkPlaceId = null
         })
 
 
-        })
-    });
+    })
+});
 
 
 
@@ -304,7 +310,7 @@ let pendingDeepLinkPlaceId = null
 
 
 async function handleDeepLink(placeId) {
-    console.log('handleDeepLink called with placeId:', placeId);
+
 
     // Validate placeId
     if (!placeId || typeof placeId !== 'string' || placeId.trim() === '') {
@@ -352,7 +358,10 @@ async function handleDeepLink(placeId) {
         if (!isValidLatLng(lat, lng)) {
             throw new Error(`Coordenadas inválidas: lat=${lat}, lng=${lng}`);
         }
-
+        if (!user) {
+            showErrorNotification(`${translations[lang].mustBeLoggedIn}`)
+            return
+        }
 
         map.setView([lat, lng]);
         map.setZoom(15);
@@ -363,7 +372,7 @@ async function handleDeepLink(placeId) {
         // Center and zoom the map
 
 
-        console.log('Mapa centrado y con zoom en las coordenadas:', { lat, lng });
+
 
 
 
@@ -469,7 +478,7 @@ export async function initSocial() {
     const isNative = !!window.Capacitor?.getPlatform && window.Capacitor.getPlatform() !== 'web';
 
     if (isNative) {
-    
+
         const SocialLogin = window.Capacitor?.Plugins?.SocialLogin;
         if (!SocialLogin) {
             console.warn('SocialLogin plugin not available.');
@@ -485,9 +494,9 @@ export async function initSocial() {
                 }
             };
 
-            
+
             await SocialLogin.initialize(config);
-          
+
 
             // Add a small delay to ensure initialization is complete
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -498,11 +507,11 @@ export async function initSocial() {
             setTimeout(initSocial, 2000);
         }
     } else {
-        
+
     }
 }
 
-
+//actualiza la vista de la barra de principal
 function updateBarFromState() {
     const buttonHome = document.querySelector('.home')
 
@@ -523,18 +532,55 @@ function updateBarFromState() {
         buttonMap.style.fontSize = '1em'
         buttonMap.style.opacity = '.8'
     }
-
+    let startY = 0
+    let isPulled = false
+    let mapContainer = document.getElementById('map-container')
     if (appState.home === true) {
+
+
+
+
+        //Obtenemos el punto inicial
+
+        mapContainer.addEventListener('touchstart', (e) => {
+            if (appState.create !== true && appState.map !== true && elements.mapContainer.scrollTop === 0) {
+                startY = e.touches[0].clientY;
+                isPulled = true
+            }
+        })
+
+        //Obtenemos punto actual despues de desplazamiento y comparamos con el anterior
+        mapContainer.addEventListener('touchmove', (e) => {
+            if (!isPulled) return
+            let currentY = e.touches[0].clientY;
+            let diff = currentY - startY
+
+            //Si el desplazamiento hacia arriba es mayor que 200 se recarga
+            if (diff > 200) {
+                location.reload()
+                isPulled = false
+            }
+        })
+
+        //Finaliza sesión de toque 
+        mapContainer.addEventListener('touchend', () => {
+            isPulled = false
+        })
+
         buttonHome.style.fontSize = '1.1em'
         buttonHome.style.opacity = '1'
     }
     else {
         buttonHome.style.fontSize = '1em'
         buttonHome.style.opacity = '.8'
+
+
     }
 
 
     if (appState.create === true) {
+        //Obtenemos punto actual despues de desplazamiento y comparamos con el anterior
+
         buttonCreate.style.fontSize = '1.1em'
         buttonCreate.style.opacity = '1'
     }
@@ -542,6 +588,7 @@ function updateBarFromState() {
     else {
         buttonCreate.style.fontSize = '1em'
         buttonCreate.style.opacity = '.8'
+
     }
 }
 const body = document.body
@@ -550,15 +597,12 @@ const body = document.body
 
 const mapBtn = document.getElementById('map-btn')
 if (mapBtn) {
+    //Se inicia el mapa
     mapBtn.addEventListener('click', async () => {
-        // Map init - only if map element exists
         try {
 
             await initMap()
-            appState.map = true
-            appState.home = false
-            appState.create = false
-            updateBarFromState()
+
 
         }
         catch (error) {
@@ -569,22 +613,27 @@ if (mapBtn) {
 }
 
 
+// Function para validar latitud y longitud
+function isValidLatLng(lat, lng) {
+    return (
+        typeof lat === 'number' &&
+        typeof lng === 'number' &&
+        !isNaN(lat) &&
+        !isNaN(lng) &&
+        lat >= -90 &&
+        lat <= 90 &&
+        lng >= -180 &&
+        lng <= 180
+    );
+}
+
 async function initMap() {
     inGlobal = false
-    // Function to validate latitude and longitude values
-    function isValidLatLng(lat, lng) {
-        return (
-            typeof lat === 'number' &&
-            typeof lng === 'number' &&
-            !isNaN(lat) &&
-            !isNaN(lng) &&
-            lat >= -90 &&
-            lat <= 90 &&
-            lng >= -180 &&
-            lng <= 180
-        );
-    }
-
+    appState.map = true
+    appState.home = false
+    appState.create = false
+    updateBarFromState()
+    //Generamos de nuevo el map container con distintos estilos a la home
     const mapContainer = document.getElementById('map-container')
 
     mapContainer.innerHTML = '<div id="map" style="width:100%; height:100%;"></div>'
@@ -595,12 +644,13 @@ async function initMap() {
 
     const atribution = '<small style="opacity:0.6;">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></small>'
 
-    // Selección robusta de tileLayer
+    // Selección robusta de tileLayer para establecer nueva capa
     let tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
     if (
         (localStorage.getItem('theme') === 'dark')) {
         tileUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png';
     }
+    //Removemos la capa del mapa anterior
     if (baseLayer) {
         map.removeLayer(baseLayer)
     }
@@ -609,21 +659,9 @@ async function initMap() {
 
 
     if (mapContainer) {
-
-
         mapContainer.style.width = '75vw'
     }
 
-
-    let newMap = document.getElementById('map')
-    if (newMap) {
-        if (newMap.style.display === 'none') {
-            setTimeout(() => {
-                newMap.style.display = 'block';
-                map.invalidateSize()
-            }, 300)
-        }
-    }
 
     try {
         let lat = 2, lng = 0, zoom = 2
@@ -652,8 +690,7 @@ async function initMap() {
                 map.setZoom(10)
 
             } catch (geoError) {
-                console.warn(geoError)
-                showErrorNotification(`${translations[lang].geoFail}`);
+                showErrorNotification(`${translations[lang].geoFail}`, 5000);
             }
         }
 
@@ -662,7 +699,7 @@ async function initMap() {
         const checkMapReady = setInterval(() => {
 
             if (map && pendingDeepLinkPlaceId) {
-                console.log('Mapa listo, procesando deeplink:', pendingDeepLinkPlaceId);
+
                 handleDeepLink(pendingDeepLinkPlaceId)
                     .then(() => console.log('handleDeepLink completado'))
                     .catch(err => console.error('Error en handleDeepLink:', err));
@@ -873,46 +910,6 @@ function decrementarContadorCreados() {
 
 
 
-
-
-
-//Eliminar los marcadores
-function clearMarkers() {
-    markers.forEach(marker => {
-        marker.setMap(null); // Elimina el marcador del mapa
-        if (marker.infoWindow) {
-            marker.infoWindow.close(); // Cierra su infoWindow si existe
-        }
-    });
-    markers = []; // Vacía el array
-}
-
-
-
-
-
-
-
-
-
-//Función para buscar por mi posición
-// Validate latitude and longitude values
-function isValidLatLng(lat, lng) {
-    return (
-        typeof lat === 'number' &&
-        typeof lng === 'number' &&
-        !isNaN(lat) &&
-        !isNaN(lng) &&
-        lat >= -90 &&
-        lat <= 90 &&
-        lng >= -180 &&
-        lng <= 180
-    );
-}
-
-
-
-
 export function showLoadingPrincSpinner() {
     const loader = document.getElementById('loader-princ');
     if (loader) {
@@ -1034,7 +1031,7 @@ async function sharePlace(place) {
 
     }
     catch (error) {
-        console.log(error)
+
         return
     }
 }
@@ -1051,18 +1048,18 @@ async function shareCreatedPlaceGoogle(place) {
             const { Share } = window.Capacitor?.Plugins || {}
             if (Share) {
                 await Share.share({
-                    title: `Destino ${place.name} !!`,
-                    text: 'Mira la ubi que he encontrado en Ubifind!',
+                    title: `${place.name} !!`,
+                    text: `${translations[lang]?.ubiFinded}`,
                     url: placeUrl,
-                    dialogTitle: 'Compartir Ubi'
+                    dialogTitle: 'Share'
                 });
             }
         }
         else {
             if (navigator && navigator.canShare) {
                 const shareData = {
-                    title: place.name || 'Lugar Compartido',
-                    text: place.address || `Ubi de ${place.name}`,
+                    title: place.name || '',
+                    text: place.address || `${translations[lang]?.ubiFinded}:${place.name}`,
                     url: placeUrl
                 }
                 await navigator.share(shareData)
@@ -1084,7 +1081,7 @@ async function shareCreatedPlace(place) {
     try {
         const deepLink = `https://ubifindapp.com/app/?creado=${place.place_id}`;
         const fallbackLink = `https://play.google.com/store/apps/details?id=com.ubifind.app`; // Si no la tiene 
-        const message = `📍 ¡Descubre ${place.name} en Ubifind!\n\n🔗 ${deepLink}\n\n¿No tienes la app? Descárgala aquí: ${fallbackLink}`;
+        const message = `📍${translations[lang]?.lookThat}: ${place.name} \n\n🔗 ${deepLink}\n\n ${translations[lang].downloadApp}: ${fallbackLink}`;
         //const placeUrl = `https://www.google.com/maps/search/?api=1&query=${place.position.lat},${place.position.lng}`
         if (!place.position.lat || !place.position.lng) return
         if (navigator.share) {
@@ -1107,7 +1104,7 @@ async function shareCreatedPlace(place) {
 
     }
     catch (error) {
-        console.log(error)
+
         return
     }
 }
@@ -1391,11 +1388,11 @@ async function enableCreatePlace() {
         }
 
         map = L.map('map').setView([lat, lng], zoom)
-
+        
         map.on('moveend', () => {
             loadPlaces()
         })
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme:dark)')
+        
         const atribution = '<small style="opacity:0.6;">&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></small>'
 
         // Selección robusta de tileLayer
@@ -1517,7 +1514,7 @@ async function showDesktopPlaceCreation(position) {
             <input id='rates-desktop' name='rates-desktop' type='number' min='1' max='5' />
         </div>
 
-        <div class='inputContainer comment'>
+        <div class='inputContainer comment-form'>
             <label for='comment-desktop' data-i18n="commentForm">Una frase o texto que describa el lugar</label>
             <textarea id='comment-desktop' name='comment-desktop'></textarea>
         </div>
@@ -1527,7 +1524,7 @@ async function showDesktopPlaceCreation(position) {
             <input id="file-upload" type="file" accept="image/*" />
         </div>
 
-        <div class='container-buttons'>
+        <div class='container-buttons-form'>
             <button class='create-place' id='save-desktop' data-i18n="saveForm" type='button'>Guardar</button>
             <button class='cancel-create-place' id='cancel-save-desktop' data-i18n="cancelForm" type='button'>Cancelar</button>
         </div>
@@ -1690,13 +1687,7 @@ border: 2px solid white;
                 `<i class="fa fa-thumbs-down"></i>`)
         });
 
-        fileUpload.addEventListener('change', function (e) {
-            console.log('📷 FILE INPUT CHANGED!', e.target.files);
-            const file = e.target.files[0];
-            if (file) {
-                console.log('File selected:', file.name, file.type);
-            }
-        });
+
 
 
 
@@ -1864,10 +1855,12 @@ async function loadSharePlaces(places) {
                 </div>
                 <div class='container-buttons'>
                     ${place.visibleToAll ? likeButton : ''}
-                    <button class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
-                    <button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>
+                    
+                    <button  style='border-radius: ${place.visibleToAll ? "initial" : "6px"}'  class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
+                    ${place.visibleToAll ? "<button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>" : ''}
+                    
                 </div>
-                <div class='container-createds-card comment'>
+                <div class='container-createds-card comment-card'>
                     <p class='coment-place'><strong>${place.visibleToAll ? place.createdBy : ''}</strong>${place.comment || ''}</p>
                 </div>`;
 
@@ -2064,14 +2057,16 @@ async function addMarkerToPlace(place) {
                     <p>${place.rating ? '⭐'.repeat(place.rating) : ''}</p>
                 </div>
                 <div class='container-createds-card photo'>
-                 <a  class='download-btn'>${place.photo ? `<img class="place-photo" style='max-width:100%; object-fit:cover; min-width:100%; max-height:400px; min-height:400px; border-radius:12px;' loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado\'s photo'}'>` : ''}</a>   
+                 <a  class='download-btn'>${place.photo ? `<img class="place-photo" style='max-width:100%; object-fit:cover; min-width:100%; max-height:400px; min-height:400px;' loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado\'s photo'}'>` : ''}</a>   
                 </div>
                 <div class='container-buttons'>
                     ${place.visibleToAll ? likeButton : ''}
-                    <button class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
-                    <button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>
+                   
+                    <button style='border-radius: ${place.visibleToAll ? "initial" : "6px"}' class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
+                    ${place.visibleToAll ? "<button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>" : ''}
+                    
                 </div>
-                <div class='container-createds-card comment'>
+                <div class='container-createds-card comment-card'>
                 
                     <p class='coment-place'><strong>${place.visibleToAll ? place.createdBy : ''}</strong>  <span> ${place.comment || ''}</span></p>
                     
@@ -2110,20 +2105,7 @@ async function addMarkerToPlace(place) {
                     map.closePopup(popup);
                 });
             }
-            const downloadBtn = popupElement.querySelector('.download-btn');
-            if (downloadBtn) {
-                downloadBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
 
-                    downloadPhotoAndroid(place.photo)
-                        .then((uri) => {
-                            console.log('URI de la foto guardada:', uri)
-                        })
-                        .catch((error) => {
-                            console.error('Error al descargar la foto:', error)
-                        });
-                });
-            }
             // Like button
             const likeBtn = popupElement.querySelectorAll('.button-likes');
             if (likeBtn && place.visibleToAll) {
@@ -2223,67 +2205,6 @@ async function addMarkerToPlace(place) {
         throw error;
     }
 }
-
-
-// Función para descargar fotos en Android
-async function downloadPhotoAndroid(filepath) {
-    const isNative = window.Capacitor?.isNativePlatform?.();
-
-    if (!isNative) {
-        // En navegador: abre directamente
-        window.open(filepath, '_blank');
-        return;
-    }
-    const { Filesystem } = window.Capacitor.Plugins
-    const { getStorage, ref } = await import("https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js")
-
-
-    try {
-
-        // Descargar archivo desde assets
-        const storage = getStorage()
-        const storageRef = ref(storage, filepath)
-        const url = await getDownloadURL(storageRef)
-
-        if (!url) {
-            throw new Error('Error al visualizar la url');
-            return;
-        }
-
-        const filename = `ubifindimg_${Date.now()}.jpeg`
-
-        // Guardar en filesystem (Documentos)
-        const result = await Filesystem.downloadFile({
-            url,
-            path: filename,
-            directory: 'DOCUMENTS',
-
-        })
-
-        // Abrir con fileOpener2
-        window.cordova.plugins.fileOpener2.open(
-            result.path,
-            `image/jpeg`,
-            {
-                error: (e) => {
-                    console.error('No se pudo abrir el archivo', e);
-
-                    showErrorNotification(`${translations[lang].downloadPdfError}`);
-                },
-                success: () => {
-
-                }
-            }
-        );
-
-
-    } catch (error) {
-        console.error('Error al preparar PDF:', error);
-
-        showErrorNotification(`${translations[lang].downloadPdfError}`);
-    }
-}
-
 
 
 async function getLikesCount(placeId) {
@@ -2402,6 +2323,7 @@ async function deleteCreatedPlace(placeId) {
         renderCreatedPlaces()
 
         loadPlaces()
+        location.reload()
         showNotification(`${translations[lang].placeDeletedSuccess}`)
     }
     catch (error) {
@@ -2457,7 +2379,7 @@ async function renderCreatedPlaces() {
                 <div class='container-createds-card photo'>
                     ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='width: 100%; min-width:100%; height: auto; max-height: 400px; min-height:400px; border-radius: 8px; object-fit: cover;'>` : '<p>Sin imagen</p>'}
                 </div>
-                <div class='container-createds-card comment'>
+                <div class='container-createds-card comment-card'>
                     <p>${place.comment ? place.comment : 'N/D'}</p>
                 </div>
                 <div class="btn-renders">
@@ -2560,7 +2482,7 @@ async function renderPrivateCreatedsPlaces() {
           <div class='container-createds-card photo'>
                     ${place.photo ? `<img src='${place.photo}' alt='${place.name || 'Lugar creado'}' style='width: 100%; height: auto; max-height: 400px; min-height:400px; border-radius: 8px; object-fit: cover;'>` : ''}
                 </div>
-        <div class='container-createds-card comment'>
+        <div class='container-createds-card comment-card'>
         <p>${place.comment ? place.comment : ''}</p>
         </div>
 
@@ -2619,11 +2541,22 @@ async function renderPrivateCreatedsPlaces() {
 
 }
 let inGlobal = false
-async function renderGlobalPlaces() {
+let globalPlaces = []
+let PAGE_SIZE = 3
+let currentIndex = 0
+let isScrollListener = false
+async function obtainGlobalPlaces() {
     const user = auth.currentUser
+    
     if (!user) return
+
     if (inGlobal) return
+
     inGlobal = true
+    appState.map = false
+    appState.create = false
+    appState.home = true
+    updateBarFromState()
     const map = document.getElementById('map')
     if (map) {
         map.style.display = 'none'
@@ -2648,25 +2581,54 @@ async function renderGlobalPlaces() {
     const snapshot = await getDocs(q)
 
     if (snapshot.empty) {
-        orNotification('No hay lugares para mostrar')
+        showErrorNotification('No hay lugares para mostrar')
         return
     }
 
-    if (!snapshot) return
-    snapshot.forEach(async docSnap => {
-        const commentUser = document.querySelectorAll('.comment-user')
-        commentUser.forEach(box => {
-            box.style.minHeight = '100%'
-            box.style.display = 'flex'
-            box.style.flexDirection = 'column'
-            box.style.alignItems = 'flex-start'
+    globalPlaces = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }))
+    mapContainer.innerHTML = ''
+    currentIndex = 0
+    renderNextPlaces()
 
-        })
-        const place = docSnap.data()
-        const placeId = docSnap.id
+
+    mapContainer.addEventListener('scroll', async () => {
+        const { scrollTop, scrollHeight, clientHeight } = mapContainer;
+
+        if (!isScrollListener && scrollTop + clientHeight >= scrollHeight - 50) {
+            if (currentIndex < globalPlaces.length) {
+                isScrollListener = true
+                showLoadingPrincSpinner()
+                await renderNextPlaces()
+                hideLoadingPrincSpinner()
+                isScrollListener = false
+            }
+        }
+    })
+
+
+
+
+}
+
+
+async function renderNextPlaces() {
+    let mapContainer = document.getElementById('map-container')
+    if (!mapContainer) return
+
+    const nextPlaces = globalPlaces.slice(currentIndex, currentIndex + PAGE_SIZE)
+
+    for (const place of nextPlaces) {
+
+
+        const placeId = place.id
+
+
         const likeButton = `<button class='button-likes' data-id='${placeId}'><img class='action-btn img-share' src='../images/favorite.webp'></button>`;
 
-        const likesCount = await getLikesCount(place.place_id)
+        const likesCount = await getLikesCount(placeId)
         const html = ` <div class="site">
         
                 <strong><h2>${place.name || 'N/D'}</h2></strong>
@@ -2675,21 +2637,22 @@ async function renderGlobalPlaces() {
                     <p>${place.rating ? '⭐'.repeat(place.rating) : ''}</p>
                 </div>
                 <div class='container-createds-card photo'>
-                 <a  class='download-btn'>${place.photo ? `<img class="place-photo" style='max-width:100%; object-fit:cover; min-width:100%; max-height:400px; min-height:400px;' loading="lazy" src='${place.photo}' alt='${place.name || 'Lugar creado\'s photo'}'>` : ''}</a>   
+                 <a  class='download-btn'>${place.photo ? `<img class="place-photo" style='max-width:100%; object-fit:cover; min-width:100%; max-height:400px; min-height:400px;' loading="lazy" src='${place.photo}' alt='${place.name || 'photo of created place'}'>` : ''}</a>   
                 </div>
                 <div class='container-buttons'>
                     ${place.visibleToAll ? likeButton : ''}
                     <button class='share-ubi'><img class='action-btn' src='../images/location.webp' alt='Compartir ubicación'></button>
                     <button class='share-card'><img class='action-btn' src='../images/share (2).webp' alt='Compartir tarjeta'></button>
                 </div>
-                <div class='container-createds-card comment'>
+                <div class='container-createds-card comment-card'>
                 
                     <p class='coment-place'><strong style='opacity:.8;'>${place.visibleToAll ? place.createdBy : ''}</strong> <span> ${place.comment || ''}</span></p>
-                     <div class="comentarios-section" data-id="${place.place_id}" id="comentarios-${place.place_id}"></div>
+                    
+                     <div class="comentarios-section" data-id="${placeId}" id="comentarios-${place.place_id}"></div>
                     
                         <div class='comentarios-input'>
                             <textarea class='text-comment' id="input-comentario-${placeId}" data-i18n-placeholder="writeYourComment"></textarea>
-                            <button class="btn-comentar" type='button' data-id="${place.place_id}">
+                            <button class="btn-comentar" type='button' data-id="${placeId}">
                                 <img class='action-btn img-share' src='../images/send.webp' alt='Enviar comentario'>
                             </button>
                         </div>
@@ -2707,24 +2670,8 @@ async function renderGlobalPlaces() {
                 s.style.animation = 'none'
             })
         }
-        await loadComments(place.place_id);
-        const downloadBtn = lastSite.querySelectorAll('.download-btn');
-        if (downloadBtn) {
-            downloadBtn.forEach(btn => {
-                btn.addEventListener('click', (e) => {
+        await loadComments(placeId);
 
-
-                    downloadPhotoAndroid(place.photo)
-                        .then((uri) => {
-                            console.log('URI de la foto guardada:', uri)
-                        })
-                        .catch((error) => {
-                            console.error('Error al descargar la foto:', error)
-                        });
-                });
-            })
-
-        }
         // Like button
         const likeBtn = lastSite.querySelectorAll('.button-likes');
         if (likeBtn && place.visibleToAll) {
@@ -2733,7 +2680,7 @@ async function renderGlobalPlaces() {
                     e.stopPropagation();
                     const id = btn.dataset.id
                     await toggleLike(id, btn);
-                    const newCount = await getLikesCount(place.place_id);
+                    const newCount = await getLikesCount(placeId);
                     const likeCountElement = lastSite.querySelector('.count-likes');
                     if (likeCountElement) {
                         likeCountElement.textContent = `${newCount} ❤️`;
@@ -2770,7 +2717,7 @@ async function renderGlobalPlaces() {
 
         // Load comments and likes if visible to all
 
-        const count = await getLikesCount(place.place_id);
+        const count = await getLikesCount(placeId);
         const likeCountElement = lastSite.querySelectorAll('.count-likes');
         if (likeCountElement) {
             likeCountElement.forEach(l => {
@@ -2791,27 +2738,24 @@ async function renderGlobalPlaces() {
 
                     const commentText = input.value.trim()
                     if (!commentText) return
-                    await addComment(commentText, place.place_id);
+                    await addComment(commentText, placeId);
                     input.value = ''
                     await loadComments(id)
                 })
             })
         }
-    })
+    }
+    currentIndex += nextPlaces.length
 }
-
-
-
 
 
 const homeBtn = document.getElementById('home-btn')
 if (homeBtn) {
     homeBtn.addEventListener('click', () => {
-        renderGlobalPlaces()
-        appState.home = true
-        appState.map = false
-        appState.create = false
-        updateBarFromState()
+        obtainGlobalPlaces()
+
+
+
     })
 
 }
@@ -2835,13 +2779,11 @@ function animateButton() {
 if (elements.buttonCreatePlace) {
     elements.buttonCreatePlace.addEventListener('click', async (e) => {
         e.preventDefault()
-
-        await enableCreatePlace()
         appState.create = true
         appState.home = false
         appState.map = false
         updateBarFromState()
-
+        await enableCreatePlace()
     })
 
 }
@@ -2905,91 +2847,15 @@ document.addEventListener('click', (event) => {
 
 const downloadPol = document.getElementById('down-poli')
 const downloadTer = document.getElementById('down-term')
-
-
-async function downloadPdf(filepath) {
-    const isNative = window.Capacitor?.isNativePlatform?.();
-
-    if (!isNative) {
-        // En navegador: abre directamente
-        window.open(filepath, '_blank');
-        return;
-    }
-    const { Filesystem } = window.Capacitor.Plugins
-
-
-    try {
-        // Descargar archivo desde assets
-        const response = await fetch(filepath);
-        const blob = await response.blob();
-        const base64Data = await convertBlobToBase64(blob);
-        const filename = filepath.split('/').pop();
-
-        // Guardar en filesystem (Documentos)
-        await Filesystem.writeFile({
-            path: filename,
-            data: base64Data,
-            directory: 'DOCUMENTS'
-        });
-
-        const { uri } = await Filesystem.getUri({
-            path: filename,
-            directory: 'DOCUMENTS'
-        });
-
-        // Abrir con fileOpener2
-        window.cordova.plugins.fileOpener2.open(
-            uri,
-            'application/pdf',
-            {
-                error: (e) => {
-                    console.error('No se pudo abrir el archivo', e);
-
-                    showErrorNotification(`${translations[lang].downloadPdfError}`);
-                },
-                success: () => {
-
-                }
-            }
-        );
-
-    } catch (error) {
-        console.error('Error al preparar PDF:', error);
-
-        showErrorNotification(`${translations[lang].downloadPdfError}`);
-    }
-}
 if (downloadPol || downloadTer) {
-    if (lang === 'es') {
-        downloadPol.addEventListener('click', () => downloadPdf('terms-politicy/politicas.pdf'))
-        downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/terminos.pdf'))
-    }
-    else if (lang === 'en') {
-        downloadPol.addEventListener('click', () => downloadPdf('terms-politicy/privacy-en.pdf'))
-        downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/TERMS-AND-CONDITIONS-en.pdf'))
-    }
-    else if (lang === 'fr') {
-        downloadPol.addEventListener('click', () => downloadPdf('terms-politicy/POLITIQUE-DE-CONFIDENTIALITÉ.pdf'))
-        downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/CONDITIONS-GÉNÉRALES-fr.pdf'))
-    }
-    else if (lang === 'de') {
-        downloadPol.addEventListener('click', () => downloadPdf('terms-politicy/DATENSCHUTZRICHTLINIE.pdf'))
-        downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/ALLGEMEINE-GESCHÄFTSBEDINGUNGEN.pdf'))
-    }
-    else if (lang === 'it') {
-        downloadPol.addEventListener('click', () => downloadPdf('terms-politicy/INFORMATIVA-SULLA-PRIVACY.pdf'))
-        downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/TERMINI-E-CONDIZIONI.pdf'))
-    }
-    else if (lang === 'pt') {
-        downloadPol.addEventListener('click', () => downloadPdf('terms-politicy/POLÍTICA-DE-PRIVACIDADE.pdf'))
-        downloadTer.addEventListener('click', () => downloadPdf('terms-politicy/TERMOS-E-CONDIÇÕES.pdf'))
-    }
+    downloadPol.addEventListener('click', () => {
+        window.location.href = '../privacyPolicy.html'
+    })
+
+    downloadTer.addEventListener('click', () => {
+        window.location.href = '../termsConditions.html'
+    })
 }
-
-
-
-
-
 
 
 async function setupPushNotifications() {
@@ -3016,13 +2882,13 @@ async function setupPushNotifications() {
 
             // 5. Notificación recibida en foreground
             PushNotifications.addListener('pushNotificationReceived', (notification) => {
-                console.log('🔔 Notificación recibida:', notification);
+
                 showSweetAlert(notification.title, notification, 'success', 'OK');
             });
 
             // 6. Acción del usuario sobre la notificación
             PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-                console.log('👆 Notificación tocada:', action.notification);
+
             });
 
         }
@@ -3072,7 +2938,7 @@ async function processDeepLinkFromUrl() {
     // Check for place_id in URL parameters
     const placeId = getUrlParameter('place_id');
     if (placeId) {
-        console.log('Processing deep link from URL with place_id:', placeId);
+
         await handleDeepLink(placeId);
         // Clean URL after processing (remove the parameters)
         const cleanUrl = window.location.href.split('?')[0];
@@ -3083,7 +2949,7 @@ async function processDeepLinkFromUrl() {
 async function initializeCapacitor() {
     // Handle web deep links (for browsers like Brave)
     if (!window.Capacitor?.isNativePlatform?.()) {
-        console.log('Running in web browser, initializing web deep links');
+
 
         // Process any existing deep link in the URL
         await processDeepLinkFromUrl();
@@ -3113,7 +2979,7 @@ async function initializeCapacitor() {
     }
 
     // Handle Capacitor deep links (for native apps)
-    console.log('Capacitor detected, initializing native deep links');
+
 
     const AppPlugin = window.Capacitor?.Plugins?.App;
     if (AppPlugin?.addListener) {
@@ -3125,19 +2991,19 @@ async function initializeCapacitor() {
 
         // Handle app URL open events (for deep linking)
         AppPlugin.addListener('appUrlOpen', (data) => {
-            console.log('App opened with URL:', data.url);
+
 
             // Extract place_id from URL
             const url = new URL(data.url);
             const placeId = url.searchParams.get('place_id');
 
             if (placeId) {
-                console.log('Processing deep link with place_id:', placeId);
+
                 handleDeepLink(placeId);
             }
         });
-    } else {
-        console.warn('Capacitor App plugin not available');
     }
 }
+
+
 

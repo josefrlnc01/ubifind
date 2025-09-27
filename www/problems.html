@@ -18,7 +18,7 @@
 
 <body>
     <main class="form-container ">
-        <button class="exit"><a href="index.html">X</a> </button>
+        <button class="exit">x </button>
         <form class="form" id="form" action="https://formspree.io/f/manengnz" method="post">
             <h1><i class="fas fa-map-marked-alt"></i> Ubifind</h1>
             <h2 data-i18n="resolution">Resolución de problemas</h2>
@@ -51,5 +51,9 @@
         </form>
     </main>
 </body>
-
+    <script>
+    document.querySelector('.exit').addEventListener('click', () => {
+        window.location.href = 'app/index.html'
+    })
+</script>
 </html>

@@ -24,7 +24,7 @@ export async function loadComments(placeId) {
         let container = document.getElementById(`comentarios-${placeId}`);
         
         if (!container) {
-            console.warn(`No se encontró el contenedor: comentarios-${placeId}`);
+            
             return false;
         }
         
@@ -181,7 +181,8 @@ export async function deleteComment(placeId,commentId){
         
     }
     catch(error){
-        console.log(error)
+       
+        return
     }
 }
 

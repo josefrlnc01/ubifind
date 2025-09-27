@@ -3,6 +3,9 @@
 // i18n.js - Shared translation system
 export const translations = {
     es: {
+        downloadApp: '¿No tienes la app? Descárgala aquí',
+        lookThat: 'Mira esto en Ubifind',
+        ubiFinded: 'Mira la ubi que he encontrado en Ubifind',
         // Perfil y cuenta
         languageSelect: 'Idioma',
         userPerfil: 'Perfil de usuario',
@@ -35,7 +38,7 @@ export const translations = {
         registerGoogle: 'Registrarme con Google',
         haveAccount: '¿Tienes una cuenta?',
         login: 'Iniciar sesión',
-        writeYourComment : 'Escribe tu comentario...',
+        writeYourComment: 'Escribe tu comentario...',
 
         loginTitle: 'Inicio de sesión',
         password: 'Contraseña',
@@ -79,12 +82,12 @@ export const translations = {
         cancelCreation: 'Cancelar modo de creación',
         sure: '¿Estás seguro/a?',
         deleteConfirmText: 'Esta acción no se puede deshacer',
-        ubiNow : 'Ubicación actual',
-        ubiNowText : 'Aquí te encuentras ahora mismo',
-        cancelConfirmTitle : 'Cancelar modo de creación', 
-        cancelConfirmText : ' ¿Quieres cancelar el modo de creación de lugares?',
-        verifyEmailTitle : 'Verifica tu email',
-        verifyEmailText : 'Revisa tu correo electrónico cuando puedas para verificar tu email, es posible que el mensaje se encuentre en la bandeja de spam',
+        ubiNow: 'Ubicación actual',
+        ubiNowText: 'Aquí te encuentras ahora mismo',
+        cancelConfirmTitle: 'Cancelar modo de creación',
+        cancelConfirmText: ' ¿Quieres cancelar el modo de creación de lugares?',
+        verifyEmailTitle: 'Verifica tu email',
+        verifyEmailText: 'Revisa tu correo electrónico cuando puedas para verificar tu email, es posible que el mensaje se encuentre en la bandeja de spam',
 
         // Login
         noAccount: '¿No tienes una cuenta?',
@@ -116,7 +119,7 @@ export const translations = {
         // Notificaciones y errores
         imageSaved: 'Imagen guardada en la carpeta de documentos',
         linkCopied: 'Enlace copiado al portapapeles',
-        geoFail: 'No se pudo obtener la ubicación ',
+
         placesLoadFail: 'Error al cargar los lugares',
         shareFail: 'No se pudo compartir el lugar',
         invalidLocation: 'Ubicación no válida  ',
@@ -138,7 +141,7 @@ export const translations = {
 Al acceder y utilizar la aplicación Ubifind, aceptas cumplir con estos Términos y Condiciones. Si no estás de acuerdo con alguno de los términos aquí establecidos, debes abstenerte de utilizar nuestros servicios.
 
 2. Descripción del servicio
-UFind es una plataforma web que permite descubrir y guardar lugares de ocio a través de mapas interactivos. El servicio puede incluir funciones como autenticación de usuarios, almacenamiento de datos en la nube y uso de APIs de terceros como Google Maps.
+Ubifind es una plataforma web que permite descubrir y guardar lugares de ocio a través de mapas interactivos. El servicio puede incluir funciones como autenticación de usuarios, almacenamiento de datos en la nube y uso de APIs de terceros como  Leaflet.
 
 3. Registro y cuentas de usuario
 Para acceder a ciertas funcionalidades, debes registrarte y autenticarte. Eres responsable de mantener la confidencialidad de tus credenciales y de todas las actividades realizadas bajo tu cuenta.
@@ -153,10 +156,10 @@ No está permitido:
 Los datos que ingresas, como rutas personalizadas o lugares guardados, siguen siendo tuyos, pero Ubifind puede almacenarlos, analizarlos o utilizarlos para mejorar el servicio. No compartiremos información personal sin tu consentimiento explícito.
 
 6. Propiedad intelectual
-Todos los elementos visuales, logotipos, textos y el diseño general de UFind están protegidos por derechos de autor. No se permite copiar ni reproducir partes del servicio sin autorización previa.
+Todos los elementos visuales, logotipos, textos y el diseño general de Ubifind están protegidos por derechos de autor. No se permite copiar ni reproducir partes del servicio sin autorización previa.
 
 7. API y servicios de terceros
-Ubifind integra servicios como Google Maps y Firebase. Al usar Ubifind, también aceptas los términos y políticas de estos proveedores.
+Ubifind integra servicios como  Leaflet y Firebase. Al usar Ubifind, también aceptas los términos y políticas de estos proveedores.
 
 8. Cancelación y eliminación de cuenta
 Puedes solicitar la eliminación de tu cuenta en cualquier momento. Nos reservamos el derecho de suspender cuentas que violen estos Términos.
@@ -175,7 +178,7 @@ Ubifind puede actualizar estos términos en cualquier momento. Las modificacione
         fillFields: 'Debes rellenar los campos',
         fallbackToWeb: 'No se pudo guardar la imagen. Abriendo en el navegador...',
         popupBlocked: 'Por favor permite ventanas emergentes para esta acción',
-        gmapsOpenFail: 'No se pudo abrir Google Maps',
+        gmapsOpenFail: 'No se pudo abrir  Leaflet',
         placeNotFound: 'Lugar no encontrado',
         duplicatePlaceName: 'No puedes guardar 2 lugares con el mismo nombre',
         savePlaceGeneric: 'Error al guardar el lugar: {message}',
@@ -192,8 +195,7 @@ Ubifind puede actualizar estos términos en cualquier momento. Las modificacione
         loadPlaceGeneric: 'Error al cargar el lugar',
         loadPlaceInvalidCoords: 'Las coordenadas del lugar no son válidas',
         loadPlaceDb: 'Error al conectar con la base de datos',
-        geoCantGet: 'No se pudo obtener la ubicación',
-        geoCantGetEmoji: 'No se pudo obtener la ubicación  ',
+
         nameRequired: 'Debes introducir al menos un nombre para guardar el sitio',
         publicFieldsRequired: 'Debes introducir al menos un nombre, comentario, valoración y una foto para guardar el sitio como público',
         offensiveWords: 'No introduzcas palabras ofensivas',
@@ -204,12 +206,73 @@ Ubifind puede actualizar estos términos en cualquier momento. Las modificacione
         publicSaveRequirements: 'Debes rellenar todos los campos para guardar en público',
         uploadFail: 'No se pudo subir el archivo: {file}',
         permisions: 'Se requieren permisos de almacenamiento para descargar la imagen',
-        geoFail: 'No se pudo obtener la ubicación  ',
-        userAlreadyExists: 'Este email ya está registrado'
+        geoFail: 'No se pudo obtener la ubicación (No es necesaria para ver lugares en el mapa)',
+        userAlreadyExists: 'Este email ya está registrado',
+
+
+
+        termsConditions: `TÉRMINOS Y CONDICIONES – Ubifind
+Última actualización: [28/05/25]
+1. Aceptación de los términos
+Al acceder y utilizar la aplicación Ubifind, aceptas cumplir con estos Términos y Condiciones. Si no estás de acuerdo con alguno de los términos aquí establecidos, debes abstenerte de utilizar nuestros servicios. \n
+2. Descripción del servicio
+Ubifind es una plataforma web que permite descubrir y guardar lugares de ocio a través de mapas interactivos. El servicio puede incluir funciones como autenticación de usuarios, almacenamiento de datos en la nube, y uso de APIs de terceros como  Leaflet.
+3. Registro y cuentas de usuario
+Para acceder a ciertas funcionalidades, debes registrarte y autenticarte. Eres responsable de mantener la confidencialidad de tus credenciales y de todas las actividades realizadas bajo tu cuenta.
+4. Uso aceptable
+No está permitido:
+Usar la plataforma con fines ilegales o no autorizados.
+Interferir con el funcionamiento del sistema.
+Compartir contenido que infrinja derechos de terceros.
+5. Contenido generado por el usuario
+Los datos que ingresas, como rutas personalizadas o lugares guardados, siguen siendo tuyos, pero Ubifind puede almacenarlos, analizarlos o utilizarlos para mejorar el servicio. No compartiremos información personal sin tu consentimiento explícito.
+6. Propiedad intelectual
+Todos los elementos visuales, logotipos, textos y el diseño general de Ubifind están protegidos por derechos de autor. No se permite copiar ni reproducir partes del servicio sin autorización previa.
+7. API y servicios de terceros
+Ubifind integra servicios como  Leaflet y Firebase. Al usar Ubifind, también aceptas los términos y políticas de estos proveedores.
+8. Cancelación y eliminación de cuenta
+Puedes solicitar la eliminación de tu cuenta en cualquier momento. Nos reservamos el derecho de suspender cuentas que violen estos Términos.
+9. Modificaciones
+Ubifind puede actualizar estos términos en cualquier momento. Las modificaciones se comunicarán a través de la aplicación.`,
+
+
+
+
+privacyPolicy: `POLÍTICA DE PRIVACIDAD – Ubifind
+Última actualización: [28-05-2025]
+1. Responsable del tratamiento de datos
+La responsable de los datos recogidos a través de Ubifind es José María Sánchez Serna.
+2. Datos que recopilamos
+Datos de autenticación: email, nombre, UID.
+Datos de uso: lugares creados, lugares visitados, búsquedas.
+Datos técnicos: dirección IP, tipo de navegador, idioma y zona horaria.
+3. Finalidad del tratamiento
+Los datos se recopilan con fines de:
+Proporcionar acceso personalizado a la plataforma.
+Almacenar y mostrar información como rutas o lugares favoritos.
+Mejorar la experiencia del usuario y corregir errores técnicos.
+Cumplimiento legal y de seguridad.
+4. Base legal para el tratamiento
+El consentimiento explícito del usuario es la base legal principal, además del interés legítimo para mejorar nuestros servicios.
+5. Conservación de los datos
+Tus datos se conservarán mientras mantengas tu cuenta activa. Puedes solicitar su eliminación escribiéndonos.
+6. Servicios de terceros
+Usamos servicios como Firebase y  Leaflet. Estos terceros pueden recopilar cierta información conforme a sus políticas.
+7. Derechos del usuario
+Puedes ejercer tus derechos de acceso, rectificación, cancelación y oposición (ARCO) enviando un correo a: contact@josesanchez.site
+8. Seguridad
+Ubifind aplica medidas técnicas y organizativas adecuadas para garantizar la seguridad de los datos personales.
+9. Transferencias internacionales
+En caso de uso de servidores fuera del Espacio Económico Europeo, se garantizarán medidas de protección adecuadas conforme al RGPD.
+10. Cambios en la política
+Ubifind se reserva el derecho de modificar esta política. Cualquier cambio será notificado al usuario.`,
     },
 
 
     en: {
+        downloadApp: 'Don’t have the app? Download it here',
+        lookThat: 'Look at this on Ubifind',
+        ubiFinded: 'Look at the location I found on Ubifind',
         // Profile & account
         languageSelect: 'Language',
         weakPassword: 'Weak password',
@@ -272,7 +335,7 @@ Ubifind puede actualizar estos términos en cualquier momento. Las modificacione
         requestChange: 'Request password change',
         saving: 'Saving',
         noPlacesCreated: 'No places created yet',
-         writeYourComment: 'Write your comment...',
+        writeYourComment: 'Write your comment...',
 
         //Tour
         tourPresentation: 'Hi 😝',
@@ -309,12 +372,12 @@ Ubifind puede actualizar estos términos en cualquier momento. Las modificacione
         cancelCreation: 'Cancel creation mode',
         sure: 'Are you sure?',
         deleteConfirmText: 'This action cannot be undone',
-         ubiNow: 'Current location',
-  ubiNowText: 'This is where you are right now',
-  cancelConfirmTitle: 'Cancel creation mode',
-  cancelConfirmText: 'Do you want to cancel the place creation mode?',
-   verifyEmailTitle: 'Verify your email',
-  verifyEmailText: 'Check your email when you can to verify it, the message may be in the spam folder',
+        ubiNow: 'Current location',
+        ubiNowText: 'This is where you are right now',
+        cancelConfirmTitle: 'Cancel creation mode',
+        cancelConfirmText: 'Do you want to cancel the place creation mode?',
+        verifyEmailTitle: 'Verify your email',
+        verifyEmailText: 'Check your email when you can to verify it, the message may be in the spam folder',
 
         // Login
         noAccount: "Don't have an account?",
@@ -343,7 +406,7 @@ Ubifind puede actualizar estos términos en cualquier momento. Las modificacione
 By accessing and using the Ubifind application, you agree to comply with these Terms and Conditions. If you do not agree with any of the terms set out here, you must refrain from using our services.
 
 2. Service Description
-UFind is a web platform that allows you to discover and save leisure places through interactive maps. The service may include features such as user authentication, cloud data storage, and the use of third-party APIs such as Google Maps.
+Ubifind is a web platform that allows you to discover and save leisure places through interactive maps. The service may include features such as user authentication, cloud data storage, and the use of third-party APIs such as  Leaflet.
 
 3. Registration and User Accounts
 To access certain features, you must register and authenticate. You are responsible for maintaining the confidentiality of your credentials and all activities carried out under your account.
@@ -358,10 +421,10 @@ The following are not permitted:
 The data you enter, such as custom routes or saved places, remains yours, but Ubifind may store, analyze, or use it to improve the service. We will not share personal information without your explicit consent.
 
 6. Intellectual Property
-All visual elements, logos, texts, and the overall design of UFind are protected by copyright. Copying or reproducing parts of the service without prior authorization is not allowed.
+All visual elements, logos, texts, and the overall design of Ubifind are protected by copyright. Copying or reproducing parts of the service without prior authorization is not allowed.
 
 7. APIs and Third-Party Services
-Ubifind integrates services such as Google Maps and Firebase. By using Ubifind, you also agree to the terms and policies of these providers.
+Ubifind integrates services such as  Leaflet and Firebase. By using Ubifind, you also agree to the terms and policies of these providers.
 
 8. Account Cancellation and Deletion
 You may request the deletion of your account at any time. We reserve the right to suspend accounts that violate these Terms.
@@ -382,7 +445,7 @@ Ubifind may update these terms at any time. Changes will be communicated through
         fallbackToWeb: ' Can not save image. Opening in web browser...',
         // ❌ Errors
         popupBlocked: 'Please allow pop-up windows for this action',
-        gmapsOpenFail: 'Could not open Google Maps',
+        gmapsOpenFail: 'Could not open  Leaflet',
         placeNotFound: 'Place not found',
         duplicatePlaceName: "You can't save two places with the same name",
         savePlaceGeneric: 'Error saving the place: {message}',
@@ -398,8 +461,7 @@ Ubifind may update these terms at any time. Changes will be communicated through
         loadPlaceGeneric: 'Error loading the place',
         loadPlaceInvalidCoords: 'The place coordinates are not valid',
         loadPlaceDb: 'Database connection error',
-        geoCantGet: 'Could not get location',
-        geoCantGetEmoji: 'Could not get location  ',
+
         nameRequired: 'You must enter at least a name to save the place',
         publicFieldsRequired: 'You must enter at least a name, comment, rating, and a photo to save the place as public',
         offensiveWords: 'Do not enter offensive words',
@@ -409,13 +471,73 @@ Ubifind may update these terms at any time. Changes will be communicated through
         shareFail: 'Could not share the place',
         publicSaveRequirements: 'You must enter at least a name and a rating to save as public',
         uploadFail: 'Failed to upload file: {file}',
-        geoFail: 'Could not get location  '
+        geoFail: 'Failed to get location (Not required to view places on the map)',
+
+
+        
+termsConditions: `TERMS AND CONDITIONS – Ubifind
+Last updated: [28/05/25]
+1. Acceptance of Terms
+By accessing and using the Ubifind app, you agree to comply with these Terms and Conditions. If you do not agree with any of the terms set forth here, you must refrain from using our services.
+2. Service Description
+Ubifind is a web platform that allows you to discover and save leisure spots through interactive maps. The service may include features such as user authentication, cloud data storage, and use of third-party APIs like  Leaflet.
+3. Registration and User Accounts
+To access certain features, you must register and authenticate. You are responsible for maintaining the confidentiality of your credentials and all activities carried out under your account.
+4. Acceptable Use
+You are not allowed to:
+Use the platform for illegal or unauthorized purposes.
+Interfere with the system’s operation.
+Share content that infringes third-party rights.
+5. User-Generated Content
+The data you provide, such as customized routes or saved places, remain yours, but Ubifind may store, analyze, or use them to improve the service. We will not share personal information without your explicit consent.
+6. Intellectual Property
+All visual elements, logos, texts, and the overall design of Ubifind are protected by copyright. Copying or reproducing parts of the service without prior authorization is not allowed.
+7. APIs and Third-Party Services
+Ubifind integrates services like  Leaflet and Firebase. By using Ubifind, you also agree to the terms and policies of these providers.
+8. Account Cancellation and Deletion
+You may request the deletion of your account at any time. We reserve the right to suspend accounts that violate these Terms.
+9. Modifications
+Ubifind may update these terms at any time. Changes will be communicated through the application.`,
+
+
+
+privacyPolicy: `PRIVACY POLICY – Ubifind
+Last updated: [28-05-2025]
+1. Data Controller
+The controller of the data collected through Ubifind is José María Sánchez Serna.
+2. Data We Collect
+Authentication data: email, name, UID.
+Usage data: places created, places visited, searches.
+Technical data: IP address, browser type, language, and time zone.
+3. Purpose of Processing
+Data are collected in order to:
+Provide personalized access to the platform.
+Store and display information such as routes or favorite places.
+Improve user experience and fix technical issues.
+Comply with legal and security requirements.
+4. Legal Basis for Processing
+The primary legal basis is the user’s explicit consent, along with legitimate interest to improve our services.
+5. Data Retention
+Your data are retained while your account remains active. You may request deletion by contacting us.
+6. Third-Party Services
+We use services such as Firebase and  Leaflet. These third parties may collect certain information in accordance with their own policies.
+7. Your Rights
+You may exercise your rights of access, rectification, cancellation, and objection (ARCO) by emailing: contact@josesanchez.site
+8. Security
+Ubifind applies appropriate technical and organizational measures to ensure the security of personal data.
+9. International Transfers
+If servers outside the European Economic Area are used, appropriate safeguards will be ensured in accordance with the GDPR.
+10. Changes to This Policy
+Ubifind reserves the right to modify this policy. Any changes will be notified to users.`,
     },
 
 
 
     fr: {
         // Profil et compte
+        downloadApp: 'Tu n’as pas l’application ? Télécharge-la ici',
+        lookThat: 'Regarde ça sur Ubifind',
+        ubiFinded: 'Regarde l’emplacement que j’ai trouvé sur Ubifind',
         languageSelect: 'Langue',
         userPerfil: 'Profil utilisateur',
         changePassword: 'Changer le mot de passe',
@@ -445,7 +567,7 @@ Ubifind may update these terms at any time. Changes will be communicated through
 En accédant et en utilisant l’application Ubifind, vous acceptez de respecter ces Termes et Conditions. Si vous n’êtes pas d’accord avec l’un des termes énoncés ici, vous devez vous abstenir d’utiliser nos services.
 
 2. Description du service
-UFind est une plateforme web qui permet de découvrir et d’enregistrer des lieux de loisirs via des cartes interactives. Le service peut inclure des fonctionnalités telles que l’authentification des utilisateurs, le stockage de données dans le cloud et l’utilisation d’APIs tierces comme Google Maps.
+Ubifind est une plateforme web qui permet de découvrir et d’enregistrer des lieux de loisirs via des cartes interactives. Le service peut inclure des fonctionnalités telles que l’authentification des utilisateurs, le stockage de données dans le cloud et l’utilisation d’APIs tierces comme  Leaflet.
 
 3. Inscription et comptes utilisateur
 Pour accéder à certaines fonctionnalités, vous devez vous inscrire et vous authentifier. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités effectuées sous votre compte.
@@ -460,10 +582,10 @@ Il est interdit de :
 Les données que vous saisissez, comme des itinéraires personnalisés ou des lieux enregistrés, restent les vôtres, mais Ubifind peut les stocker, les analyser ou les utiliser pour améliorer le service. Nous ne partagerons pas d’informations personnelles sans votre consentement explicite.
 
 6. Propriété intellectuelle
-Tous les éléments visuels, logos, textes et la conception générale de UFind sont protégés par des droits d’auteur. Il est interdit de copier ou reproduire des parties du service sans autorisation préalable.
+Tous les éléments visuels, logos, textes et la conception générale de Ubifind sont protégés par des droits d’auteur. Il est interdit de copier ou reproduire des parties du service sans autorisation préalable.
 
 7. API et services tiers
-Ubifind intègre des services tels que Google Maps et Firebase. En utilisant Ubifind, vous acceptez également les termes et politiques de ces prestataires.
+Ubifind intègre des services tels que  Leaflet et Firebase. En utilisant Ubifind, vous acceptez également les termes et politiques de ces prestataires.
 
 8. Annulation et suppression de compte
 Vous pouvez demander la suppression de votre compte à tout moment. Nous nous réservons le droit de suspendre les comptes qui violent ces Termes.
@@ -507,7 +629,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         requestChange: 'Demander un changement de mot de passe',
         saving: 'Enregistrer',
         noPlacesCreated: 'Aucun lieu créé',
-          writeYourComment: 'Écrivez votre commentaire...',
+        writeYourComment: 'Écrivez votre commentaire...',
 
 
 
@@ -549,12 +671,12 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         cancelCreation: 'Annuler le mode de création',
         sure: 'tu es sûr ?',
         deleteConfirmText: 'Cette action ne peut pas être annulée',
-         ubiNow: 'Emplacement actuel',
-  ubiNowText: 'Voici où vous vous trouvez en ce moment',
-    cancelConfirmTitle: 'Annuler le mode de création',
-  cancelConfirmText: 'Voulez-vous annuler le mode de création de lieux ?',
-   verifyEmailTitle: 'Vérifiez votre e-mail',
-  verifyEmailText: 'Consultez votre boîte mail quand vous pouvez pour le vérifier, le message peut se trouver dans le dossier spam',
+        ubiNow: 'Emplacement actuel',
+        ubiNowText: 'Voici où vous vous trouvez en ce moment',
+        cancelConfirmTitle: 'Annuler le mode de création',
+        cancelConfirmText: 'Voulez-vous annuler le mode de création de lieux ?',
+        verifyEmailTitle: 'Vérifiez votre e-mail',
+        verifyEmailText: 'Consultez votre boîte mail quand vous pouvez pour le vérifier, le message peut se trouver dans le dossier spam',
 
         // Connexion
         noAccount: "Vous n’avez pas de compte ?",
@@ -595,7 +717,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         invalidRating: 'Le valeur doit être entre 1 et 5',
         weakPassword: 'Mot de passe faible',
         popupBlocked: 'Veuillez autoriser les fenêtres surgissantes pour cette action',
-        gmapsOpenFail: 'Impossible d’ouvrir Google Maps',
+        gmapsOpenFail: 'Impossible d’ouvrir  Leaflet',
         placeNotFound: 'Lieu introuvable',
         duplicatePlaceName: 'Vous ne pouvez pas enregistrer deux lieux avec le même nom',
         savePlaceGeneric: 'Erreur lors de l’enregistrement du lieu : {message}',
@@ -611,8 +733,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         loadPlaceGeneric: 'Erreur lors du chargement du lieu',
         loadPlaceInvalidCoords: 'Les coordonnées du lieu ne sont pas valides',
         loadPlaceDb: 'Erreur de connexion à la base de données',
-        geoCantGet: 'Impossible d’obtenir la localisation',
-        geoCantGetEmoji: 'Impossible d’obtenir la localisation ',
+
         nameRequired: 'Vous devez saisir au moins un nom pour enregistrer le lieu',
         publicFieldsRequired: 'Vous devez saisir au moins un nom, un commentaire, une note et une photo pour enregistrer le lieu comme public',
         offensiveWords: 'N’entrez pas de mots offensants',
@@ -622,9 +743,68 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         shareFail: 'Impossible de partager le lieu',
         publicSaveRequirements: 'Vous devez saisir au moins un nom et une évaluation pour enregistrer en public',
         uploadFail: 'Échec du téléchargement du fichier : {file}',
-        geoFail: 'Impossible d’obtenir la localisation  '
+        geoFail: 'Impossible d’obtenir la position (Non nécessaire pour voir les lieux sur la carte)',
+
+
+        termsConditions: `CONDITIONS GÉNÉRALES – Ubifind
+Dernière mise à jour : [28/05/25]
+1. Acceptation des conditions
+En accédant et en utilisant l’application Ubifind, vous acceptez de respecter ces Conditions Générales. Si vous n’êtes pas d’accord avec l’un des termes énoncés, vous devez vous abstenir d’utiliser nos services.
+2. Description du service
+Ubifind est une plateforme web qui permet de découvrir et d’enregistrer des lieux de loisirs via des cartes interactives. Le service peut inclure des fonctionnalités telles que l’authentification des utilisateurs, le stockage de données dans le cloud, et l’utilisation d’APIs tierces comme  Leaflet.
+3. Inscription et comptes d’utilisateur
+Pour accéder à certaines fonctionnalités, vous devez vous inscrire et vous authentifier. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités effectuées sous votre compte.
+4. Utilisation acceptable
+Il est interdit de :
+Utiliser la plateforme à des fins illégales ou non autorisées.
+Interférer avec le fonctionnement du système.
+Partager du contenu portant atteinte aux droits de tiers.
+5. Contenu généré par l’utilisateur
+Les données que vous saisissez, telles que des itinéraires personnalisés ou des lieux enregistrés, restent les vôtres, mais Ubifind peut les stocker, les analyser ou les utiliser pour améliorer le service. Nous ne partagerons pas vos informations personnelles sans votre consentement explicite.
+6. Propriété intellectuelle
+Tous les éléments visuels, logos, textes et le design général d’Ubifind sont protégés par le droit d’auteur. Il est interdit de copier ou de reproduire des parties du service sans autorisation préalable.
+7. APIs et services tiers
+Ubifind intègre des services tels que  Leaflet et Firebase. En utilisant Ubifind, vous acceptez également les conditions et politiques de ces fournisseurs.
+8. Annulation et suppression de compte
+Vous pouvez demander la suppression de votre compte à tout moment. Nous nous réservons le droit de suspendre les comptes qui enfreignent ces Conditions.
+9. Modifications
+Ubifind peut mettre à jour ces conditions à tout moment. Les modifications seront communiquées via l’application.`,
+
+
+privacyPolicy: `POLITIQUE DE CONFIDENTIALITÉ – Ubifind
+Dernière mise à jour : [28-05-2025]
+1. Responsable du traitement des données
+Le responsable des données collectées via Ubifind est José María Sánchez Serna.
+2. Données que nous collectons
+Données d’authentification : email, nom, UID.
+Données d’utilisation : lieux créés, lieux visités, recherches.
+Données techniques : adresse IP, type de navigateur, langue et fuseau horaire.
+3. Finalité du traitement
+Les données sont collectées afin de :
+Fournir un accès personnalisé à la plateforme.
+Stocker et afficher des informations telles que des itinéraires ou des lieux favoris.
+Améliorer l’expérience utilisateur et corriger les problèmes techniques.
+Respecter les obligations légales et de sécurité.
+4. Base légale du traitement
+La base légale principale est le consentement explicite de l’utilisateur, ainsi que l’intérêt légitime d’améliorer nos services.
+5. Conservation des données
+Vos données sont conservées tant que votre compte reste actif. Vous pouvez demander leur suppression en nous écrivant.
+6. Services tiers
+Nous utilisons des services tels que Firebase et  Leaflet. Ces tiers peuvent collecter certaines informations conformément à leurs politiques.
+7. Droits de l’utilisateur
+Vous pouvez exercer vos droits d’accès, de rectification, d’annulation et d’opposition (ARCO) en envoyant un email à : contact@josesanchez.site
+8. Sécurité
+Ubifind applique des mesures techniques et organisationnelles appropriées pour garantir la sécurité des données personnelles.
+9. Transferts internationaux
+En cas d’utilisation de serveurs en dehors de l’Espace économique européen, des mesures de protection appropriées seront mises en place conformément au RGPD.
+10. Modifications de la politique
+Ubifind se réserve le droit de modifier cette politique. Tout changement sera notifié à l’utilisateur.`,
+
     },
     it: {
+        downloadApp: 'Non hai l’app? Scaricala qui',
+        lookThat: 'Guarda questo su Ubifind',
+        ubiFinded: 'Guarda la posizione che ho trovato su Ubifind',
         // Profilo e account
         languageSelect: 'Lingua',
         userPerfil: 'Profilo utente',
@@ -688,7 +868,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         requestChange: 'Richiedi un cambio di password',
         saving: 'Salvando',
         noPlacesCreated: 'Non hai luoghi creati',
-          writeYourComment: 'Scrivi il tuo commento...',
+        writeYourComment: 'Scrivi il tuo commento...',
 
         // SweetAlert
         confirmButtonText: 'OK',
@@ -703,12 +883,12 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         cancelCreation: 'Annulla modalità creazione',
         sure: 'tu es sicuro ?',
         deleteConfirmText: 'Questo azione non può essere annullata',
-          ubiNow: 'Posizione attuale',
-  ubiNowText: 'Ecco dove ti trovi in questo momento',
-    cancelConfirmTitle: 'Annulla modalità di creazione',
-  cancelConfirmText: 'Vuoi annullare la modalità di creazione di luoghi?',
-   verifyEmailTitle: 'Verifica la tua email',
-  verifyEmailText: 'Controlla la tua email quando puoi per verificarla, il messaggio potrebbe trovarsi nella cartella spam',
+        ubiNow: 'Posizione attuale',
+        ubiNowText: 'Ecco dove ti trovi in questo momento',
+        cancelConfirmTitle: 'Annulla modalità di creazione',
+        cancelConfirmText: 'Vuoi annullare la modalità di creazione di luoghi?',
+        verifyEmailTitle: 'Verifica la tua email',
+        verifyEmailText: 'Controlla la tua email quando puoi per verificarla, il messaggio potrebbe trovarsi nella cartella spam',
 
 
         tourPresentation: 'Ciao 😝',
@@ -759,7 +939,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
             Accedendo e utilizzando l’applicazione Ubifind, accetti di rispettare questi Termini e Condizioni. Se non sei d’accordo con uno qualsiasi dei termini qui stabiliti, devi astenerti dall’utilizzare i nostri servizi.
             
             2. Descrizione del servizio
-            UFind è una piattaforma web che consente di scoprire e salvare luoghi di svago tramite mappe interattive. Il servizio può includere funzionalità come autenticazione degli utenti, archiviazione dati nel cloud e uso di API di terze parti come Google Maps.
+            Ubifind è una piattaforma web che consente di scoprire e salvare luoghi di svago tramite mappe interattive. Il servizio può includere funzionalità come autenticazione degli utenti, archiviazione dati nel cloud e uso di API di terze parti come  Leaflet.
             
             3. Registrazione e account utente
             Per accedere a determinate funzionalità, devi registrarti e autenticarti. Sei responsabile della riservatezza delle tue credenziali e di tutte le attività svolte con il tuo account.
@@ -774,10 +954,10 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
             I dati che inserisci, come percorsi personalizzati o luoghi salvati, rimangono tuoi, ma Ubifind può conservarli, analizzarli o utilizzarli per migliorare il servizio. Non condivideremo informazioni personali senza il tuo consenso esplicito.
             
             6. Proprietà intellettuale
-            Tutti gli elementi visivi, loghi, testi e il design generale di UFind sono protetti da copyright. Non è consentito copiare o riprodurre parti del servizio senza autorizzazione preventiva.
+            Tutti gli elementi visivi, loghi, testi e il design generale di Ubifind sono protetti da copyright. Non è consentito copiare o riprodurre parti del servizio senza autorizzazione preventiva.
             
             7. API e servizi di terze parti
-            Ubifind integra servizi come Google Maps e Firebase. Utilizzando Ubifind, accetti anche i termini e le politiche di questi fornitori.
+            Ubifind integra servizi come  Leaflet e Firebase. Utilizzando Ubifind, accetti anche i termini e le politiche di questi fornitori.
             
             8. Cancellazione ed eliminazione dell’account
             Puoi richiedere l’eliminazione del tuo account in qualsiasi momento. Ci riserviamo il diritto di sospendere gli account che violano questi Termini.
@@ -800,7 +980,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         invalidRating: 'La valutazione deve essere compresa tra 1 e 5',
         weakPassword: 'Password debole',
         popupBlocked: 'Consenti le finestre popup per questa azione',
-        gmapsOpenFail: 'Impossibile aprire Google Maps',
+        gmapsOpenFail: 'Impossibile aprire  Leaflet',
         placeNotFound: 'Luogo non trovato',
         duplicatePlaceName: 'Non puoi salvare due luoghi con lo stesso nome',
         savePlaceGeneric: "Errore durante il salvataggio del luogo: {message}",
@@ -816,8 +996,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         loadPlaceGeneric: 'Errore durante il caricamento del luogo',
         loadPlaceInvalidCoords: 'Le coordinate del luogo non sono valide',
         loadPlaceDb: 'Errore di connessione al database',
-        geoCantGet: 'Impossibile ottenere la posizione',
-        geoCantGetEmoji: 'Impossibile ottenere la posizione  ',
+
         nameRequired: 'Devi inserire almeno un nome per salvare il luogo',
         publicFieldsRequired: 'Devi inserire almeno un nome, un commento, una valutazione e una foto per salvare il luogo come pubblico',
         offensiveWords: 'Non inserire parole offensive',
@@ -827,9 +1006,72 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         shareFail: 'Impossibile condividere il luogo',
         publicSaveRequirements: 'Devi inserire almeno un nome e una valutazione per salvare in pubblico',
         uploadFail: 'Caricamento del file non riuscito: {file}',
-        geoFail: 'Impossibile ottenere la posizione  '
+        geoFail: 'Impossibile ottenere la posizione (Non necessaria per visualizzare i luoghi sulla mappa)',
+
+
+        termsConditions: `TERMINI E CONDIZIONI – Ubifind
+Ultimo aggiornamento: [28/05/25]
+1. Accettazione dei termini
+Accedendo e utilizzando l’applicazione Ubifind, accetti di rispettare questi Termini e Condizioni. Se non sei d’accordo con uno qualsiasi dei termini qui stabiliti, devi astenerti dall’utilizzare i nostri servizi.
+2. Descrizione del servizio
+Ubifind è una piattaforma web che consente di scoprire e salvare luoghi di svago tramite mappe interattive. Il servizio può includere funzionalità come l’autenticazione degli utenti, l’archiviazione dei dati nel cloud e l’uso di API di terze parti come  Leaflet.
+3. Registrazione e account utente
+Per accedere a determinate funzionalità, devi registrarti e autenticarti. Sei responsabile della riservatezza delle tue credenziali e di tutte le attività svolte con il tuo account.
+4. Uso accettabile
+Non è consentito:
+Utilizzare la piattaforma per scopi illegali o non autorizzati.
+Interferire con il funzionamento del sistema.
+Condividere contenuti che violino i diritti di terzi.
+5. Contenuti generati dall’utente
+I dati che inserisci, come percorsi personalizzati o luoghi salvati, rimangono tuoi, ma Ubifind può archiviarli, analizzarli o utilizzarli per migliorare il servizio. Non condivideremo informazioni personali senza il tuo consenso esplicito.
+6. Proprietà intellettuale
+Tutti gli elementi visivi, loghi, testi e il design generale di Ubifind sono protetti da copyright. Non è consentito copiare o riprodurre parti del servizio senza previa autorizzazione.
+7. API e servizi di terze parti
+Ubifind integra servizi come  Leaflet e Firebase. Utilizzando Ubifind, accetti anche i termini e le politiche di questi fornitori.
+8. Cancellazione ed eliminazione dell’account
+Puoi richiedere l’eliminazione del tuo account in qualsiasi momento. Ci riserviamo il diritto di sospendere gli account che violano questi Termini.
+9. Modifiche
+Ubifind può aggiornare questi termini in qualsiasi momento. Le modifiche saranno comunicate tramite l’applicazione.`,
+
+
+
+
+privacyPolicy: `POLITICA SULLA PRIVACY – Ubifind
+Ultimo aggiornamento: [28-05-2025]
+1. Responsabile del trattamento dei dati
+Il responsabile dei dati raccolti tramite Ubifind è José María Sánchez Serna.
+2. Dati che raccogliamo
+Dati di autenticazione: email, nome, UID.
+Dati di utilizzo: luoghi creati, luoghi visitati, ricerche.
+Dati tecnici: indirizzo IP, tipo di browser, lingua e fuso orario.
+3. Finalità del trattamento
+I dati vengono raccolti al fine di:
+Fornire accesso personalizzato alla piattaforma.
+Archiviare e mostrare informazioni come percorsi o luoghi preferiti.
+Migliorare l’esperienza dell’utente e correggere errori tecnici.
+Garantire il rispetto degli obblighi legali e di sicurezza.
+4. Base giuridica del trattamento
+La base giuridica principale è il consenso esplicito dell’utente, insieme all’interesse legittimo a migliorare i nostri servizi.
+5. Conservazione dei dati
+I tuoi dati verranno conservati finché il tuo account rimarrà attivo. Puoi richiederne la cancellazione scrivendoci.
+6. Servizi di terze parti
+Utilizziamo servizi come Firebase e  Leaflet. Queste terze parti possono raccogliere alcune informazioni in conformità con le proprie politiche.
+7. Diritti dell’utente
+Puoi esercitare i tuoi diritti di accesso, rettifica, cancellazione e opposizione (ARCO) inviando una mail a: contact@josesanchez.site
+8. Sicurezza
+Ubifind applica misure tecniche e organizzative adeguate per garantire la sicurezza dei dati personali.
+9. Trasferimenti internazionali
+In caso di utilizzo di server al di fuori dello Spazio economico europeo, saranno garantite misure di protezione adeguate in conformità con il GDPR.
+10. Modifiche alla politica
+Ubifind si riserva il diritto di modificare la presente politica. Qualsiasi modifica sarà notificata all’utente.`,
+
+
     },
     de: {
+        downloadApp: 'Du hast die App nicht? Lade sie hier herunter',
+        lookThat: 'Schau dir das auf Ubifind an',
+        ubiFinded: 'Schau dir den Standort an, den ich auf Ubifind gefunden habe',
+
         // Profil und Konto
 
         languageSelect: 'Sprache',
@@ -893,7 +1135,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         writeEmail: 'Schreibe deine E-Mail',
         requestChange: 'Passwortänderung beantragen',
         noPlacesCreated: 'Noch keine Orte erstellt',
-         writeYourComment: 'Schreibe deinen Kommentar...',
+        writeYourComment: 'Schreibe deinen Kommentar...',
 
         saving: 'Speichern',
 
@@ -910,12 +1152,12 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
         cancelCreation: 'Erstellungsmodus abbrechen',
         sure: 'Du bist sicher ?',
         deleteConfirmText: 'Diese Aktion kann nicht rückgängig gemacht werden',
-          ubiNow: 'Aktueller Standort',
-  ubiNowText: 'Hier befindest du dich gerade',
-    cancelConfirmTitle: 'Erstellungsmodus abbrechen',
-  cancelConfirmText: 'Möchtest du den Modus zur Erstellung von Orten abbrechen?',
-    verifyEmailTitle: 'Bestätige deine E-Mail',
-  verifyEmailText: 'Überprüfe deine E-Mails, wenn du kannst, um sie zu bestätigen. Die Nachricht könnte sich im Spam-Ordner befinden',
+        ubiNow: 'Aktueller Standort',
+        ubiNowText: 'Hier befindest du dich gerade',
+        cancelConfirmTitle: 'Erstellungsmodus abbrechen',
+        cancelConfirmText: 'Möchtest du den Modus zur Erstellung von Orten abbrechen?',
+        verifyEmailTitle: 'Bestätige deine E-Mail',
+        verifyEmailText: 'Überprüfe deine E-Mails, wenn du kannst, um sie zu bestätigen. Die Nachricht könnte sich im Spam-Ordner befinden',
 
 
         tourPresentation: 'Hallo 😝',
@@ -966,7 +1208,7 @@ Ubifind peut mettre à jour ces termes à tout moment. Les modifications seront 
 Durch den Zugriff auf und die Nutzung der Ubifind-Anwendung erklären Sie sich mit diesen Allgemeinen Geschäftsbedingungen einverstanden. Wenn Sie mit einem der hier festgelegten Bedingungen nicht einverstanden sind, dürfen Sie unsere Dienste nicht nutzen.
 
 2. Beschreibung des Dienstes
-UFind ist eine Webplattform, die es ermöglicht, Freizeitorte über interaktive Karten zu entdecken und zu speichern. Der Dienst kann Funktionen wie Benutzer-Authentifizierung, Cloud-Speicherung von Daten und die Nutzung von Drittanbieter-APIs wie Google Maps umfassen.
+Ubifind ist eine Webplattform, die es ermöglicht, Freizeitorte über interaktive Karten zu entdecken und zu speichern. Der Dienst kann Funktionen wie Benutzer-Authentifizierung, Cloud-Speicherung von Daten und die Nutzung von Drittanbieter-APIs wie  Leaflet umfassen.
 
 3. Registrierung und Benutzerkonten
 Um auf bestimmte Funktionen zuzugreifen, müssen Sie sich registrieren und authentifizieren. Sie sind für die Vertraulichkeit Ihrer Anmeldedaten und alle Aktivitäten verantwortlich, die unter Ihrem Konto stattfinden.
@@ -981,10 +1223,10 @@ Nicht erlaubt ist:
 Die von Ihnen eingegebenen Daten, wie personalisierte Routen oder gespeicherte Orte, bleiben Ihre, aber Ubifind darf sie speichern, analysieren oder verwenden, um den Dienst zu verbessern. Persönliche Informationen werden nicht ohne Ihre ausdrückliche Zustimmung weitergegeben.
 
 6. Geistiges Eigentum
-Alle visuellen Elemente, Logos, Texte und das Gesamtdesign von UFind sind urheberrechtlich geschützt. Es ist nicht gestattet, Teile des Dienstes ohne vorherige Genehmigung zu kopieren oder zu reproduzieren.
+Alle visuellen Elemente, Logos, Texte und das Gesamtdesign von Ubifind sind urheberrechtlich geschützt. Es ist nicht gestattet, Teile des Dienstes ohne vorherige Genehmigung zu kopieren oder zu reproduzieren.
 
 7. APIs und Dienste Dritter
-Ubifind integriert Dienste wie Google Maps und Firebase. Durch die Nutzung von Ubifind stimmen Sie auch den Bedingungen und Richtlinien dieser Anbieter zu.
+Ubifind integriert Dienste wie  Leaflet und Firebase. Durch die Nutzung von Ubifind stimmen Sie auch den Bedingungen und Richtlinien dieser Anbieter zu.
 
 8. Kündigung und Löschung des Kontos
 Sie können die Löschung Ihres Kontos jederzeit beantragen. Wir behalten uns das Recht vor, Konten zu sperren, die gegen diese Bedingungen verstoßen.
@@ -1007,7 +1249,7 @@ Ubifind kann diese Bedingungen jederzeit aktualisieren. Änderungen werden über
         invalidRating: 'Die Bewertung muss zwischen 1 und 5 liegen',
         weakPassword: 'Passwort ist zu schwach',
         popupBlocked: 'Bitte erlaube Pop-up-Fenster für diese Aktion',
-        gmapsOpenFail: 'Google Maps konnte nicht geöffnet werden',
+        gmapsOpenFail: ' Leaflet konnte nicht geöffnet werden',
         placeNotFound: 'Ort nicht gefunden',
         duplicatePlaceName: 'Du kannst nicht zwei Orte mit demselben Namen speichern',
         savePlaceGeneric: 'Fehler beim Speichern des Ortes: {message}',
@@ -1023,8 +1265,7 @@ Ubifind kann diese Bedingungen jederzeit aktualisieren. Änderungen werden über
         loadPlaceGeneric: 'Fehler beim Laden des Ortes',
         loadPlaceInvalidCoords: 'Die Koordinaten des Ortes sind ungültig',
         loadPlaceDb: 'Datenbankverbindungsfehler',
-        geoCantGet: 'Standort konnte nicht ermittelt werden',
-        geoCantGetEmoji: 'Standort konnte nicht ermittelt werden  ',
+
         nameRequired: 'Du musst mindestens einen Namen eingeben, um den Ort zu speichern',
         publicFieldsRequired: 'Du musst mindestens einen Namen, einen Kommentar, eine Bewertung und ein Foto eingeben, um den Ort als öffentlich zu speichern',
         offensiveWords: 'Keine beleidigenden Wörter eingeben',
@@ -1034,9 +1275,67 @@ Ubifind kann diese Bedingungen jederzeit aktualisieren. Änderungen werden über
         shareFail: 'Ort konnte nicht geteilt werden',
         publicSaveRequirements: 'Du musst mindestens einen Namen und eine Bewertung eingeben, um öffentlich zu speichern',
         uploadFail: 'Datei konnte nicht hochgeladen werden: {file}',
-        geoFail: 'Standort konnte nicht ermittelt werden  '
+        geoFail: 'Standort konnte nicht ermittelt werden (Nicht erforderlich, um Orte auf der Karte anzuzeigen)',
+
+        termsConditions: `NUTZUNGSBEDINGUNGEN – Ubifind
+Letzte Aktualisierung: [28/05/25]
+1. Annahme der Bedingungen
+Durch den Zugriff auf und die Nutzung der Ubifind-App erklären Sie sich mit diesen Nutzungsbedingungen einverstanden. Wenn Sie mit einem der hier festgelegten Bedingungen nicht einverstanden sind, müssen Sie die Nutzung unserer Dienste unterlassen.
+2. Beschreibung des Dienstes
+Ubifind ist eine Webplattform, die es ermöglicht, Freizeitorte über interaktive Karten zu entdecken und zu speichern. Der Dienst kann Funktionen wie Benutzer-Authentifizierung, Cloud-Datenspeicherung und die Nutzung von Drittanbieter-APIs wie  Leaflet umfassen.
+3. Registrierung und Benutzerkonten
+Um auf bestimmte Funktionen zugreifen zu können, müssen Sie sich registrieren und authentifizieren. Sie sind verantwortlich für die Vertraulichkeit Ihrer Zugangsdaten und alle Aktivitäten, die unter Ihrem Konto durchgeführt werden.
+4. Angemessene Nutzung
+Es ist nicht gestattet:
+Die Plattform für illegale oder nicht autorisierte Zwecke zu nutzen.
+In den Betrieb des Systems einzugreifen.
+Inhalte zu teilen, die die Rechte Dritter verletzen.
+5. Vom Benutzer erstellte Inhalte
+Die von Ihnen eingegebenen Daten, wie personalisierte Routen oder gespeicherte Orte, bleiben Ihre, aber Ubifind darf sie speichern, analysieren oder nutzen, um den Dienst zu verbessern. Wir werden keine personenbezogenen Daten ohne Ihre ausdrückliche Zustimmung weitergeben.
+6. Geistiges Eigentum
+Alle visuellen Elemente, Logos, Texte und das Gesamtdesign von Ubifind sind urheberrechtlich geschützt. Das Kopieren oder Reproduzieren von Teilen des Dienstes ohne vorherige Genehmigung ist nicht gestattet.
+7. APIs und Dienste Dritter
+Ubifind integriert Dienste wie  Leaflet und Firebase. Durch die Nutzung von Ubifind stimmen Sie auch den Bedingungen und Richtlinien dieser Anbieter zu.
+8. Kündigung und Löschung des Kontos
+Sie können die Löschung Ihres Kontos jederzeit beantragen. Wir behalten uns das Recht vor, Konten zu sperren, die gegen diese Bedingungen verstoßen.
+9. Änderungen
+Ubifind kann diese Bedingungen jederzeit aktualisieren. Änderungen werden über die Anwendung mitgeteilt.`,
+
+
+privacyPolicy: `DATENSCHUTZRICHTLINIE – Ubifind
+Letzte Aktualisierung: [28-05-2025]
+1. Verantwortlicher für die Datenverarbeitung
+Der Verantwortliche für die über Ubifind erhobenen Daten ist José María Sánchez Serna.
+2. Daten, die wir sammeln
+Authentifizierungsdaten: E-Mail, Name, UID.
+Nutzungsdaten: erstellte Orte, besuchte Orte, Suchanfragen.
+Technische Daten: IP-Adresse, Browsertyp, Sprache und Zeitzone.
+3. Zweck der Verarbeitung
+Die Daten werden gesammelt, um:
+Personalisierte Zugänge zur Plattform bereitzustellen.
+Informationen wie Routen oder Lieblingsorte zu speichern und anzuzeigen.
+Die Benutzererfahrung zu verbessern und technische Fehler zu beheben.
+Gesetzliche und sicherheitsrelevante Anforderungen zu erfüllen.
+4. Rechtsgrundlage der Verarbeitung
+Die Hauptrechtsgrundlage ist die ausdrückliche Zustimmung des Nutzers sowie das berechtigte Interesse an der Verbesserung unserer Dienste.
+5. Aufbewahrung der Daten
+Ihre Daten werden gespeichert, solange Ihr Konto aktiv bleibt. Sie können deren Löschung beantragen, indem Sie uns kontaktieren.
+6. Dienste Dritter
+Wir verwenden Dienste wie Firebase und  Leaflet. Diese Drittanbieter können bestimmte Informationen gemäß ihren eigenen Richtlinien sammeln.
+7. Rechte des Nutzers
+Sie können Ihre Rechte auf Auskunft, Berichtigung, Löschung und Widerspruch (ARCO) ausüben, indem Sie eine E-Mail senden an: contact@josesanchez.site
+8. Sicherheit
+Ubifind setzt angemessene technische und organisatorische Maßnahmen ein, um die Sicherheit personenbezogener Daten zu gewährleisten.
+9. Internationale Datenübertragungen
+Bei der Nutzung von Servern außerhalb des Europäischen Wirtschaftsraums werden angemessene Schutzmaßnahmen gemäß der DSGVO sichergestellt.
+10. Änderungen dieser Richtlinie
+Ubifind behält sich das Recht vor, diese Richtlinie zu ändern. Jegliche Änderungen werden den Nutzern mitgeteilt.`,
+
     },
     pt: {
+        downloadApp: 'Não tem o app? Baixe-o aqui',
+        lookThat: 'Olha isso no Ubifind',
+        ubiFinded: 'Olha a localização que encontrei no Ubifind',
         // Perfil e conta
         languageSelect: 'Idioma',
         userPerfil: 'Perfil do usuário',
@@ -1120,8 +1419,8 @@ Ubifind kann diese Bedingungen jederzeit aktualisieren. Änderungen werden über
         ubiNowText: 'Aqui é onde você está agora',
         cancelConfirmTitle: 'Cancelar modo de criação',
         cancelConfirmText: 'Você quer cancelar o modo de criação de lugares?',
-          verifyEmailTitle: 'Verifique seu e-mail',
-  verifyEmailText: 'Verifique seu e-mail quando puder para confirmá-lo, a mensagem pode estar na pasta de spam',
+        verifyEmailTitle: 'Verifique seu e-mail',
+        verifyEmailText: 'Verifique seu e-mail quando puder para confirmá-lo, a mensagem pode estar na pasta de spam',
 
 
         tourPresentation: 'Olá 😝',
@@ -1170,7 +1469,7 @@ Ubifind kann diese Bedingungen jederzeit aktualisieren. Änderungen werden über
 Ao acessar e utilizar o aplicativo Ubifind, você concorda em cumprir estes Termos e Condições. Se não concordar com algum dos termos aqui estabelecidos, deve abster-se de utilizar nossos serviços.
 
 2. Descrição do serviço
-UFind é uma plataforma web que permite descobrir e salvar locais de lazer através de mapas interativos. O serviço pode incluir funcionalidades como autenticação de usuários, armazenamento de dados na nuvem e uso de APIs de terceiros como o Google Maps.
+Ubifind é uma plataforma web que permite descobrir e salvar locais de lazer através de mapas interativos. O serviço pode incluir funcionalidades como autenticação de usuários, armazenamento de dados na nuvem e uso de APIs de terceiros como o  Leaflet.
 
 3. Registro e contas de usuário
 Para acessar determinadas funcionalidades, você deve se registrar e autenticar. Você é responsável por manter a confidencialidade de suas credenciais e por todas as atividades realizadas em sua conta.
@@ -1185,10 +1484,10 @@ Não é permitido:
 Os dados que você insere, como rotas personalizadas ou locais salvos, continuam sendo seus, mas o Ubifind pode armazená-los, analisá-los ou utilizá-los para melhorar o serviço. Não compartilharemos informações pessoais sem o seu consentimento explícito.
 
 6. Propriedade intelectual
-Todos os elementos visuais, logotipos, textos e o design geral do UFind são protegidos por direitos autorais. Não é permitido copiar ou reproduzir partes do serviço sem autorização prévia.
+Todos os elementos visuais, logotipos, textos e o design geral do Ubifind são protegidos por direitos autorais. Não é permitido copiar ou reproduzir partes do serviço sem autorização prévia.
 
 7. API e serviços de terceiros
-O Ubifind integra serviços como o Google Maps e o Firebase. Ao usar o Ubifind, você também aceita os termos e políticas desses provedores.
+O Ubifind integra serviços como o  Leaflet e o Firebase. Ao usar o Ubifind, você também aceita os termos e políticas desses provedores.
 
 8. Cancelamento e exclusão de conta
 Você pode solicitar a exclusão de sua conta a qualquer momento. Reservamo-nos o direito de suspender contas que violem estes Termos.
@@ -1211,7 +1510,7 @@ O Ubifind pode atualizar estes termos a qualquer momento. As modificações ser�
         invalidRating: 'A avaliação deve estar entre 1 e 5',
         weakPassword: 'Senha fraca',
         popupBlocked: 'Permita janelas pop-up para esta ação',
-        gmapsOpenFail: 'Não foi possível abrir o Google Maps',
+        gmapsOpenFail: 'Não foi possível abrir o  Leaflet',
         placeNotFound: 'Lugar não encontrado',
         duplicatePlaceName: 'Você não pode salvar dois lugares com o mesmo nome',
         savePlaceGeneric: 'Erro ao salvar o lugar: {message}',
@@ -1227,8 +1526,7 @@ O Ubifind pode atualizar estes termos a qualquer momento. As modificações ser�
         loadPlaceGeneric: 'Erro ao carregar o lugar',
         loadPlaceInvalidCoords: 'As coordenadas do lugar não são válidas',
         loadPlaceDb: 'Erro de conexão com o banco de dados',
-        geoCantGet: 'Não foi possível obter a localização',
-        geoCantGetEmoji: 'Não foi possível obter a localização  ',
+
         nameRequired: 'Você deve inserir pelo menos um nome para salvar o lugar',
         publicFieldsRequired: 'Você deve inserir pelo menos um nome, comentário, avaliação e uma foto para salvar o lugar como público',
         offensiveWords: 'Não insira palavras ofensivas',
@@ -1238,7 +1536,64 @@ O Ubifind pode atualizar estes termos a qualquer momento. As modificações ser�
         shareFail: 'Não foi possível compartilhar o lugar',
         publicSaveRequirements: 'Você deve inserir pelo menos um nome e uma avaliação para salvar como público',
         uploadFail: 'Falha ao enviar o arquivo: {file}',
-        geoFail: 'Não foi possível obter a localização  '
+        geoFail: 'Não foi possível obter a localização (Não é necessária para ver os locais no mapa)',
+
+
+        termsConditions: `TERMOS E CONDIÇÕES – Ubifind
+Última atualização: [28/05/25]
+1. Aceitação dos termos
+Ao aceder e utilizar a aplicação Ubifind, concorda em cumprir estes Termos e Condições. Se não concordar com algum dos termos aqui estabelecidos, deve abster-se de utilizar os nossos serviços.
+2. Descrição do serviço
+O Ubifind é uma plataforma web que permite descobrir e guardar locais de lazer através de mapas interativos. O serviço pode incluir funcionalidades como autenticação de utilizadores, armazenamento de dados na nuvem e utilização de APIs de terceiros como o  Leaflet.
+3. Registo e contas de utilizador
+Para aceder a certas funcionalidades, deve registar-se e autenticar-se. É responsável por manter a confidencialidade das suas credenciais e por todas as atividades realizadas na sua conta.
+4. Utilização aceitável
+Não é permitido:
+Utilizar a plataforma para fins ilegais ou não autorizados.
+Interferir com o funcionamento do sistema.
+Partilhar conteúdos que infrinjam direitos de terceiros.
+5. Conteúdo gerado pelo utilizador
+Os dados que introduz, como rotas personalizadas ou locais guardados, continuam a ser seus, mas o Ubifind pode armazená-los, analisá-los ou utilizá-los para melhorar o serviço. Não partilharemos informações pessoais sem o seu consentimento explícito.
+6. Propriedade intelectual
+Todos os elementos visuais, logótipos, textos e o design geral do Ubifind estão protegidos por direitos de autor. Não é permitido copiar ou reproduzir partes do serviço sem autorização prévia.
+7. API e serviços de terceiros
+O Ubifind integra serviços como o  Leaflet e o Firebase. Ao utilizar o Ubifind, também concorda com os termos e políticas destes fornecedores.
+8. Cancelamento e eliminação da conta
+Pode solicitar a eliminação da sua conta a qualquer momento. Reservamo-nos o direito de suspender contas que violem estes Termos.
+9. Modificações
+O Ubifind pode atualizar estes termos a qualquer momento. As modificações serão comunicadas através da aplicação.`,
+
+
+
+
+privacyPolicy: `POLÍTICA DE PRIVACIDADE – Ubifind
+Última atualização: [28-05-2025]
+1. Responsável pelo tratamento de dados
+O responsável pelos dados recolhidos através do Ubifind é José María Sánchez Serna.
+2. Dados que recolhemos
+Dados de autenticação: email, nome, UID.
+Dados de utilização: locais criados, locais visitados, pesquisas.
+Dados técnicos: endereço IP, tipo de navegador, idioma e fuso horário.
+3. Finalidade do tratamento
+Os dados são recolhidos para:
+Fornecer acesso personalizado à plataforma.
+Armazenar e exibir informações como rotas ou locais favoritos.
+Melhorar a experiência do utilizador e corrigir erros técnicos.
+Cumprir requisitos legais e de segurança.
+4. Base legal para o tratamento
+A principal base legal é o consentimento explícito do utilizador, juntamente com o interesse legítimo em melhorar os nossos serviços.
+5. Conservação dos dados
+Os seus dados serão conservados enquanto a sua conta permanecer ativa. Pode solicitar a sua eliminação entrando em contacto connosco.
+6. Serviços de terceiros
+Utilizamos serviços como Firebase e  Leaflet. Estes terceiros podem recolher determinadas informações de acordo com as suas próprias políticas.
+7. Direitos do utilizador
+Pode exercer os seus direitos de acesso, retificação, cancelamento e oposição (ARCO) enviando um email para: contact@josesanchez.site
+8. Segurança
+O Ubifind aplica medidas técnicas e organizacionais adequadas para garantir a segurança dos dados pessoais.
+9. Transferências internacionais
+No caso de utilização de servidores fora do Espaço Económico Europeu, serão asseguradas medidas de proteção adequadas de acordo com o RGPD.
+10. Alterações a esta política
+O Ubifind reserva-se o direito de modificar esta política. Quaisquer alterações serão notificadas ao utilizador.`
     }
 
 

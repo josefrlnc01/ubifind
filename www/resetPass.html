@@ -11,7 +11,7 @@
 </head>
 <body>
     <main class="form-container">
-        <button class="exit"><a href="index.html">X</a></button>
+        <button class="exit">x</button>
         <form class="form" id="form" method="post">
             <div class="inputContainer pass">
                 <label for="last-password" data-i18n="lastPassword">Escribe tu antigua contraseña</label>
@@ -35,4 +35,9 @@
         </form>
     </main>
 </body>
+<script>
+    document.querySelector('.exit').addEventListener('click', () => {
+        window.location.href = 'app/index.html'
+    })
+</script>
 </html>

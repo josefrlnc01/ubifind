@@ -7,6 +7,7 @@
         </intent>
         <package android:name="com.google.android.apps.maps" />
     </queries>
+    
     <application
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
@@ -78,15 +79,25 @@
                     />
             </intent-filter>
 
-
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-          android:host="new-day-459708.firebaseapp.com"
-          android:scheme="https"
-        />
+                    android:host="new-day-459708.firebaseapp.com"
+                    android:scheme="https"
+                />
+            </intent-filter>
+
+            <!-- Deeplink configuration for ubifindapp://open -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="ubifindapp"
+                    android:host="open"
+                />
             </intent-filter>
            
             
@@ -97,20 +108,12 @@
       android:exported="false"
       android:theme="@android:style/Theme.Translucent.NoTitleBar"
     />
-        <provider
-      android:name="androidx.core.content.FileProvider"
-      android:authorities="${applicationId}.fileprovider"
-      android:exported="false"
-      android:grantUriPermissions="true"
-    >
-            <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths"
-      />
-        </provider>
+        
+        
     </application>
 
-    <!-- Permissions -->
+
+   
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.INTERNET" />
