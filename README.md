@@ -66,10 +66,10 @@ Ubifind es una red social que te permite descubrir y compartir lugares interesan
 
 ## 📱 Capturas de Pantalla
 <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
-  <img width="720"  alt="Rellena la información de tus lugares detalladamente_20250913_183920_0000" src="https://github.com/user-attachments/assets/ba8ba96f-256e-4f1e-8c2c-18b731cb53dd" />
-<img width="2245" height=<img width="2245" height="3179" alt="Rellena la información de tus lugares detalladamente_20250913_211706_0000" src="https://github.com/user-attachments/assets/3cba8641-67b7-46b2-b446-ac4ee6036f31" />
-"3179" alt="Busca lugares en todo el mundo 🌎_20250913_205327_0000" src="https://github.com/user-attachments/assets/baaec77b-495c-41da-b866-82840a25427b" />
-<img width="2245" height="3179" alt="Rellena la información de tus lugares detalladamente_20250913_212828_0000" src="https://github.com/user-attachments/assets/9571d1db-12cf-45a5-9e7f-7c56198f7ea8" />
+  <img width="280"  alt="Rellena la información de tus lugares detalladamente_20250913_183920_0000" src="https://github.com/user-attachments/assets/ba8ba96f-256e-4f1e-8c2c-18b731cb53dd" />
+<img width="280"  alt="Rellena la información de tus lugares detalladamente_20250913_211706_0000" src="https://github.com/user-attachments/assets/3cba8641-67b7-46b2-b446-ac4ee6036f31" />
+
+<img width="280"  alt="Rellena la información de tus lugares detalladamente_20250913_212828_0000" src="https://github.com/user-attachments/assets/9571d1db-12cf-45a5-9e7f-7c56198f7ea8" />
 
 </div>
 
