@@ -27,7 +27,7 @@ Ubifind es una red social que te permite descubrir y compartir lugares interesan
 
 ## 📱 Plataformas Soportadas
 
-- **Web**: [Accede desde tu navegador](https://newplaceapp.com)
+- **Web**: [Accede desde tu navegador](https://ubifindapp.com)
 - **Android**: [Descarga en Google Play](https://play.google.com/apps/testing/com.ubifind.app)
 
 ## 🚀 Cómo Empezar
