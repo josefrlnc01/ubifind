@@ -1,12 +1,18 @@
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import { auth } from "./firebaseConfig.js";
-import { applyTranslations, getCurrentLanguage } from "./js/i18n.js";
+import { applyTranslations, getCurrentLanguage } from "./i18n.js";
 
-const form = document.getElementById('form');
-const response = document.getElementById('response');
 
-// Get current language
-const lang = getCurrentLanguage();
+   
+
+
+    const form = document.getElementById('form');
+    const response = document.getElementById('response');
+    
+    // Get current language
+    const lang = getCurrentLanguage();
+   
+        
 
 // Password reset form submission
 form.addEventListener('submit', async (e) => {

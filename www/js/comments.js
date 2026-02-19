@@ -12,7 +12,7 @@ import {
     increment,
     setDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { App, auth, db, storage } from "./firebaseConfig.js";
+import { App, auth, db, storage } from "../firebaseConfig.js";
 
 
 

@@ -16,10 +16,10 @@ android {
     
     signingConfigs {
         release {
-            storeFile file(RELEASE_STORE_FILE)
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
+            storeFile file("C:/Users/Jose/AndroidKeys/newplace.jks")
+        storePassword "280701"
+        keyAlias "newplace"
+        keyPassword "280701"
         }
     }
     
@@ -27,7 +27,7 @@ android {
         applicationId "com.ubifind.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 44
+        versionCode 53
         versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -55,14 +55,18 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth-ktx'
+    
+    // Google Sign-In
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
+    implementation 'com.google.android.gms:play-services-identity:18.0.1'
     
     // Credentials API
     implementation "androidx.credentials:credentials:1.2.2"
     implementation "androidx.credentials:credentials-play-services-auth:1.2.2"
     implementation "com.google.android.libraries.identity.googleid:googleid:1.1.0"
     
-    // Other dependencies
+    // Otras dependencias
     implementation "com.google.android.gms:play-services-ads:22.5.0"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation("com.revenuecat.purchases:purchases:8.17.1")
@@ -71,6 +75,10 @@ dependencies {
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
+    
+    // Dependencias para el plugin de inicio de sesión social
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'androidx.browser:browser:1.5.0'
     
     // Testing
     testImplementation "junit:junit:$junitVersion"

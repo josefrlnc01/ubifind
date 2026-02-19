@@ -1,7 +1,44 @@
 import { auth} from "./firebaseConfig.js";
 import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-const user = auth.currentUser
+
+
+const {App} = window.Capacitor.Plugins
+
+document.addEventListener('DOMContentLoaded', async () => {
+
+    if(!window.Capacitor.isNativePlatform()){
+        // Add keyboard event listener for Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                const shouldExit = handleBackButton();
+                if (shouldExit) {
+                    handleBackButton();
+                }
+            }
+        }); 
+    }
+     else{
+        // Handle back button
+        App.addListener('backButton', () => {
+            const shouldExit = handleBackButton();
+            if (shouldExit) App.exitApp();
+        })
+
+     }   
+        
+
+    function handleBackButton(){
+        if(window.location.pathname != '/app'){
+            window.location.href = '/app'
+            return false
+        }
+        return true
+    }
+    
+    })
+
+
 const actionCodeSettings = {
   // URL you want to redirect back to. The domain (www.example.com) for
   // this URL must be whitelisted in the Firebase Console.

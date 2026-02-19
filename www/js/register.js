@@ -1,6 +1,6 @@
 import { auth, db } from './firebaseConfig.js';
 import { initSocial } from './script.js';
-import {  translations, getCurrentLanguage } from './js/i18n.js';
+import {  translations, getCurrentLanguage } from './i18n.js';
 import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
 import { 
   createUserWithEmailAndPassword, 
@@ -166,10 +166,10 @@ if (buttonGoogle) {
       } else {
         // NATIVO (Android/iOS): usar el plugin
         const SocialLogin = window.Capacitor.Plugins?.SocialLogin;
-        if (!SocialLogin) throw new Error('Social login plugin not available');
+        if (!SocialLogin) throw new Error('Google auth plugin not available');
 
         const res = await SocialLogin.login({ provider: 'google' });
-        const idToken = res?.result?.idToken;
+        const idToken = result?.idToken || result?.result?.idToken;
         
         if (!idToken) {
           console.error('No se pudo obtener el token de Google', res);

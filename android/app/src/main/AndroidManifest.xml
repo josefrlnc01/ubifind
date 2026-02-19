@@ -29,21 +29,42 @@
 
         <!-- Google Sign-In Configuration -->
         <meta-data
-      android:name="com.google.android.gms.auth.api.signin.credentials.ENABLE_CREDENTIALS"
-      android:value="true"
-    />
+            android:name="com.google.android.gms.auth.api.signin.credentials.ENABLE_CREDENTIALS"
+            android:value="true" />
 
         <!-- Web client ID for server verification -->
         <meta-data
-      android:name="com.google.android.gms.auth.api.signin.credentials.SERVER_CLIENT_ID"
-      android:value="940873643414-856bc0no2p33f06lr9netrff6c77miul.apps.googleusercontent.com"
-    />
+            android:name="com.google.android.gms.auth.api.signin.credentials.SERVER_CLIENT_ID"
+            android:value="940873643414-13u2lck1pv368due6qu4smfonlbgh39c.apps.googleusercontent.com" />
 
         <!-- Google Sign-In -->
         <meta-data
-      android:name="com.google.android.gms.auth.api.signin.credentials.ACCOUNT_NAME"
-      android:value="@string/app_name"
-    />
+            android:name="com.google.android.gms.auth.api.signin.credentials.ACCOUNT_NAME"
+            android:value="@string/app_name" />
+            
+        
+        <!-- Activity for Google Sign-In -->
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.GoogleSignInActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+            <activity
+    android:name="com.codetrixstudio.capacitor.GoogleAuth.GoogleAuthActivity"
+    android:exported="true"
+    android:launchMode="singleTask">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="@string/custom_url_scheme" />
+    </intent-filter>
+</activity>
 
         <!-- Google Play Services -->
         <meta-data
@@ -75,8 +96,11 @@
                 <data
                     android:scheme="https"
                     android:host="ubifindapp.com"
-                    android:pathPrefix="/app/"
+                   
                     />
+                    <data
+        android:scheme="ubifind"
+        android:host="open" />
             </intent-filter>
 
             <intent-filter android:autoVerify="true">
@@ -89,27 +113,11 @@
                 />
             </intent-filter>
 
-            <!-- Deeplink configuration for ubifindapp://open -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="ubifindapp"
-                    android:host="open"
-                />
-            </intent-filter>
+          
            
             
            
         </activity>
-        <activity
-      android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
-      android:exported="false"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar"
-    />
-        
-        
     </application>
 
 

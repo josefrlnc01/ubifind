@@ -15,7 +15,6 @@
     "SplashScreen": {
       "launchShowDuration": 600,
       "androidSplashResourceName": "splash",
-      
       "androidScaleType": "CENTER_CROP",
       "fadeInDuration": 300,
       "fadeOutDuration": 300,
@@ -23,16 +22,20 @@
       "splashFullScreen": true,
       "splashImmersive": true
     },
-    "App": {
-     
-      "iosScheme": "App",
-      "androidScheme": "https"
+    "CustomURLScheme": {
+      "scheme": "ubifind",
+      "host": "open"
     },
-  "CustomURLScheme": {
-    "scheme": "ubifindapp",
-    "host": "open"
-  },
-   
+    
+    "App": {
+      "iosScheme": "ubifind",
+      "androidScheme": "ubifind"
+    },
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "serverClientId": "940873643414-856bc0no2p33f06lr9netrff6c77miul.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": true
+    }
   },
   "android": {
     "allowMixedContent": true,

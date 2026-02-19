@@ -8,10 +8,6 @@ import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.PluginHandle;
 import com.getcapacitor.Plugin;
 
-import com.google.android.gms.ads.MobileAds;
-
-import com.revenuecat.purchases.Purchases;
-import com.revenuecat.purchases.PurchasesConfiguration;
 
 // Social login (CapGo)
 import ee.forgr.capacitor.social.login.GoogleProvider;
@@ -23,25 +19,12 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    // Inicialización AdMob
-    MobileAds.initialize(this, initializationStatus -> {
-      // Log.d("AdMob", "Inicializado correctamente");
-    });
-
-    // Inicialización RevenueCat
-    String revenueCatAPIKey = "goog_YhBEczdwaWegvjAeukgWXnDDDen"; // <-- tu API key
-    Purchases.setDebugLogsEnabled(true);
-    Purchases.configure(
-      new PurchasesConfiguration.Builder(this, revenueCatAPIKey).build()
-    );
   }
 
   @Override
   public void onStart() {
     super.onStart();
-    // Sync purchases on app start
-    Purchases.getSharedInstance().syncPurchases();
+
   }
 
   // Necesario para que el plugin SocialLogin reciba la respuesta de Google

@@ -82,7 +82,10 @@
 
     <!-- Your application scripts as modules -->
     <script type="module" src="../script.js"></script>
-
+   
+    <script type="module" src="../js/interact-places.js"></script>
+    <script type="module" src="../js/render-places.js"></script>
+    <script type="module" src="../js/map.js"></script>
     <!-- Capacitor platform-specific scripts -->
     <script nomodule src="cordova.js"></script>
     <script nomodule src="capacitor.js"></script>
@@ -170,7 +173,7 @@
                                     class="icon icon-contact"></span>Contacto</a>
                         </li>
                         <li role="none">
-                            <a role="menuitem" data-i18n="report" href="../problems.html"><span
+                            <a role="menuitem" data-i18n="report" href="../"><span
                                     class="icon icon-report"></span>Reportar problema</a>
                         </li>
 
@@ -274,7 +277,7 @@
 
     <div id="error-notification-banner" class="error-notification-banner hidden">
         <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" role="img"
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" role="img"
                 aria-label="Error">
                 <title>Error</title>
                 <circle cx="12" cy="12" r="10" fill="#EF4444" stroke="#dc2626" stroke-opacity="0.9" stroke-width="1" />

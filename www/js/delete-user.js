@@ -1,5 +1,5 @@
 import { deleteUser, EmailAuthProvider, reauthenticateWithCredential, GoogleAuthProvider, reauthenticateWithPopup, reauthenticateWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { auth } from "./firebaseConfig.js";
+import { auth } from "../firebaseConfig.js";
 
 export async function deleteUserAccount() {
     const user = auth.currentUser;
