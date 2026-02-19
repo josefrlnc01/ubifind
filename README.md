@@ -65,11 +65,12 @@ Ubifind es una red social que te permite descubrir y compartir lugares interesan
 ¿Necesitas ayuda o tienes alguna pregunta? Contáctanos a través de nuestro [formulario de contacto](#contact-form) o envía un correo a soporte@ubifind.com
 
 ## 📱 Capturas de Pantalla
-
 <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
-  <img src="https://github.com/user-attachments/assets/06ba0772-4f4b-42f2-a464-b45fa54de65c" alt="Ubifind Captura 1" width="300"/>
-  <img src="https://github.com/user-attachments/assets/7ce8258a-8599-47e7-80af-63932a2ff25f" alt="Ubifind Captura 2" width="300"/>
-  <img src="https://github.com/user-attachments/assets/455fc810-b0cb-4760-83c4-6989d5a8902f" alt="Ubifind Captura 3" width="300"/>
+  <img width="280"  alt="Rellena la información de tus lugares detalladamente_20250913_183920_0000" src="https://github.com/user-attachments/assets/ba8ba96f-256e-4f1e-8c2c-18b731cb53dd" />
+<img width="280"  alt="Rellena la información de tus lugares detalladamente_20250913_211706_0000" src="https://github.com/user-attachments/assets/3cba8641-67b7-46b2-b446-ac4ee6036f31" />
+
+<img width="280"  alt="Rellena la información de tus lugares detalladamente_20250913_212828_0000" src="https://github.com/user-attachments/assets/9571d1db-12cf-45a5-9e7f-7c56198f7ea8" />
+
 </div>
 
 ## 📄 Licencia
